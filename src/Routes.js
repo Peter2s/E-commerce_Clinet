@@ -78,7 +78,7 @@ var routes = [
   {
     path: "/setting",
     name: "Setting",
-    icon: "ni ni-settings text-blue",
+    icon: "fa fa-gear text-blue",
     component: <Setting />,
     layout: "/admin",
   },
