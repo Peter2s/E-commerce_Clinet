@@ -1,6 +1,6 @@
-const Input = ({type, name, value, id, handleChange}) => {
+const Input = ({type, name, value, id, handleChange , onBlur ,error}) => {
     return(
-        <input type={type} name={name} value={value} id={id} onChange={handleChange} />
+        <input type={type} name={name} value={value} id={id} onBlur={onBlur} onChange={handleChange}  error={error}/>
     )
 }
 

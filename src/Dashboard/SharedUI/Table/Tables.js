@@ -8,11 +8,13 @@ import {
   Table,
   Container,
   Row,
+  Col,
   Navbar,
 } from "reactstrap";
+
 // core components
 
-const Tables = ({title, trContent, tableContent}) => {
+const Tables = ({title, trContent, tableContent,btn}) => {
   return (
     <>
       <Navbar />
@@ -22,15 +24,24 @@ const Tables = ({title, trContent, tableContent}) => {
         <Row>
           <div className="col">
             <Card className="shadow">
-              <CardHeader className="border-0">
-                <h3 className="mb-0">{title}</h3>
+            <CardHeader className="border-0">
+              <Row>
+                  <Col>
+                    <h3 className="mb-0">{title}</h3>
+                  </Col>
+                  <Col>
+                    {btn}
+                  </Col>
+                </Row>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
-                  <tr dangerouslySetInnerHTML={{ __html: trContent }} >
+                  <tr >
+                    {trContent}
                   </tr>
                 </thead>
-                <tbody dangerouslySetInnerHTML={{ __html: tableContent }} >
+                <tbody >
+                  {tableContent}
                 </tbody>
               </Table>
               <CardFooter className="py-4">

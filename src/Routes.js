@@ -18,12 +18,22 @@
 import Index from "./Dashboard/Pages/HomePage/Index.js";
 import Profile from "./Dashboard/Pages/Profile/Profile.js";
 import Login from "./Dashboard/Pages/Login/Login.js";
-import Orders from "./Dashboard/Pages/Orders/Orders.js";
+import Orders from "./Dashboard/Pages/Orders/OrderList/OrderList.js";
 import Products from './Dashboard/Pages/Products/Product-list/Products.js';
 import Categories from './Dashboard/Pages/Categories/Categories.js';
 import Roles from './Dashboard/Pages/Roles/Roles.js';
 import Setting from './Dashboard/Pages/Setting/Setting.js';
-import Users from './Dashboard/Pages/Users/Users.js';
+import Users from './Dashboard/Pages/Users/UserListing/UserListing.js';
+import UserCreate from './Dashboard/Pages/Users/UserCreate/UserCreate.js';
+import UserEdit from './Dashboard/Pages/Users/UserEdit/UserEdit.js';
+import UserDetail from "Dashboard/Pages/Users/UserDetails/UserDetails.js";
+import Emps from "Dashboard/Pages/Employees/EmpListing/EmpListing.js";
+import EmpCreate from "Dashboard/Pages/Employees/EmpCreate/EmpCreate.js";
+import EmpEdit from "Dashboard/Pages/Employees/EmpEdit/EmpEdit.js";
+import EmpDetails from "Dashboard/Pages/Employees/EmpDetail/EmpDetail.js";
+import OrderDetail from "Dashboard/Pages/Orders/OrderDetails/OrderDetails.js";
+
+
 
 var routes = [
   {
@@ -69,6 +79,27 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/users/create",
+    name: "New",
+    icon: "fa fa-users text-blue",
+    component: <UserCreate/>,
+    layout: "/admin",
+  },
+  {
+    path: "/UserEdit/:id",
+    name: "New",
+    icon: "fa fa-users text-blue",
+    component: <UserEdit/>,
+    layout: "/admin",
+  },
+  {
+    path: "/UserDetail/:id",
+    name: "New",
+    icon: "fa fa-users text-blue",
+    component: <UserDetail/>,
+    layout: "/admin",
+  },
+  {
     path: "/roles",
     name: "Roles",
     icon: "fa fa-unlock text-blue",
@@ -83,11 +114,45 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/employees",
+    name: "Employees",
+    icon: "fa fa-users text-blue",
+    component: <Emps />,
+    layout: "/admin",
+  },
+  {
+    path: "/employees/create",
+    name: "New",
+    icon: "fa fa-users text-blue",
+    component: <EmpCreate/>,
+    layout: "/admin",
+  },
+  {
+    path: "/EmpEdit/:id",
+    name: "New",
+    icon: "fa fa-users text-blue",
+    component: <EmpEdit/>,
+    layout: "/admin",
+  },
+  {
+    path: "/EmpDetails/:id",
+    name: "New",
+    icon: "fa fa-users text-blue",
+    component: <EmpDetails/>,
+    layout: "/admin",
+  },
+  {
     path: "/login",
     name: "Login",
     icon: "ni ni-key-25 text-info",
     component: <Login />,
     layout: "/auth",
+  },
+  {
+    path: "/OrderDetails/:id",
+    name: "New",
+		component: <OrderDetail/>,
+    layout: "/admin",
   }
 ];
 export default routes;
