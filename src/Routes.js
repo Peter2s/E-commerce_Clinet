@@ -1,29 +1,16 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.2.3
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import Index from "./Dashboard/Pages/HomePage/Index.js";
 import Profile from "./Dashboard/Pages/Profile/Profile.js";
 import Login from "./Dashboard/Pages/Login/Login.js";
 import Orders from "./Dashboard/Pages/Orders/Orders.js";
 import Products from './Dashboard/Pages/Products/Product-list/Products.js';
 import Categories from './Dashboard/Pages/Categories/Categories.js';
-import Roles from './Dashboard/Pages/Roles/Roles.js';
+import ListRoles from './Dashboard/Pages/Roles/ListRoles/ListRoles.js';
+import CreateRole from './Dashboard/Pages/Roles/CreateRole/CreateRole.js';
 import Setting from './Dashboard/Pages/Setting/Setting.js';
 import Users from './Dashboard/Pages/Users/Users.js';
+import AboutUS from "Dashboard/Pages/AboutUs/ShowAboutUs/ShowAboutUs.js";
+import ContactUs from "Dashboard/Pages/ContactUs/ShowContactUs/ShowContactUs.js";
+import EditRole from "Dashboard/Pages/Roles/EditRole/EditRole.js";
 
 var routes = [
   {
@@ -72,7 +59,21 @@ var routes = [
     path: "/roles",
     name: "Roles",
     icon: "fa fa-unlock text-blue",
-    component: <Roles />,
+    component: <ListRoles />,
+    layout: "/admin",
+  },
+  {
+    path: "/roles/create",
+    name: "RoleAdd",
+    icon: "fa fa-lock text-blue",
+    component: <CreateRole />,
+    layout: "/admin",
+  },
+  {
+    path: "/roles/edit/:id",
+    name: "RoleEdit",
+    icon: "fa fa-lock text-blue",
+    component: <EditRole />,
     layout: "/admin",
   },
   {
@@ -80,6 +81,20 @@ var routes = [
     name: "Setting",
     icon: "fa fa-gear text-blue",
     component: <Setting />,
+    layout: "/admin",
+  },
+  {
+    path: "/aboutus",
+    name: "About us",
+    icon: "fa fa-info text-blue",
+    component: <AboutUS />,
+    layout: "/admin",
+  },
+  {
+    path: "/contactus",
+    name: "Contact us",
+    icon: "fa fa-info text-blue",
+    component: <ContactUs />,
     layout: "/admin",
   },
   {

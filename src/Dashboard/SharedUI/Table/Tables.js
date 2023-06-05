@@ -9,10 +9,13 @@ import {
   Container,
   Row,
   Navbar,
+  Col,
 } from "reactstrap";
+import Btn from "../Btn/Btn";
+import { Link } from "react-router-dom";
 // core components
 
-const Tables = ({title, trContent, tableContent}) => {
+const Tables = ({title, trContent, tableContent, link, addBtnName,btn}) => {
   return (
     <>
       <Navbar />
@@ -23,7 +26,14 @@ const Tables = ({title, trContent, tableContent}) => {
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                <h3 className="mb-0">{title}</h3>
+              <Row>
+                  <Col>
+                    <h3 className="mb-0">{title}</h3>
+                  </Col>
+                  <Col>
+                    {btn}
+                  </Col>
+                </Row>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">

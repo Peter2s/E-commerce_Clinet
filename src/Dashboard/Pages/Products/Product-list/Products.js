@@ -3,7 +3,7 @@ import Tables from '../../../SharedUI/Table/Tables';
 const Products = () => {
     return (
         <>
-            <Tables title="Products Table" 
+          <Tables title="Products Table" 
             trContent='
                 <th scope="col">Project</th>
                 <th scope="col">Budget</th>
