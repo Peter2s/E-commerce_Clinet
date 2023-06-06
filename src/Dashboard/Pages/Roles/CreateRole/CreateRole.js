@@ -5,7 +5,7 @@ import axios from 'axios';
 import Btn from 'Dashboard/SharedUI/Btn/Btn';
 
 const CreateRole = () => {
-  const rolesEndpoint = 'http://localhost:8000/roles';
+  const rolesEndpoint = 'http://e-commerce.nader-mo.tech/api/v1/roles';
 
   const initialRole = {
     newRole: '',
@@ -20,7 +20,8 @@ const CreateRole = () => {
     const fetchPermissions = async () => {
       try {
         const response = await axios.get(rolesEndpoint);
-        const roles = response.data;
+        const roles = response.data.data;
+        console.log(roles);
         if (roles && roles.length > 0) {
           const permissions = roles[0].permissions;
           setPermissionsData(permissions);
@@ -67,7 +68,7 @@ const CreateRole = () => {
       // Create the role object in the desired format
       const roleData = {
         name: role.newRole,
-        is_active: true,
+        // is_active: true,
         permissions: Object.values(permissionsByEntity)
       };
   
@@ -118,8 +119,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck1"
-                      value="Employees:Get"
-                      checked={role.permissions.includes('Employees:Get')}
+                      value="employees:Get"
+                      checked={role.permissions.includes('employees:Get')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label" htmlFor="customCheck1">
@@ -131,8 +132,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck2"
-                      value="Employees:Post"
-                      checked={role.permissions.includes('Employees:Post')}
+                      value="employees:Post"
+                      checked={role.permissions.includes('employees:Post')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label" htmlFor="customCheck2">
@@ -144,8 +145,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck3"
-                      value="Employees:Patch"
-                      checked={role.permissions.includes('Employees:Patch')}
+                      value="employees:Patch"
+                      checked={role.permissions.includes('employees:Patch')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label" htmlFor="customCheck3">
@@ -159,8 +160,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck4"
-                      value="Employees:Delete"
-                      checked={role.permissions.includes('Employees:Delete')}
+                      value="employees:Delete"
+                      checked={role.permissions.includes('employees:Delete')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label" htmlFor="customCheck4">
@@ -172,8 +173,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck5"
-                      value="Employees:Ban"
-                      checked={role.permissions.includes('Employees:Ban')}
+                      value="employees:Ban"
+                      checked={role.permissions.includes('employees:Ban')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label" htmlFor="customCheck5">
@@ -185,8 +186,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck6"
-                      value="Employees:Unban"
-                      checked={role.permissions.includes('Employees:Unban')}
+                      value="employees:Unban"
+                      checked={role.permissions.includes('employees:Unban')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label" htmlFor="customCheck6">
@@ -201,8 +202,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck7"
-                      value="Products:Get"
-                      checked={role.permissions.includes('Products:Get')}
+                      value="products:Get"
+                      checked={role.permissions.includes('products:Get')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label" htmlFor="customCheck7">
@@ -214,8 +215,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck8"
-                      value="Products:Post"
-                      checked={role.permissions.includes('Products:Post')}
+                      value="products:Post"
+                      checked={role.permissions.includes('products:Post')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label" htmlFor="customCheck8">
@@ -227,8 +228,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck9"
-                      value="Products:Patch"
-                      checked={role.permissions.includes('Products:Patch')}
+                      value="products:Patch"
+                      checked={role.permissions.includes('products:Patch')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label" htmlFor="customCheck9">
@@ -240,8 +241,8 @@ const CreateRole = () => {
                       type="checkbox"
                       className="custom-control-input"
                       id="customCheck10"
-                      value="Products:Delete"
-                      checked={role.permissions.includes('Products:Delete')}
+                      value="products:Delete"
+                      checked={role.permissions.includes('products:Delete')}
                       onChange={handlePermissionChange}
                     />
                     <label className="custom-control-label mb-4" htmlFor="customCheck10">

@@ -18,7 +18,7 @@ import {
 } from "reactstrap";
 import { axiosInstance } from "Axios.js";
 import Btn from "Dashboard/SharedUI/Btn/Btn.js";
-import './Profile.css';
+import "./Profile.css";
 
 const Profile = () => {
   const [editMode, setEditMode] = useState(false);
@@ -26,8 +26,7 @@ const Profile = () => {
     name: "",
     email: "",
     phone: "",
-    addresses: [],
-    bio: "",
+    role: "",
   });
   const [showModal, setShowModal] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -37,16 +36,19 @@ const Profile = () => {
   const [originalProfileData, setOriginalProfileData] = useState(null); // New state for storing original profile data
   const [phoneError, setPhoneError] = useState(false);
   const [errorEmpty, setErrorEmpty] = useState(false);
-
+  const jwt = localStorage.getItem('jwt');
+  
   useEffect(() => {
     fetchProfileData();
   }, []);
 
   const fetchProfileData = async () => {
     try {
-      const res = await axiosInstance.get("/users/1");
-      setProfileData(res.data);
-      setOriginalProfileData(res.data); // Store the original profile data
+      const res = await axiosInstance.get(
+        "/api/v1/employees/647e61d24e6f0f88521bdf71"
+      );
+      setProfileData(res.data.data);
+      setOriginalProfileData(res.data.data); // Store the original profile data
     } catch (err) {
       console.log(err);
     }
@@ -72,85 +74,81 @@ const Profile = () => {
     setProfileData(originalProfileData); // Reset profileData to the original values
   };
 
-const handleInputChange = (e) => {
-  const { id, name, value } = e.target;
-  if (id === "new_password") {
-    setNewPassword(value);
-  } else if (id === "confirm_new_password") {
-    setConfirmNewPassword(value);
-  } else if (name === "phone") {
-    // Validate mobile number format
-    if (/^\d+$/.test(value) || value === "") {
+  const handleInputChange = (e) => {
+    const { id, name, value } = e.target;
+    if (id === "new_password") {
+      setNewPassword(value);
+    } else if (id === "confirm_new_password") {
+      setConfirmNewPassword(value);
+    } else if (name === "phone") {
+      // Validate mobile number format
+      if (/^\d+$/.test(value) || value === "") {
+        setProfileData((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+        setPhoneError(false);
+      } else {
+        setPhoneError(true);
+      }
+    } else {
       setProfileData((prevState) => ({
         ...prevState,
         [name]: value,
       }));
-      setPhoneError(false);
-    }else{
-      setPhoneError(true);
     }
-  } else {
-    setProfileData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  }
-};
-
-const handleModalOk = () => {
-  if (newPassword === '' || confirmNewPassword === '') {
-    setMatchError(false);
-    setShowModal(true);
-    setErrorEmpty(true);
-  }else if (newPassword !== confirmNewPassword) {
-    setMatchError(true);
-    setErrorEmpty(false);
-  }else {
-    setMatchError(false);
-    setShowModal(false);
-    setErrorEmpty(false);
-    saveProfileData();
-  }
-};
-
-  const handleAddressChange = (e, index) => {
-    const updatedAddresses = [...profileData.addresses];
-    updatedAddresses[index] = e.target.value;
-    setProfileData({ ...profileData, addresses: updatedAddresses });
   };
 
-  const handleAddAddress = () => {
-    const updatedAddresses = [...profileData.addresses, ""];
-    setProfileData({ ...profileData, addresses: updatedAddresses });
+  const handleModalOk = async () => {
+    if (newPassword === "" || confirmNewPassword === "") {
+      setMatchError(false);
+      setShowModal(true);
+      setErrorEmpty(true);
+    } else if (newPassword !== confirmNewPassword) {
+      setMatchError(true);
+      setErrorEmpty(false);
+    } else {
+      setMatchError(false);
+      setShowModal(false);
+      setErrorEmpty(false);
+      try {
+        await axiosInstance.patch(
+          "http://e-commerce.nader-mo.tech/api/v1/employees/update-password",
+          { newPassword },
+          {
+            headers: {
+              Authorization: `Bearer ${jwt}`, // Include the authentication token
+            },
+          }
+        );
+        // Password successfully changed
+      } catch (err) {
+        console.log(err);
+        // Handle error if password change failed
+      }
+    }
   };
-
-  const handleRemoveAddress = (index) => {
-    const updatedAddresses = [...profileData.addresses];
-    updatedAddresses.splice(index, 1);
-    setProfileData({ ...profileData, addresses: updatedAddresses });
-  };
-
-  const hasEmptyAddress = profileData.addresses.some( // To validate if address is empty
-    (address) => address.trim() === ""
-  );
-
+  
   const saveProfileData = async () => {
-    if (profileData.name.trim() === "" || profileData.phone.trim() === "" || hasEmptyAddress) {
+    if (profileData.name.trim() === "" || profileData.phone.trim() === "") {
       setInputError(true);
       return;
-    }  
+    }
     const updatedProfileData = { ...profileData };
     if (newPassword !== "" && confirmNewPassword !== "") {
       updatedProfileData.password = newPassword;
     }
     try {
-      await axiosInstance.put("/users/1", updatedProfileData);
+      await axiosInstance.patch(
+        "/api/v1/employees/647e61d24e6f0f88521bdf71",
+        updatedProfileData
+      );
       toggleEditMode();
     } catch (err) {
       console.log(err);
     }
   };
-  
+
   return (
     <div>
       <>
@@ -180,7 +178,11 @@ const handleModalOk = () => {
                           name="btn btn-primary"
                           onClick={saveProfileData}
                         />
-                        <Btn title="Cancel" name="btn btn-secondary" onClick={cancelMode} />            
+                        <Btn
+                          title="Cancel"
+                          name="btn btn-secondary"
+                          onClick={cancelMode}
+                        />
                       </>
                     ) : (
                       ""
@@ -203,10 +205,7 @@ const handleModalOk = () => {
                     <Row>
                       <Col lg="2" style={{ height: "150px" }} className="mt-5">
                         <div className="card-profile-image">
-                          <a
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
+                          <a href="#pablo" onClick={(e) => e.preventDefault()}>
                             <img
                               alt="..."
                               className="rounded-circle"
@@ -216,26 +215,27 @@ const handleModalOk = () => {
                         </div>
                       </Col>
                     </Row>
-                    <Row>
-                      <Col>
-                      { editMode ? (<Btn
-                          title="Change Image"
-                          name="btn-sm btn-outline-primary mb-4 ml-4"
-                        />):("")}
+                    <Row className="mb-4">
+                      <Col lg="4">
+                        {editMode ? (
+                          <input type="file" className="form-control" />
+                        ) : (
+                          ""
+                        )}
                       </Col>
                     </Row>
                   </div>
                 </div>
                 <>
-                <Row>
-                  <Col>
-                  {editMode && inputError && (
-                            <Alert color="danger" className="alert-transparent">
-                              Complete all required fields
-                            </Alert>
-                    )}
-                  </Col>
-                </Row>
+                  <Row>
+                    <Col>
+                      {editMode && inputError && (
+                        <Alert color="danger" className="alert-transparent">
+                          Complete all required fields
+                        </Alert>
+                      )}
+                    </Col>
+                  </Row>
                   <Row>
                     <Col lg="6">
                       <FormGroup>
@@ -243,7 +243,7 @@ const handleModalOk = () => {
                           className="form-control-label"
                           htmlFor="input-username"
                         >
-                          Name{editMode?(<span class="required">*</span>):("")}
+                          Name{editMode ? <span class="required">*</span> : ""}
                         </label>
                         <Col lg="8">
                           {editMode ? (
@@ -268,7 +268,8 @@ const handleModalOk = () => {
                           className="form-control-label"
                           htmlFor="input-mobile-number"
                         >
-                          Mobile Number{editMode?(<span class="required">*</span>):("")}
+                          Mobile Number
+                          {editMode ? <span class="required">*</span> : ""}
                         </label>
                         <Col lg="8">
                           {editMode ? (
@@ -283,96 +284,35 @@ const handleModalOk = () => {
                           ) : (
                             <p>{profileData.phone}</p>
                           )}
-                          { phoneError ? (
-                            <span className="text-danger">Phone Number must be only numbers</span>
-                          ) : ("")}
+                          {phoneError ? (
+                            <span className="text-danger">
+                              Phone Number must be only numbers
+                            </span>
+                          ) : (
+                            ""
+                          )}
                         </Col>
                       </FormGroup>
                     </Col>
                   </Row>
                   <Row>
-                    <Col lg="6">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-last-name"
-                        >
-                          Addresses{editMode?(<span class="required">*</span>):("")}
-                        </label>
-                        <Col lg="12">
-                          {editMode ? (
-                            <>
-                              {profileData.addresses.map((address, index) => (
-                                <>
-                                  <div className="row">
-                                    <Col lg="8">
-                                      <Input
-                                        key={index}
-                                        className="form-control-alternative mb-2"
-                                        id={`input-address-${index}`}
-                                        type="text"
-                                        name="addresses"
-                                        value={address}
-                                        onChange={(e) =>
-                                          handleAddressChange(e, index)
-                                        }
-                                      />
-                                    </Col>
-                                    <Col lg="4">
-                                      {index !==
-                                        profileData.addresses.length && (
-                                        <i
-                                          className="fa fa-minus-circle text-primary mt-2"
-                                          onClick={() =>
-                                            handleRemoveAddress(index)
-                                          }
-                                        ></i>
-                                      )}
-                                    </Col>
-                                  </div>
-                                  {index ===
-                                    profileData.addresses.length - 1 && (
-                                    <button
-                                      className="btn-sm btn-outline-primary"
-                                      onClick={handleAddAddress}
-                                    >
-                                      <i className="fa fa-plus-circle"></i>{" "}
-                                      Add new address
-                                    </button>
-                                  )}
-                                </>
-                              ))}
-                            </>
-                          ) : (
-                            <>
-                              {profileData.addresses.map((address, index) => (
-                                <p key={index}>{address}</p>
-                              ))}
-                            </>
-                          )}
-                        </Col>
-                      </FormGroup>
-                    </Col>
-                    <Col lg="4">
+                  <Col lg="4">
                       {/* Description */}
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-Bio"
-                      >
-                        Bio
+                      <label className="form-control-label" htmlFor="input-Bio">
+                        Role
                       </label>
                       <Col lg="12">
                         {editMode ? (
                           <Input
                             className="form-control-alternative"
                             rows="4"
-                            type="textarea"
-                            name="bio"
-                            value={profileData.bio}
+                            type="text"
+                            name="role"
+                            value={profileData.role}
                             onChange={handleInputChange}
                           />
                         ) : (
-                          <p>{profileData.bio}</p>
+                          <p>{profileData.role}</p>
                         )}
                       </Col>
                     </Col>
@@ -385,10 +325,7 @@ const handleModalOk = () => {
                 </h6>
                 <Col lg="6">
                   <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-email"
-                    >
+                    <label className="form-control-label" htmlFor="input-email">
                       Email address
                     </label>
                     <Col lg="8">
@@ -398,37 +335,77 @@ const handleModalOk = () => {
                 </Col>
                 <Col lg="6">
                   <FormGroup>
-                    <label  className="form-control-label"  htmlFor="input-password">Password</label>
-                    <Btn title="Change Password" name="btn btn-primary ml-3" onClick={openModal}
+                  {editMode? (
+                    <>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-password"
+                    >
+                      Password
+                    </label>
+                    <Btn
+                      title="Change Password"
+                      name="btn btn-primary ml-3"
+                      onClick={openModal}
                     />
-                    <Modal  isOpen={showModal}  toggle={() => setShowModal(false)}>
+                    <Modal
+                      isOpen={showModal}
+                      toggle={() => setShowModal(false)}
+                    >
                       <ModalBody>
-                        <span  className="close"  onClick={closeModal}>
+                        <span className="close" onClick={closeModal}>
                           &times;
                         </span>
                         <h2>Change Password</h2>
-                        <Input type="password" name="password" id="new_password" className="form-control mt-5"
-                          placeholder="New Password" onChange={handleInputChange}
+                        <Input
+                          type="password"
+                          name="password"
+                          id="new_password"
+                          className="form-control mt-5"
+                          placeholder="New Password"
+                          onChange={handleInputChange}
                         />
-                        <Input type="password" name="password" id="confirm_new_password" 
-                          className="form-control mt-3" placeholder="Confirm new password" onChange={handleInputChange}
+                        <Input
+                          type="password"
+                          name="password"
+                          id="confirm_new_password"
+                          className="form-control mt-3"
+                          placeholder="Confirm new password"
+                          onChange={handleInputChange}
                         />
                         {matchError && (
-                          <div className="alert alert-danger mt-3 alert-transparent" role="alert">
+                          <div
+                            className="alert alert-danger mt-3 alert-transparent"
+                            role="alert"
+                          >
                             New password and confirm new password do not match.
                           </div>
                         )}
                         {errorEmpty && (
-                          <div className="alert alert-danger mt-3 alert-transparent" role="alert">
+                          <div
+                            className="alert alert-danger mt-3 alert-transparent"
+                            role="alert"
+                          >
                             Please fill in all the fields.
                           </div>
-                        )}                      
-                        </ModalBody>
+                        )}
+                      </ModalBody>
                       <ModalFooter>
-                        <Btn title="Save" name="btn btn-primary" onClick={handleModalOk}/>
-                        <Btn title="Cancel" name="btn btn-secondary" onClick={closeModal}/>
+                        <Btn
+                          title="Save"
+                          name="btn btn-primary"
+                          onClick={handleModalOk}
+                        />
+                        <Btn
+                          title="Cancel"
+                          name="btn btn-secondary"
+                          onClick={closeModal}
+                        />
                       </ModalFooter>
                     </Modal>
+                    </>)
+                    :("")
+                  }
                   </FormGroup>
                 </Col>
               </Form>

@@ -8,8 +8,8 @@ import {
   Table,
   Container,
   Row,
-  Navbar,
   Col,
+  Navbar
 } from "reactstrap";
 import Btn from "../Btn/Btn";
 import { Link } from "react-router-dom";
@@ -37,10 +37,12 @@ const Tables = ({title, trContent, tableContent, link, addBtnName,btn}) => {
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
-                  <tr dangerouslySetInnerHTML={{ __html: trContent }} >
+                  <tr >
+                    {trContent}
                   </tr>
                 </thead>
-                <tbody dangerouslySetInnerHTML={{ __html: tableContent }} >
+                <tbody >
+                  {tableContent}
                 </tbody>
               </Table>
               <CardFooter className="py-4">

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Card, CardHeader, Container, Input, Row } from 'reactstrap';
+import { axiosInstance } from '../../../../Axios';
 
 const EditRole = () => {
   const { id } = useParams();
@@ -14,8 +15,8 @@ const EditRole = () => {
 
   const fetchRoleData = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/roles/${id}`);
-      const { name, permissions } = response.data;
+      const response = await axiosInstance.get(`http://e-commerce.nader-mo.tech/api/v1/roles/${id}`);
+      const { name, permissions } = response.data.data;
       setName(name);
       setPermissions(permissions || []);
       console.log(response.data);
@@ -26,7 +27,7 @@ const EditRole = () => {
 
   const handleSave = async () => {
     try {
-      const response = await axios.patch(`http://localhost:8000/roles/${id}`, {
+      const response = await axiosInstance.patch(`http://e-commerce.nader-mo.tech/api/v1/roles/${id}`, {
         name,
         permissions,
       });

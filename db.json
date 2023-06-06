@@ -49,9 +49,13 @@
       "name": "Eman",
       "email": "emangamal@gmail.coms",
       "phone": "014555555655",
-      "addresses": [
-        "Mansouras",
-        "aaaaa"
+      "address": [
+        {
+          "area": "Egy",
+          "city": "Mans",
+          "governorate": "aaaaaaaa",
+          "country": "aaaaaaaaa"
+        }
       ],
       "bio": "aaaa",
       "password": "yy",
@@ -113,6 +117,30 @@
       "is_active": true,
       "permissions": [],
       "id": 3
+    },
+    {
+      "name": "aaaaaaaaa",
+      "is_active": true,
+      "permissions": [
+        {
+          "entity": "employees",
+          "access": {
+            "get": true,
+            "patch": true,
+            "post": true
+          }
+        },
+        {
+          "entity": "products",
+          "access": {
+            "get": true,
+            "post": true,
+            "patch": true,
+            "delete": true
+          }
+        }
+      ],
+      "id": 4
     }
   ]
 }

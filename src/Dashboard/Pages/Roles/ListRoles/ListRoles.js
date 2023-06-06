@@ -2,24 +2,28 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Card, CardBody, CardHeader } from 'reactstrap';
+import { axiosInstance } from '../../../../Axios';
 
 const Roles = () => {
   const [roles, setRoles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rolesPerPage, setRolesPerPage] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetchRolesData();
-  }, []);
+    fetchRolesData(currentPage);
+  }, [currentPage]);
 
-  const fetchRolesData = async () => {
+  const fetchRolesData = async (page) => {
     try {
-      const response = await axios.get('http://localhost:8000/roles');
-      setRoles(response.data);
-      console.log(response.data);
+      const response = await axiosInstance.get(`/api/v1/roles?page=${page}`);
+      setRoles(response.data.data); // Assuming the roles data is returned as an array
+      setTotalPages(response.data.paginationResult.totalPages);
     } catch (error) {
       console.log(error);
     }
   };
-
+  
   const handleDeactivate = async (id) => {
     try {
       const response = await axios.patch(`http://localhost:8000/roles/${id}`, {
@@ -64,6 +68,19 @@ const Roles = () => {
     }
   };
 
+   // Change the current page
+   const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const indexOfLastRole = currentPage * rolesPerPage;
+  const indexOfFirstRole = indexOfLastRole - rolesPerPage;
+  console.log(roles);
+  const currentRoles = roles.slice(indexOfFirstRole, indexOfLastRole);
+
+  
   const handleButtonClick = (idRole) => {
     window.location.href = `/admin/roles/edit/${idRole}`;
   };
@@ -82,9 +99,9 @@ const Roles = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await axios.delete(`http://localhost:8000/roles/${id}`);
+        const response = await axiosInstance.delete(`/api/v1/roles/${id}`);
         setRoles((prevRoles) => prevRoles.filter((role) => role.id !== id));
-        console.log(response.data);
+        console.log(response.data.data);
         Swal.fire('Deleted!', 'The role has been deleted.', 'success');
       }
     } catch (error) {
@@ -107,14 +124,14 @@ const Roles = () => {
               </tr>
             </thead>
             <tbody>
-              {roles.map((role) => (
-                <tr key={role.id}>
-                  <td>{role.id}</td>
+              {currentRoles.map((role) => (
+                <tr key={role._id}>
+                  <td>{role._id}</td>
                   <td>{role.name}</td>
                   <td>
                     {role.permissions.map((permission) => (
                       <div key={permission.entity}>
-                        <strong>{permission.entity}:</strong> {' '}
+                        <strong>{permission.entity}:</strong>{' '}
                         {Object.entries(permission.access)
                           .filter(([_, value]) => value)
                           .map(([key, _]) => key)
@@ -125,30 +142,47 @@ const Roles = () => {
                   <td>
                     <button
                       className="btn btn-info fa fa-edit"
-                      onClick={() => handleButtonClick(role.id)}
+                      onClick={() => handleButtonClick(role._id)}
                     ></button>
                     <button
                       className="btn btn-danger fa fa-trash"
-                      onClick={() => handleDelete(role.id)}
+                      onClick={() => handleDelete(role._id)}
                     ></button>
                     {role.is_active ? (
                       <button
                         className="btn btn-warning fa fa-lock"
-                        onClick={() => handleDeactivate(role.id)}
+                        onClick={() => handleDeactivate(role._id)}
                       ></button>
                     ) : (
                       <button
                         className="btn btn-success fa fa-lock-open"
-                        onClick={() => handleActivate(role.id)}
+                        onClick={() => handleActivate(role._id)}
                       ></button>
                     )}
                   </td>
                 </tr>
               ))}
             </tbody>
+               {/* Pagination */}
+      <ul className="pagination">
+        {Array.from({ length: totalPages }).map((_, index) => (
+          <li key={index + 1} className="page-item">
+            <button
+              className={`page-link ${
+                currentPage === index + 1 ? 'active' : ''
+              }`}
+              onClick={() => paginate(index + 1)}
+            >
+              {index + 1}
+            </button>
+          </li>
+        ))}
+      </ul>
           </table>
         </CardBody>
       </Card>
+
+   
     </>
   );
 };
