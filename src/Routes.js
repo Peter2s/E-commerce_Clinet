@@ -20,10 +20,15 @@ import Profile from "./Dashboard/Pages/Profile/Profile.js";
 import Login from "./Dashboard/Pages/Login/Login.js";
 import Orders from "./Dashboard/Pages/Orders/Orders.js";
 import Products from './Dashboard/Pages/Products/Product-list/Products.js';
-import Categories from './Dashboard/Pages/Categories/Categories.js';
+import Categories from './Dashboard/Pages/Categories/Categories/Categories.js';
 import Roles from './Dashboard/Pages/Roles/Roles.js';
 import Setting from './Dashboard/Pages/Setting/Setting.js';
 import Users from './Dashboard/Pages/Users/Users.js';
+import AddProduct from "Dashboard/Pages/Products/Product-add/AddProduct.js";
+import AddCategory from "Dashboard/Pages/Categories/AddCategory/AddCategory.js";
+import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword.js";
+import ConfirmNewPassword from "Dashboard/Components/ConfirmNewPassword/ConfirmNewPassword.js";
+import UpdateCategory from "Dashboard/Pages/Categories/updateCategory/UpdateCategory.js";
 
 var routes = [
   {
@@ -55,10 +60,31 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/addCategory",
+    name: "AddCategory",
+    icon: "ni ni-bullet-list-67 text-blue",
+    component: <AddCategory />,
+    layout: "/admin",
+  },
+  {
+    path: "/editcategory",
+    name: "UpdateCategory",
+    icon: "ni ni-bullet-list-67 text-blue",
+    component: <UpdateCategory />,
+    layout: "/admin",
+  },
+  {
     path: "/products",
     name: "Products",
     icon: "ni ni-bag-17 text-blue",
     component: <Products />,
+    layout: "/admin",
+  },
+  {
+    path: "/addProducts",
+    name: "AddProducts",
+    icon: "ni ni-bullet-list-67 text-blue",
+    component: <AddProduct/>,
     layout: "/admin",
   },
   {
@@ -83,10 +109,24 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/login",
+    path: "/auth",
     name: "Login",
     icon: "ni ni-key-25 text-info",
     component: <Login />,
+    layout: "/auth",
+  },
+  {
+    path: "/reset-password-token",
+    name: "ForgetPssword",
+    icon: "ni ni-key-25 text-info",
+    component: <ForgetPssword />,
+    layout: "/auth",
+  },
+  {
+    path: "/reset-password",
+    name: "ConfirmNewPassword",
+    icon: "ni ni-key-25 text-info",
+    component: <ConfirmNewPassword />,
     layout: "/auth",
   }
 ];

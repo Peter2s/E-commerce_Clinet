@@ -1,6 +1,7 @@
+import "./Input.css"
 const Input = ({type, name, value, id, handleChange}) => {
     return(
-        <input type={type} name={name} value={value} id={id} onChange={handleChange} />
+        <input className="sharedinput" type={type} name={name} value={value} id={id} onChange={handleChange} />
     )
 }
 
