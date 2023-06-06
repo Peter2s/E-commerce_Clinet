@@ -5,62 +5,54 @@ import Input from "Dashboard/SharedUI/Input/Input";
 import Btn from "Dashboard/SharedUI/Btn/Btn";
 import { FormGroup } from "reactstrap";
 
-const UPdateProduct = ({ productID }) => {
-    const [id, setId] = useState(productID);
+const UpdateCategory = ({ categoryId }) => {
+  const [id, setId] = useState(categoryId);
   const [name_en, setName_en] = useState("");
   const [name_ar, setName_ar] = useState("");
   const [file, setFile] = useState(null);
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [quantity, setQuantity] = useState("");
   const [validation, setValidation] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the product data based on the categoryId
-    const fetchProduct = async () => {
+    // Fetch the category data based on the categoryId
+    const fetchCategory = async () => {
       try {
         const response = await axios.get(
           `http://localhost:8000/categories/${id}`
         );
-        const productData = response.data;
-        // Update the state with the retrieved product data
-        setName_en(productData.name_en);
-        setName_ar(productData.name_ar);       
-        setFile(productData.file);
-        setCategory(productData.category);
-        setDescription(productData.description);
-        setPrice(productData.price);
-        setQuantity(productData.quantity);
+        const categoryData = response.data;
+        // Update the state with the retrieved category data
+        setName_en(categoryData.name_en);
+        setName_ar(categoryData.name_ar);
+        setFile(categoryData.file);
       } catch (error) {
         console.log(error.message);
       }
     };
 
     // Fetch the category data only if categoryId is provided
-    if (productID) {
-        fetchProduct();
+    if (categoryId) {
+      fetchCategory();
     }
-  }, [productID, id]);
+  }, [categoryId, id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Create a new form data object
-    const newProduct = new FormData();
-    newProduct.append("id", id);
-    newProduct.append("name_en", name_en);
-    newProduct.append("name_ar", name_ar);
-    newProduct.append("image", file);
+    const newCatData = new FormData();
+    newCatData.append("id", id);
+    newCatData.append("name_en", name_en);
+    newCatData.append("name_ar", name_ar);
+    newCatData.append("image", file);
 
     
     // const image=file
     // const catData = { id, name_en, name_ar, image };
 
     axios
-      .post(`http://localhost:8000/categories/${id}`, newProduct, {
+      .post(`http://localhost:8000/categories/${id}`, newCatData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -81,7 +73,7 @@ const UPdateProduct = ({ productID }) => {
           <form className="container" onSubmit={handleSubmit}>
             <div className="card" style={{ textAlign: "left" }}>
               <div className="card-title">
-                <h2>Update Product</h2>
+                <h2>Update Category</h2>
               </div>
               <div className="card-body">
                 <div className="row">
@@ -99,7 +91,6 @@ const UPdateProduct = ({ productID }) => {
                       )}
                     </div>
                   </div>
-                  
                   <div className="col-lg-12">
                     <div className="form-group">
                       <label>الاسم</label>
@@ -121,18 +112,6 @@ const UPdateProduct = ({ productID }) => {
                   />
                   </FormGroup>
                   </div>
-
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label>Category</label>
-                      <Input
-                        required
-                        value={category}
-                        onChange={(e) => setName_en(e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
                   <div className="col-lg-12">
                     <div className="form-group">
                     <Btn  type="submit" title="Save" className="btn btn-success"/> 
@@ -151,4 +130,4 @@ const UPdateProduct = ({ productID }) => {
   );
 };
 
-export default UPdateProduct;
+export default UpdateCategory;

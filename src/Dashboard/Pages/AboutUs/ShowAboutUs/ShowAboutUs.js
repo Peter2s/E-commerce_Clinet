@@ -41,7 +41,7 @@ const AboutUS = () => {
             <div dangerouslySetInnerHTML={{ __html: aboutUsData.about_us }} />
           </CardBody>
           <CardFooter className="py-4">
-            <Btn title="Edit" name="btn btn-primary" onClick={toggleEditCard} />
+            <Btn title="Edit" className="btn btn-primary" onClick={toggleEditCard} />
           </CardFooter>
         </Card>
       )}

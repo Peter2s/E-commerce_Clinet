@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import MySwal from 'sweetalert2';
 import Btn from "Dashboard/SharedUI/Btn/Btn";
 import input from "Dashboard/SharedUI/Input/Input";
+import { axiosInstance } from "../../../../Axios";
 const UserCreate = () => {
   const navigate = useNavigate();
 
@@ -16,18 +17,19 @@ const UserCreate = () => {
       email: "",
       phone: "",
       password: "",
+      confirmPassword: "",
       image: "",
       bio: "",
       country: "",
       city: "",
       governate: "",
       area: "",
-      active: true,
+      // active: true,
     },
     validationSchema: Yup.object({
       name: Yup.string().matches(/^[a-zA-Z\s]*$/, "Invalid name format").required("Enter the name"),
       email: Yup.string().email("Invalid email address").required("Enter the email"),
-      phone: Yup.string().matches(/^[0-9]{10}$/, "Invalid phone number").required("Enter the phone number"),
+      phone: Yup.string().matches(/^[0-9]{11}$/, "Invalid phone number").required("Enter the phone number"),
       password: Yup.string()
         .min(8, "Password must be at least 8 characters")
         .max(20, "Password must be less than 20 characters")
@@ -53,35 +55,38 @@ const UserCreate = () => {
           email: values.email,
           phone: values.phone,
           password: values.password,
+          confirmPassword: values.confirmPassword,
           image: values.image,
           bio: values.bio,
-          country: values.country,
-          city: values.city,
-          governate: values.governate,
-          area: values.area,
-          active: values.active,
+          address: {
+            country: values.country,
+            city: values.city,
+            governate: values.governate,
+            area: values.area,
+          },
+          // active: values.active,
 
           
         };
   
-        axios
-          .post("http://localhost:8000/user", userData, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-          .then((res) => {
-            MySwal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: 'Your changes have been saved successfully.',
-              });
-            navigate("/admin/users");
-          })
-          .catch((err) => {
-            console.log(err.message);
+        axiosInstance
+        .post("/api/v1/users", userData, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          MySwal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Your changes have been saved successfully.',
           });
-      },
+          navigate("/admin/users");
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    },
     });
 
   return (
@@ -156,6 +161,24 @@ const UserCreate = () => {
                       />
                       {formik.errors.password && formik.touched.password && (
                         <span className="text-danger">{formik.errors.password}</span>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+                <Row>
+                <Col>
+                    <div className="form-group">
+                      <label>confirmPassword</label>
+                      <input
+                        type="password"
+                        name="confirmPassword"
+                        value={formik.values.confirmPassword}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        className="form-control form-control-alternative"
+                      />
+                      {formik.errors.confirmPassword && formik.touched.confirmPassword && (
+                        <span className="text-danger">{formik.errors.confirmPassword}</span>
                       )}
                     </div>
                   </Col>
@@ -260,7 +283,7 @@ const UserCreate = () => {
                     </div>
                   </Col>
                 </Row>
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label>Active</label>
                   <input
                     type="checkbox"
@@ -270,7 +293,7 @@ const UserCreate = () => {
                     onChange={formik.handleChange}
                     className="form-control "
                   />
-                </div>
+                </div> */}
                 <div className="form-group">
                   <button type="submit" className="btn btn-primary mr-2">
                     Create

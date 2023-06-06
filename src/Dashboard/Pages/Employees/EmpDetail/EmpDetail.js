@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import "../../../Assets/css/project.css";
+import { axiosInstance } from "../../../../Axios";
 
 const EmpDetails = () => {
   const { id } = useParams();
@@ -22,10 +23,10 @@ const EmpDetails = () => {
   const [empdata, setEmpData] = useState({});
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:4000/employee/${id}`)
+    axiosInstance
+      .get(`/api/v1/employees/${id}`)
       .then((res) => {
-        setEmpData(res.data);
+        setEmpData(res.data.data);
       })
       .catch((err) => {
         console.log(err.message);

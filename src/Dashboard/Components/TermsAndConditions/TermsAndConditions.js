@@ -42,7 +42,7 @@ const TermsAndConditions = () => {
             <div dangerouslySetInnerHTML={{ __html: termsAndConditionsData.terms_and_conditions }} />
         </CardBody>
         <CardFooter className="py-4">
-            <Btn title="Edit" name="btn btn-primary" onClick={toggleEditCard} />
+            <Btn title="Edit" className="btn btn-primary" onClick={toggleEditCard} />
         </CardFooter>
       </Card>
           )}

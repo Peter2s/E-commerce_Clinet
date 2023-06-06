@@ -164,7 +164,7 @@ const Profile = () => {
                   {!editMode ? (
                     <Btn
                       title="Edit Profile"
-                      name="btn btn-primary"
+                      className="btn btn-primary"
                       onClick={toggleEditMode}
                     />
                   ) : (
@@ -175,12 +175,12 @@ const Profile = () => {
                       <>
                         <Btn
                           title="Save"
-                          name="btn btn-primary"
+                          className="btn btn-primary"
                           onClick={saveProfileData}
                         />
                         <Btn
                           title="Cancel"
-                          name="btn btn-secondary"
+                          className="btn btn-secondary"
                           onClick={cancelMode}
                         />
                       </>
@@ -345,7 +345,7 @@ const Profile = () => {
                     </label>
                     <Btn
                       title="Change Password"
-                      name="btn btn-primary ml-3"
+                      className="btn btn-primary ml-3"
                       onClick={openModal}
                     />
                     <Modal
@@ -393,12 +393,12 @@ const Profile = () => {
                       <ModalFooter>
                         <Btn
                           title="Save"
-                          name="btn btn-primary"
+                          className="btn btn-primary"
                           onClick={handleModalOk}
                         />
                         <Btn
                           title="Cancel"
-                          name="btn btn-secondary"
+                          className="btn btn-secondary"
                           onClick={closeModal}
                         />
                       </ModalFooter>

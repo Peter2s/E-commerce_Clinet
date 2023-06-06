@@ -76,7 +76,7 @@ const EditTermsAndConditions = ({ onUpdate }) => {
           <div className="card-footer">
             <Btn
               title="Save"
-              name="btn btn-primary mt-3"
+              className="btn btn-primary mt-3"
               onClick={() => {
                 handleSaveAndToggle();
                 if (hasChanges) {

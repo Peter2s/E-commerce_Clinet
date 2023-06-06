@@ -91,7 +91,7 @@ const Users = () => {
          btn={<>
           <Link to="/admin/users/create" className='d-flex'>
                           <Btn
-                            name="btn btn-primary ml-auto"
+                            className="btn btn-primary ml-auto"
                             title="Add User"
                           />
                         </Link>
@@ -117,24 +117,24 @@ const Users = () => {
             <td>{user.bio}</td>
             <td>
                 {user.is_active ? (
-                    <Btn name="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(user.id)}/>
+                    <Btn className="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(user.id)}/>
                   ) : (
-                    <Btn name="btn-success btn fa fa-lock-open" onClick={() => handleActivate(user.id)}/>
+                    <Btn className="btn-success btn fa fa-lock-open" onClick={() => handleActivate(user.id)}/>
                   )}
                 <span className="ml-2"> 
                 <Link to={`/admin/UserEdit/${user.id}`}>
-                  <Btn name="btn-primary btn fa fa-edit" />
+                  <Btn className="btn-primary btn fa fa-edit" />
                 </Link>
                 </span>
                 <span className="ml-2">
                   <Btn
-                    name="btn btn-danger fa fa-trash"
+                    className="btn btn-danger fa fa-trash"
                     onClick={() => handleDelete(user.id)}
                   />
                 </span>
                 <span className="ml-2">
                 <Link to={`/admin/UserDetail/${user.id}`}>
-                  <Btn name="btn-info btn fa fa-circle-info" />
+                  <Btn className="btn-info btn fa fa-circle-info" />
                 </Link>
                 </span>
             </td>

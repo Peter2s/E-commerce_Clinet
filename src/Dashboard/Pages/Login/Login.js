@@ -18,7 +18,6 @@
 
 // reactstrap components
 import {
-  Button,
   Card,
   CardBody,
   FormGroup,
@@ -30,17 +29,93 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { useRef,useState,useEffect, Fragment ,useContext} from "react";
+import AuthContext from "Context/Authentication ";
+import axios from "../../../api/axios"
+import { Link } from "react-router-dom";
+import Btn from "Dashboard/SharedUI/Btn/Btn";
+import { useNavigate } from "react-router-dom";
 
+const Login_URL="/auth"
 const Login = () => {
+  const {setAuth}=useContext(AuthContext)
+  const userRef=useRef()
+  const errRef=useRef()
+
+  const [user,setuser]=useState('')
+  const [password,setpassword]=useState('')
+  const [errmsg,seterrmsg]=useState('')
+  const [success,setsuccess]=useState(false)
+
+const Navigate =useNavigate()
+
+  useEffect(()=>{
+    userRef.current.focus()
+  },[])
+
+  useEffect(()=>{
+    seterrmsg('')
+},[user,password])
+
+
+const handelSubmit=async (e)=>
+{
+ 
+  try{
+    const response = await axios.post(Login_URL,JSON.stringify({user,password}),
+    {
+      headers:{"Content-Type":"application/json"},
+      withCredentials:(true)
+    })
+    console.log(JSON.stringify(response?.data))
+    const accessToken=response?.data?.accessToken;
+    const roles = response?.data?.roles;
+    setAuth({user,password,accessToken,roles})
+    setuser('')
+    setpassword('')
+    setsuccess(true)
+    Navigate.path("/admin")
+  }
+  
+  //handle error response 
+  catch(err){
+    if(!err?.response){
+    seterrmsg("no server response ")
+    }
+    else if(err.response?.staus === 400){
+      seterrmsg("missing user name or password ")
+    }else if(err.response?.staus === 401){
+      seterrmsg("unauthorized")
+    }
+    else {
+      seterrmsg("login failed ")
+
+      }
+      errRef.current.focus();
+    }
+}
+
+
   return (
+    
     <>
-      <Col lg="5" md="7">
-        <Card className="bg-secondary shadow border-0">
+      {success ? (
+        <section >
+        <p> loged in success </p>
+        {Navigate.path("/admin")}
+        </section>
+      ):(
+
+
+      <Col lg="5" md="7" >
+        <Card className="bg-secondary shadow border-0" >
           <CardBody className="px-lg-5 py-lg-5">
             <div className="text-center text-muted mb-4">
+            <p ref={errRef} className={errmsg ? "errormessage":"offscreen"} 
+            aria-live="assertive">{errmsg}</p>
               <small>Sign in</small>
             </div>
-            <Form role="form">
+            <Form role="form" onSubmit={handelSubmit}>
               <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">
@@ -48,10 +123,15 @@ const Login = () => {
                       <i className="ni ni-email-83" />
                     </InputGroupText>
                   </InputGroupAddon>
-                  <Input
+                  <Input 
                     placeholder="Email"
                     type="email"
-                    autoComplete="new-email"
+                    id="email"
+                    autoComplete="off"
+                    ref={userRef}
+                    onChange={(e)=>{setuser(e.target.value)}}
+                    value={user}
+                    required
                   />
                 </InputGroup>
               </FormGroup>
@@ -65,45 +145,32 @@ const Login = () => {
                   <Input
                     placeholder="Password"
                     type="password"
-                    autoComplete="new-password"
+                    id="email"
+                    onChange={(e)=>{setpassword(e.target.value)}}
+                    value={password}
+                    required
                   />
                 </InputGroup>
               </FormGroup>
-              <div className="custom-control custom-control-alternative custom-checkbox">
-                <input
-                  className="custom-control-input"
-                  id=" customCheckLogin"
-                  type="checkbox"
-                />
-                <label
-                  className="custom-control-label"
-                  htmlFor=" customCheckLogin"
-                >
-                  <span className="text-muted">Remember me</span>
-                </label>
-              </div>
               <div className="text-center">
-                <Button className="my-4" color="primary" type="button">
-                  Sign in
-                </Button>
+                <Btn name="btn btn-info" title=" Sign in " onClick={() => handelSubmit()}/>
+                   
               </div>
             </Form>
           </CardBody>
         </Card>
         <Row className="mt-3">
           <Col xs="6">
-            <a
-              className="text-light"
-              href="#pablo"
-              onClick={(e) => e.preventDefault()}
-            >
-              <small>Forgot password?</small>
-            </a>
+              <Link to="/auth/reset-password-token" >Forget password? </Link>
           </Col>
          </Row>
       </Col>
+      )
+      }
     </>
+
   );
-};
+    };
+
 
 export default Login;

@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Card, CardBody, CardHeader } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import { axiosInstance } from '../../../../Axios';
+import Btn from 'Dashboard/SharedUI/Btn/Btn';
+import Tables from './../../../SharedUI/Table/Tables';
+import { Link } from 'react-router-dom';
 
 const Roles = () => {
   const [roles, setRoles] = useState([]);
@@ -17,7 +20,7 @@ const Roles = () => {
   const fetchRolesData = async (page) => {
     try {
       const response = await axiosInstance.get(`/api/v1/roles?page=${page}`);
-      setRoles(response.data.data); // Assuming the roles data is returned as an array
+      setRoles(response.data.data);
       setTotalPages(response.data.paginationResult.totalPages);
     } catch (error) {
       console.log(error);
@@ -111,78 +114,102 @@ const Roles = () => {
 
   return (
     <>
-      <Card>
-        <CardHeader>Roles</CardHeader>
-        <CardBody>
-          <table className="table">
-            <thead>
-              <tr>
+<Tables
+         btn={<>
+          <Link to="/admin/roles/create" className='d-flex'>
+                          <Btn
+                            className="btn btn-primary ml-auto"
+                            title="Add Role"
+                          />
+                        </Link>
+          </>}
+        title="Roles Table"
+        trContent={
+          <>
                 <th scope="col">ID</th>
                 <th scope="col">Name</th>
                 <th scope="col">Permissions</th>
                 <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentRoles.map((role) => (
-                <tr key={role._id}>
-                  <td>{role._id}</td>
-                  <td>{role.name}</td>
-                  <td>
-                    {role.permissions.map((permission) => (
-                      <div key={permission.entity}>
-                        <strong>{permission.entity}:</strong>{' '}
-                        {Object.entries(permission.access)
-                          .filter(([_, value]) => value)
-                          .map(([key, _]) => key)
-                          .join(', ')}
-                      </div>
-                    ))}
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-info fa fa-edit"
-                      onClick={() => handleButtonClick(role._id)}
-                    ></button>
-                    <button
-                      className="btn btn-danger fa fa-trash"
-                      onClick={() => handleDelete(role._id)}
-                    ></button>
-                    {role.is_active ? (
-                      <button
-                        className="btn btn-warning fa fa-lock"
-                        onClick={() => handleDeactivate(role._id)}
-                      ></button>
-                    ) : (
-                      <button
-                        className="btn btn-success fa fa-lock-open"
-                        onClick={() => handleActivate(role._id)}
-                      ></button>
-                    )}
-                  </td>
-                </tr>
+            
+          </>
+        }
+        tableContent={
+          currentRoles.map((role) => (
+            <tr key={role._id}>
+              <td>{role._id}</td>
+              <td>{role.name}</td>
+              <td>
+                {role.permissions.map((permission) => (
+                  <div key={permission.entity}>
+                    <strong>{permission.entity}:</strong>{' '}
+                    {Object.entries(permission.access)
+                      .filter(([_, value]) => value)
+                      .map(([key, _]) => key)
+                      .join(', ')}
+                  </div>
+                ))}
+              </td>
+              <td>
+                <button
+                  className="btn btn-info fa fa-edit"
+                  onClick={() => handleButtonClick(role._id)}
+                ></button>
+                <button
+                  className="btn btn-danger fa fa-trash"
+                  onClick={() => handleDelete(role._id)}
+                ></button>
+                {role.is_active ? (
+                  <button
+                    className="btn btn-warning fa fa-lock"
+                    onClick={() => handleDeactivate(role._id)}
+                  ></button>
+                ) : (
+                  <button
+                    className="btn btn-success fa fa-lock-open"
+                    onClick={() => handleActivate(role._id)}
+                  ></button>
+                )}
+              </td>
+            </tr>
+          ))}
+          pagination={
+            <>
+              {/* Pagination */}
+              <ul className="pagination">
+              {currentPage > 1 && (
+                <li className="page-item">
+                  <button
+                    className="page-link"
+                    onClick={() => paginate(currentPage - 1)}
+                  >
+                    Previous
+                  </button>
+                </li>
+              )}
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <li key={index + 1} className="page-item">
+                  <button
+                    className={`page-link ${currentPage === index + 1 ? 'active' : ''}`}
+                    onClick={() => paginate(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                </li>
               ))}
-            </tbody>
-               {/* Pagination */}
-      <ul className="pagination">
-        {Array.from({ length: totalPages }).map((_, index) => (
-          <li key={index + 1} className="page-item">
-            <button
-              className={`page-link ${
-                currentPage === index + 1 ? 'active' : ''
-              }`}
-              onClick={() => paginate(index + 1)}
-            >
-              {index + 1}
-            </button>
-          </li>
-        ))}
-      </ul>
-          </table>
-        </CardBody>
-      </Card>
-
-   
+              {currentPage < totalPages && (
+                <li className="page-item">
+                  <button
+                    className="page-link"
+                    onClick={() => paginate(currentPage + 1)}
+                  >
+                    Next
+                  </button>
+                </li>
+              )}
+            </ul>
+            </>
+          }
+      />
     </>
   );
 };

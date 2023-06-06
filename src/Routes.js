@@ -3,7 +3,7 @@ import Profile from "./Dashboard/Pages/Profile/Profile.js";
 import Login from "./Dashboard/Pages/Login/Login.js";
 import Orders from "./Dashboard/Pages/Orders/OrderList/OrderList.js";
 import Products from './Dashboard/Pages/Products/Product-list/Products.js';
-import Categories from './Dashboard/Pages/Categories/Categories.js';
+import Categories from './Dashboard/Pages/Categories/Categories/Categories.js';
 import ListRoles from './Dashboard/Pages/Roles/ListRoles/ListRoles.js';
 import CreateRole from './Dashboard/Pages/Roles/CreateRole/CreateRole.js';
 import Setting from './Dashboard/Pages/Setting/Setting.js';
@@ -19,13 +19,17 @@ import OrderDetail from "Dashboard/Pages/Orders/OrderDetails/OrderDetails.js";
 import EditRole from "Dashboard/Pages/Roles/EditRole/EditRole.js";
 import AboutUS from "Dashboard/Pages/AboutUs/ShowAboutUs/ShowAboutUs.js";
 import ContactUs from "./Dashboard/Pages/ContactUs/ShowContactUs/ShowContactUs.js";
-
-
+import AddProduct from "Dashboard/Pages/Products/Product-add/AddProduct.js";
+import AddCategory from "Dashboard/Pages/Categories/AddCategory/AddCategory.js";
+import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword.js";
+import ConfirmNewPassword from "Dashboard/Components/ConfirmNewPassword/ConfirmNewPassword.js";
+import UpdateCategory from "Dashboard/Pages/Categories/updateCategory/UpdateCategory.js";
+import UPdateProduct from "Dashboard/Pages/Products/Product-edit/Product-edit.js";
 
 var routes = [
   {
     path: "/user-profile",
-    name: "User Profile",
+    name: "New",
     icon: "ni ni-single-02 text-yellow",
     component: <Profile />,
     layout: "/admin",
@@ -52,10 +56,38 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/addCategory",
+    name: "New",
+    icon: "ni ni-bullet-list-67 text-blue",
+    component: <AddCategory />,
+    layout: "/admin",
+  },
+  {
+    path: "/editcategory",
+    name: "New",
+    icon: "ni ni-bullet-list-67 text-blue",
+    component: <UpdateCategory />,
+    layout: "/admin",
+  },
+  {
     path: "/products",
     name: "Products",
     icon: "ni ni-bag-17 text-blue",
     component: <Products />,
+    layout: "/admin",
+  },
+  {
+    path: "/addProducts",
+    name: "New",
+    icon: "ni ni-bullet-list-67 text-blue",
+    component: <AddProduct/>,
+    layout: "/admin",
+  },
+  {
+    path: "/edit-product",
+    name: "New",
+    icon: "ni ni-bullet-list-67 text-blue",
+    component: <UPdateProduct/>,
     layout: "/admin",
   },
   {
@@ -95,21 +127,21 @@ var routes = [
   },
   {
     path: "/roles/create",
-    name: "RoleAdd",
+    name: "New",
     icon: "fa fa-lock text-blue",
     component: <CreateRole />,
     layout: "/admin",
   },
   {
     path: "/roles/edit/:id",
-    name: "RoleEdit",
+    name: "New",
     icon: "fa fa-lock text-blue",
     component: <EditRole />,
     layout: "/admin",
   },
   {
     path: "/setting",
-    name: "Setting",
+    name: "Settings",
     icon: "fa fa-gear text-blue",
     component: <Setting />,
     layout: "/admin",
@@ -156,7 +188,7 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/login",
+    path: "/auth",
     name: "Login",
     icon: "ni ni-key-25 text-info",
     component: <Login />,
@@ -167,6 +199,20 @@ var routes = [
     name: "New",
 		component: <OrderDetail/>,
     layout: "/admin",
+  },
+  {
+    path: "/reset-password-token",
+    name: "New",
+    icon: "ni ni-key-25 text-info",
+    component: <ForgetPssword />,
+    layout: "/auth",
+  },
+  {
+    path: "/reset-password",
+    name: "New",
+    icon: "ni ni-key-25 text-info",
+    component: <ConfirmNewPassword />,
+    layout: "/auth",
   }
 ];
 export default routes;

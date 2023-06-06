@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import MySwal from "sweetalert2";
 import Btn from "Dashboard/SharedUI/Btn/Btn";
 import Input from "Dashboard/SharedUI/Input/Input";
+import { axiosInstance } from "../../../../Axios";
 
 const EmpEdit = () => {
   const navigate = useNavigate();
@@ -14,10 +15,10 @@ const EmpEdit = () => {
 
   useEffect(() => {
     // Fetch the user data based on the ID and populate the form fields
-    axios
-      .get(`http://localhost:8000/employee/${id}`)
+    axiosInstance
+      .get(`/api/v1/employees/${id}`)
       .then((res) => {
-        const EmpData = res.data;
+        const EmpData = res.data.data;
         formik.setValues(EmpData);
       })
       .catch((err) => {
@@ -30,32 +31,30 @@ const EmpEdit = () => {
       name: "",
       email: "",
       phone: "",
-      password: "",
+      // password: "",
       role: "",
-      roleId: 2
     },
     validationSchema: Yup.object({
       name: Yup.string().matches(/^[a-zA-Z\s]*$/, "Invalid name format").required("Enter the name"),
       email: Yup.string().email("Invalid email address").required("Enter the email"),
-      phone: Yup.string().matches(/^[0-9]{10}$/, "Invalid phone number").required("Enter the phone number"),
-      password: Yup.string()
-        .min(8, "Password must be at least 8 characters")
-        .max(20, "Password must be less than 20 characters")
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Invalid password format")
-        .required("Enter the password"),
+      phone: Yup.string().matches(/^[0-9]{11}$/, "Invalid phone number").required("Enter the phone number"),
+      // password: Yup.string()
+      //   .min(8, "Password must be at least 8 characters")
+      //   .max(20, "Password must be less than 20 characters")
+      //   .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Invalid password format")
+      //   .required("Enter the password"),
     }),
     onSubmit: (values) => {
       const empData = {
         name: values.name,
         email: values.email,
         phone: values.phone,
-        password: values.password,
+        // password: values.password,
         role:values.role,
-        roleId:values.roleId
       };
 
-      axios
-        .put(`http://localhost:4000/employee/${id}`, empData, {
+      axiosInstance
+        .patch(`/api/v1/employees/${id}`, empData, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -66,7 +65,7 @@ const EmpEdit = () => {
             title: "Success!",
             text: "Your changes have been saved successfully.",
           });
-          navigate("/admin/users");
+          navigate("/admin/employees");
         })
         .catch((err) => {
           console.log(err.message);
@@ -140,7 +139,7 @@ const EmpEdit = () => {
                     </FormGroup>
                   </Col>
                   <Col>
-                    <FormGroup>
+                    {/* <FormGroup>
                       <label>Password</label>
                       <input
                        className="form-control form-control-alternative"
@@ -154,25 +153,22 @@ const EmpEdit = () => {
                       {formik.errors.password && formik.touched.password && (
                         <span className="text-danger">{formik.errors.password}</span>
                       )}
-                    </FormGroup>
+                    </FormGroup> */}
                   </Col>
                 </Row>
                 <Row>
                 <Col>
                     <FormGroup>
                       <label htmlFor="role">Role</label>
-                      <select
+                      <input
+                        type="text"
                         name="role"
                         id="role"
                         value={formik.values.role}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         className="form-control form-control-alternative"
-                      >
-                        <option value="">Select Role</option>
-                        <option value="employee">Employee</option>
-                        <option value="admin">Admin</option>
-                      </select>
+                      /> 
                       {formik.errors.role && formik.touched.role && (
                         <span className="text-danger">{formik.errors.role}</span>
                       )}

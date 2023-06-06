@@ -44,17 +44,17 @@ const WebsiteInfo = () => {
     });
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setWebInfo({ ...webInfo, logo: file.name });
-      reader.readAsDataURL(file);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //     setWebInfo({ ...webInfo, logo: file.name });
+  //     reader.readAsDataURL(file);
+  //   };
+  //   if (file) {
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
   
 
   const handleEditClick = () => {
@@ -170,12 +170,12 @@ const WebsiteInfo = () => {
         <div className="ml-auto">
     <Btn
       title={editMode ? "Save" : "Edit"}
-      name="btn btn-primary"
+      className="btn btn-primary"
       onClick={editMode ? handleSaveClick : handleEditClick}
     />
     {editMode ? (<Btn
       title= "Cancel"
-      name="btn btn-secondary"
+      className="btn btn-secondary"
       onClick={handleCancelClick}
     />):""}
   </div>
@@ -192,12 +192,12 @@ const WebsiteInfo = () => {
                       <label className="form-control-label" htmlFor="logo">
                           Image
                         </label>
-                      <Input
+                      <input
                         className="form-control w-25"
                         type="file"
-                        accept="image/*"
+                        // accept="image/*"
                         name="logo"
-                        onChange={handleFileChange}
+                        // onChange={handleFileChange}
                       />
                       {webInfo.logo && (
                         <img src={webInfo.logo} className="w-25" alt="logo" />
@@ -335,7 +335,7 @@ const WebsiteInfo = () => {
                   <div className="form-row mb-2">
                     <Btn
                       title="+"
-                      name="btn btn-primary border m-2 mr-5"
+                      className="btn btn-primary border m-2 mr-5"
                       onClick={handleAddBanners}
                     />
                   </div>
@@ -401,7 +401,7 @@ const WebsiteInfo = () => {
                   <div className="form-row">
                     <Btn
                       title="+"
-                      name="btn btn-primary border m-2 mr-5"
+                      className="btn btn-primary border m-2 mr-5"
                       onClick={handleAddSocialMedia}
                     />
                   </div>

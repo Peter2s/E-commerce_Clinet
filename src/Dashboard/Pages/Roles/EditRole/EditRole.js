@@ -27,7 +27,7 @@ const EditRole = () => {
 
   const handleSave = async () => {
     try {
-      const response = await axiosInstance.patch(`http://e-commerce.nader-mo.tech/api/v1/roles/${id}`, {
+      const response = await axiosInstance.patch(`/api/v1/roles/${id}`, {
         name,
         permissions,
       });
@@ -62,7 +62,7 @@ const EditRole = () => {
             <div className="pl-4">
               <label>
                 Name:
-                <Input type="text" className='form-control' value={name} onChange={(e) => setName(e.target.value)} />
+                <Input type="text" className='form-control-alternative' value={name} onChange={(e) => setName(e.target.value)} />
               </label>
               <div>
                 <h4 className='mt-4'>Permissions:</h4>
@@ -152,7 +152,7 @@ const EditRole = () => {
                 </div>
                 <div className='mt-3'>
                 <label htmlFor="permissions" className='mt-3'>Products</label>
-                <div className='col-6'>
+                <div className='col-12'>
                 <div className="custom-control custom-checkbox">
                   <input
                     type="checkbox"
@@ -180,7 +180,7 @@ const EditRole = () => {
                   </label>
                   </div>
                 </div>
-                <div className='col-6'>
+                <div className='col-12'>
                 <div className="custom-control custom-checkbox">
                   <input
                     type="checkbox"

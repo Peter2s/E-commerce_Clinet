@@ -78,8 +78,6 @@ const CreateRole = () => {
       console.error('Error saving role:', error);
     }
   };
-  
-  
 
   return (
     <>
@@ -98,7 +96,7 @@ const CreateRole = () => {
                     <b>Role</b><span className="required">*</span>
                   </label>
                   <Input
-                    className="w-50"
+                    className="w-50 form-control-alternative"
                     type="text"
                     id="roleName"
                     name="newRole"
@@ -252,7 +250,7 @@ const CreateRole = () => {
                   </div>
                   </div>
                   <CardFooter>
-                    <Btn type="button" title="Save" name="btn btn-primary" onClick={handleSave} />
+                    <Btn type="button" title="Save" className="btn btn-primary" onClick={handleSave} />
                   </CardFooter>
                 </form>
               </CardBody>

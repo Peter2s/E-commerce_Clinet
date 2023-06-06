@@ -28,7 +28,7 @@ const Setting = () => {
     >
 <Btn
   title="Website Information"
-  name="btn"
+  className="btn"
   style={{
     background: activeLink === "website-info" ? "linear-gradient(to bottom, lightgray, white)" : "linear-gradient(to right, white, white)",
   }}
@@ -40,7 +40,7 @@ const Setting = () => {
       style={{ cursor: "pointer" }}
       className={activeLink === "terms-and-conditions" ? "active-link" : ""}
     >
-      <Btn title="Terms and Conditions" name="btn" style={{    background: activeLink === "terms-and-conditions" ? "linear-gradient(to bottom, lightgray, white)" : "linear-gradient(to right, white, white)",
+      <Btn title="Terms and Conditions" className="btn" style={{    background: activeLink === "terms-and-conditions" ? "linear-gradient(to bottom, lightgray, white)" : "linear-gradient(to right, white, white)",
 }} />
     </span>
     {activeLink === "website-info" && <WebsiteInfo />}
