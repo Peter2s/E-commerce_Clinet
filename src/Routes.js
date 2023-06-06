@@ -29,6 +29,7 @@ import AddCategory from "Dashboard/Pages/Categories/AddCategory/AddCategory.js";
 import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword.js";
 import ConfirmNewPassword from "Dashboard/Components/ConfirmNewPassword/ConfirmNewPassword.js";
 import UpdateCategory from "Dashboard/Pages/Categories/updateCategory/UpdateCategory.js";
+import UPdateProduct from "Dashboard/Pages/Products/Product-edit/Product-edit.js";
 
 var routes = [
   {
@@ -85,6 +86,13 @@ var routes = [
     name: "AddProducts",
     icon: "ni ni-bullet-list-67 text-blue",
     component: <AddProduct/>,
+    layout: "/admin",
+  },
+  {
+    path: "/edit-product",
+    name: "UPdateProduct",
+    icon: "ni ni-bullet-list-67 text-blue",
+    component: <UPdateProduct/>,
     layout: "/admin",
   },
   {

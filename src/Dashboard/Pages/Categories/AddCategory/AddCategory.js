@@ -3,6 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Input from "Dashboard/SharedUI/Input/Input";
 import Btn from "Dashboard/SharedUI/Btn/Btn";
+import "./AddCategory.css"
+import {
+  Card,
+  CardHeader,
+  Container,
+  Row,
+  Navbar,
+} from "reactstrap";
 
 const AddCategory = () => {
   const [image, setImage] = useState("");
@@ -32,25 +40,28 @@ const AddCategory = () => {
   };
 
   return (
-    <div>
+    
+    <>
+    <Navbar />
+   
+   <Container className="mt--7" fluid>
+     {/* Table */}
+     <Row>
+       <div className="col">
+   <Card className="shadow">
+   <CardHeader className="border-0">
+   <div className=" btntitleproduct row col-12">
+     <h3 className="col-6 mb-0">addCategory</h3>
+     </div>
+   </CardHeader>
       <div className="row">
         <div className="offset-lg-3 col-lg-6">
           <form className="container" onSubmit={handleSubmit}>
             <div className="card" style={{ textAlign: "left" }}>
-              <div className="card-title">
-                <h2>Add Category</h2>
-              </div>
               <div className="card-body">
                 <div className="row">
                   <div className="col-lg-12">
-                    {/* <div className="form-group">
-                      <label>ID</label>
-                      <input
-                        value={id}
-                        disabled="disabled"
-                        className="form-control"
-                      ></input>
-                    </div> */}
+                  
                   </div>
                   <div className="col-lg-12">
                     <div className="form-group">
@@ -58,7 +69,7 @@ const AddCategory = () => {
                       <Input
                         required
                         value={name_en}
-                        onChange={(e) => setName_en(e.target.value)}
+                        handleChange={(e) => setName_en(e.target.value)}
                         className="form-control"
                       ></Input>
                       {name_en.length === 0 && validation && (
@@ -71,7 +82,7 @@ const AddCategory = () => {
                       <label>الاسم</label>
                       <Input
                         value={name_ar}
-                        onChange={(e) => setName_ar(e.target.value)}
+                        handleChange={(e) => setName_ar(e.target.value)}
                         className="form-control"
                       ></Input>
                     </div>
@@ -100,7 +111,11 @@ const AddCategory = () => {
           </form>
         </div>
       </div>
+    </Card>
     </div>
+    </Row>
+    </Container>
+    </>
   );
 };
 

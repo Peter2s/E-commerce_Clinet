@@ -10,24 +10,23 @@ import {
   Navbar,
 } from "reactstrap";
 const AddProduct = () => {
-  const [id, setId] = useState("");
-  const [name, setName] = useState("");
+  const [name_en, setName_en] = useState("");
+  const [name_ar, setName_ar] = useState("");
   const [image, setImage] = useState("");
   const [category, setCategory] = useState("");
-  const [description, setDescription] = useState(true);
-  const [price, setPrice] = useState(true);
-  const [quantity, setQuantity] = useState(true);
-  const [active, setActive] = useState(true);
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
   const [validation, setValidation] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const categoryData = { name, image, category, description,price,quantity };
+    const productData = { name_en,name_ar, image, category, description,price,quantity };
 
     axios
-      .post("http://localhost:8000/employee", categoryData, {
+      .post("http://localhost:8000/products", productData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -52,7 +51,7 @@ const AddProduct = () => {
 <Card className="shadow">
 <CardHeader className="border-0">
 <div className=" btntitleproduct row col-12">
-  <h3 className="col-6 mb-0">addCategory</h3>
+  <h3 className="col-6 mb-0">Add products</h3>
   </div>
 </CardHeader>
 
@@ -63,19 +62,26 @@ const AddProduct = () => {
                 <label>Name</label>
             <Input 
              onMouseDown={(e) => setValidation(true)}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName_en(e.target.value)}
               className="form-control"
-              type="text" name="categoryName" value={name} id="categoryName" handleChange={(e)=> setName(e.target.value)}></Input>
+              type="text" name="categoryName_en" value={name_en} id="categoryName"/>
+              <label>الاسم</label>
+            <Input 
+             onMouseDown={(e) => setValidation(true)}
+              onChange={(e) => setName_ar(e.target.value)}
+              className="form-control"
+              type="text" name="categoryName_en" value={name_ar} id="categoryName"/>
+     
             <label>Image</label>
-              <Input type="text" name="categoryImage" value={Image} id="categoryImage" handleChange={(e)=> setImage(e.target.value)}></Input>
+              <Input type="file" className="form-control" value={image} handleChange={(e)=> setImage(e.target.value)}></Input>
               <label>Category</label>
-              <Input type="text" name="category" value={name} id="categoryName" handleChange={(e)=> setName(e.target.value)}></Input>
+              <Input type="text" className="form-control" value={category} handleChange={(e)=> setCategory(e.target.value)}></Input>
               <label>description</label>
-              <Input type="text" name="categoryName" value={name} id="categoryName" handleChange={(e)=> setName(e.target.value)}></Input>
+              <Input type="text" className="form-control" value={description} handleChange={(e)=> setDescription(e.target.value)}></Input>
               <label>Price</label>
-              <Input type="text" name="categoryName" value={name} id="categoryName" handleChange={(e)=> setName(e.target.value)}></Input>
+              <Input type="text" className="form-control" value={price} handleChange={(e)=> setPrice(e.target.value)}></Input>
               <label>Quantity</label>
-              <Input type="text" name="categoryName" value={name} id="categoryName" handleChange={(e)=> setName(e.target.value)}></Input>
+              <Input type="text" className="form-control" value={quantity} handleChange={(e)=> setQuantity(e.target.value)}></Input>
       <div className="col-lg-12">
                     <div className="form-group">
                      <button className="btn btn-success" type="submit">

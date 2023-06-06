@@ -64,13 +64,15 @@ const Categories = () => {
         trContent={`
           <th scope="col">ID</th>
           <th scope="col">Name</th>
+          <th scope="col">الاسم</th>
           <th scope="col">Image</th>
           <th scope="col">Actions</th>
         `}
         tableContent={categories.map((category) => (
           <tr key={category.id}>
             <td>{category.id}</td>
-            <td>{category.name}</td>
+            <td>{category.name_en}</td>
+            <td>{category.name_ar}</td>
             <td>
               <img src={category.image} alt={category.name} />
             </td>
