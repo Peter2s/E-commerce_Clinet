@@ -21,7 +21,7 @@ const Products = () => {
   
     useEffect(() => {
       // Fetch the items from the server
-      axios.get("http://localhost:8000/categories")
+      axios.get("http://localhost:8000/products")
         .then((response) => {
           setProduct(response.data);
         })
