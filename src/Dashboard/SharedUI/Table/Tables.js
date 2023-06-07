@@ -14,7 +14,7 @@ import {
 
 // core components
 
-const Tables = ({title, trContent, tableContent,btn}) => {
+const Tables = ({title, trContent, tableContent,btn }) => {
   return (
     <>
       <Navbar />

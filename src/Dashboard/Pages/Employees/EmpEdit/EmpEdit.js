@@ -15,10 +15,10 @@ const EmpEdit = () => {
   useEffect(() => {
     // Fetch the user data based on the ID and populate the form fields
     axios
-      .get(`http://localhost:8000/employee/${id}`)
+      .get(`http://localhost:4000/employee/${id}`)
       .then((res) => {
-        const EmpData = res.data;
-        formik.setValues(EmpData);
+        const empData = res.data;
+        formik.setValues(empData);
       })
       .catch((err) => {
         console.log(err.message);
@@ -66,7 +66,7 @@ const EmpEdit = () => {
             title: "Success!",
             text: "Your changes have been saved successfully.",
           });
-          navigate("/admin/users");
+          navigate("/admin/employees");
         })
         .catch((err) => {
           console.log(err.message);

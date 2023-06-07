@@ -21,7 +21,7 @@ const EmpCreate = () => {
     validationSchema: Yup.object({
       name: Yup.string().matches(/^[a-zA-Z\s]*$/, "Invalid name format").required("Enter the name"),
       email: Yup.string().email("Invalid email address").required("Enter the email"),
-      phone: Yup.string().matches(/^[0-9]{10}$/, "Invalid phone number").required("Enter the phone number"),
+      phone: Yup.string().matches(/^[0-9]{11}$/, "Invalid phone number").required("Enter the phone number"),
       password: Yup.string()
         .min(8, "Password must be at least 8 characters")
         .max(20, "Password must be less than 20 characters")
