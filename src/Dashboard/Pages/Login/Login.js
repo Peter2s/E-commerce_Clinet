@@ -38,9 +38,9 @@ import { useNavigate } from "react-router-dom";
 
 const Login_URL="admin/auth"
 const Login = () => {
-  const {setAuth}=useContext(AuthContext)
-  const userRef=useRef()
-  const errRef=useRef()
+  const {setAuthUser,setUserToken} = useContext(AuthContext)
+  const userRef= useRef()
+  const errRef= useRef()
 
   const [user,setuser]=useState('')
   const [password,setpassword]=useState('')
@@ -66,45 +66,33 @@ const handelSubmit = async (e)=>
     const response = await axiosInstance.post(Login_URL,{email:user,password},
     {
       headers:{"Content-Type":"application/json"},
-      // withCredentials:(true)
     })
-    console.log(JSON.stringify(response?.data))
-    const accessToken=response?.data?.accessToken;
-    const roles = response?.data?.roles;
-    setAuth({user,password,accessToken,roles})
-    setuser('')
-    setpassword('')
-    setsuccess(true)
-    Navigate.path("/admin")
+    console.log(response?.data.data.user)
+    const authUser = response?.data.data.user;
+    const accessToken =  response?.data.data.token;
+    setAuthUser(authUser);
+    setUserToken(accessToken);
+    setuser('');
+    setpassword('');
+    setsuccess(true);
+    Navigate("/admin");
   }
-  
-  //handle error response 
   catch(err){
-    console.error(err)
-    if(!err?.response){
-    seterrmsg("no server response ")
-    }
-    else if(err.response?.staus === 400){
-      seterrmsg("missing user name or password ")
-    }else if(err.response?.staus === 401){
-      seterrmsg("unauthorized")
-    }
-    else {
-      seterrmsg("login failed ")
-
-      }
+    console.error(err.response.data.message)
+    const erorr = err.response.data.message
+    seterrmsg(erorr)
       errRef.current.focus();
     }
 }
 
 
   return (
-    
+
     <>
       {success ? (
         <section >
         <p> loged in success </p>
-        {Navigate.path("/admin")}
+        {Navigate("/admin")}
         </section>
       ):(
 
@@ -113,7 +101,7 @@ const handelSubmit = async (e)=>
         <Card className="bg-secondary shadow border-0" >
           <CardBody className="px-lg-5 py-lg-5">
             <div className="text-center text-muted mb-4">
-            <p ref={errRef} className={errmsg ? "errormessage":"offscreen"} 
+            <p ref={errRef} className="text-danger"
             aria-live="assertive">{errmsg}</p>
               <small>Sign in</small>
             </div>
@@ -167,12 +155,9 @@ const handelSubmit = async (e)=>
           </Col>
          </Row>
       </Col>
-      )
-      }
+      )}
     </>
-
-  );
-    };
+  )}
 
 
 export default Login;

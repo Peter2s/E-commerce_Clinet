@@ -1,11 +1,14 @@
-import { createContext,useState } from "react";
+import {createContext, useCallback, useState} from "react";
 
 const AuthContext =createContext({})
 
 export const Authentication = ({children})=>{
-    const {auth,setAuth}=useState()
+    const [user,setUser]=useState({})
+    const [token,setToken]=useState("")
+    const setAuthUser = useCallback((user)=>setUser(user),[]);
+    const setUserToken = useCallback((token)=>setUser(token),[]);
     return(
-        <AuthContext.Provider value={{auth,setAuth}}>
+        <AuthContext.Provider value={{user,setAuthUser,token,setUserToken}}>
             {children}
         </AuthContext.Provider>
     )
