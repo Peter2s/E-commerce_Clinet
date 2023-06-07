@@ -1,18 +1,19 @@
 import Tables from '../../../SharedUI/Table/Tables';
-import Btn from 'Dashboard/SharedUI/Btn/Btn';
+import Btn from './../../../SharedUI/Btn/Btn';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2';
+import { axiosInstance } from '../../../../Axios';
 
 
 const Emps = () => {
   const [empData, setEmpData] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:4000/employee/")
+    axiosInstance.get("/api/v1/employees")
       .then((res) => {
-        setEmpData(res.data);
+        setEmpData(res.data.data);
       }).catch((err) => {
         console.log(err.message);
       })
@@ -32,7 +33,7 @@ const Emps = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await axios.delete(`http://localhost:4000/employee/${id}`);
+        const response = await axiosInstance.delete(`/api/v1/employees/${id}`);
         setEmpData((prevUser) =>prevUser.filter((employee) => employee.id !== id));
         console.log(response.data);
         Swal.fire('Deleted!', 'The role has been deleted.', 'success');
@@ -48,7 +49,7 @@ const Emps = () => {
          btn={<>
           <Link to="/admin/employees/create" className='d-flex'>
                           <Btn
-                            name="btn btn-primary ml-auto"
+                            className="btn btn-primary ml-auto"
                             title="Add Employee"
                           />
                         </Link>
@@ -75,18 +76,18 @@ const Emps = () => {
             
                 <td>
                 <Link to={`/admin/EmpEdit/${employee.id}`}>
-                  <Btn name="btn-primary btn fa fa-edit" />
+                  <Btn className="btn-primary btn fa fa-edit" />
                 </Link>
                 
                 <span className="ml-2">
                   <Btn
-                    name="btn btn-danger fa fa-trash"
+                    className="btn btn-danger fa fa-trash"
                     onClick={() => handleDelete(employee.id)}
                   />
                 </span>
                 <span className="ml-2">
                 <Link to={`/admin/EmpDetails/${employee.id}`}>
-                  <Btn name="btn-info btn fa fa-circle-info" />
+                  <Btn className="btn-info btn fa fa-circle-info" />
                 </Link>
                 </span>
             </td>

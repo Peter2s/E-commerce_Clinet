@@ -4,19 +4,26 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2';
+import { axiosInstance } from '../../../../Axios';
 
 
 const Users = () => {
   const [userData, setUserData] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/user/")
+    fetchContactUsData();
+  });
+
+  const fetchContactUsData = async () => {
+    await axiosInstance
+      .get("/api/v1/users")
       .then((res) => {
-        setUserData(res.data);
-      }).catch((err) => {
-        console.log(err.message);
+        setUserData(res.data.data);
       })
-  }, []);
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   
   const handleDelete = async (id) => {
     try {
@@ -41,13 +48,14 @@ const Users = () => {
       console.log(error);
     }
   };
-  const handleActivate = (userId) => {
-    axios.patch(`http://localhost:8000/user/${userId}`, { is_active: true })
+  const handleActivate = async (userId) => {
+    await axiosInstance
+    .get(`/api/v1/users/${userId}/activate`)
       .then((res) => {
         // Update the user data
         setUserData(prevData => {
           const updatedData = [...prevData];
-          const userIndex = updatedData.findIndex(user => user.id === userId);
+          const userIndex = updatedData.findIndex(user => user._id === userId);
           if (userIndex !== -1) {
             updatedData[userIndex] = { ...updatedData[userIndex], is_active: true };
           }
@@ -60,13 +68,14 @@ const Users = () => {
       });
   };
 
-  const handleDeactivate = (userId) => {
-    axios.patch(`http://localhost:8000/user/${userId}`, { is_active: false })
+  const handleDeactivate = async (userId) => {
+    await axiosInstance
+    .get(`/api/v1/users/${userId}/deactivate`)
       .then((res) => {
         // Update the user data
         setUserData(prevData => {
           const updatedData = [...prevData];
-          const userIndex = updatedData.findIndex(user => user.id === userId);
+          const userIndex = updatedData.findIndex(user => user._id === userId);
           if (userIndex !== -1) {
             updatedData[userIndex] = { ...updatedData[userIndex], is_active: false };
           }
@@ -83,7 +92,7 @@ const Users = () => {
          btn={<>
           <Link to="/admin/users/create" className='d-flex'>
                           <Btn
-                            name="btn btn-primary ml-auto"
+                            className="btn btn-primary ml-auto"
                             title="Add User"
                           />
                         </Link>
@@ -109,24 +118,24 @@ const Users = () => {
             <td>{user.bio}</td>
             <td>
                 {user.is_active ? (
-                    <Btn name="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(user.id)}/>
+                    <Btn className="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(user.id)}/>
                   ) : (
-                    <Btn name="btn-success btn fa fa-lock-open" onClick={() => handleActivate(user.id)}/>
+                    <Btn className="btn-success btn fa fa-lock-open" onClick={() => handleActivate(user.id)}/>
                   )}
                 <span className="ml-2"> 
                 <Link to={`/admin/UserEdit/${user.id}`}>
-                  <Btn name="btn-primary btn fa fa-edit" />
+                  <Btn className="btn-primary btn fa fa-edit" />
                 </Link>
                 </span>
                 <span className="ml-2">
                   <Btn
-                    name="btn btn-danger fa fa-trash"
+                    className="btn btn-danger fa fa-trash"
                     onClick={() => handleDelete(user.id)}
                   />
                 </span>
                 <span className="ml-2">
                 <Link to={`/admin/UserDetail/${user.id}`}>
-                  <Btn name="btn-info btn fa fa-circle-info" />
+                  <Btn className="btn-info btn fa fa-circle-info" />
                 </Link>
                 </span>
             </td>

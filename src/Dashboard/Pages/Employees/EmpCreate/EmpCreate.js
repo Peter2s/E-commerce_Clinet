@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import MySwal from 'sweetalert2';
 import Btn from "Dashboard/SharedUI/Btn/Btn";
 import Input from "Dashboard/SharedUI/Input/Input";
+import { axiosInstance } from "../../../../Axios";
 const EmpCreate = () => {
   const navigate = useNavigate();
 
@@ -16,7 +17,7 @@ const EmpCreate = () => {
       email: "",
       phone: "",
       password: "",
-      role:""
+      role_id:""
     },
     validationSchema: Yup.object({
       name: Yup.string().matches(/^[a-zA-Z\s]*$/, "Invalid name format").required("Enter the name"),
@@ -35,11 +36,11 @@ const EmpCreate = () => {
           email: values.email,
           phone: values.phone,
           password: values.password,
-          role:values.role
+          role_id:values.role_id
         };
   
-        axios
-          .post("http://localhost:8000/employee", empData, {
+        axiosInstance
+          .post("/api/v1/employees", empData, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -137,22 +138,30 @@ const EmpCreate = () => {
                 <Row>
                     <Col>
                     <FormGroup>
-                      <label htmlFor="role">Role</label>
-                      <select
-                        name="role"
-                        id="role"
-                        value={formik.values.role}
+                      <label htmlFor="role_id">role_id</label>
+                      {/* <select
+                        name="role_id"
+                        id="role_id"
+                        value={formik.values.role_id}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         className="form-control"
                       >
-                        <option value="">Select Role</option>
+                        <option value="">Select role_id</option>
                         <option value="employee">Employee</option>
                         <option value="admin">Admin</option>
                       </select>
-                      {formik.errors.role && formik.touched.role && (
-                        <span className="text-danger">{formik.errors.role}</span>
-                      )}
+                      {formik.errors.role_id && formik.touched.role_id && (
+                        <span className="text-danger">{formik.errors.role_id}</span>
+                      )} */}
+                      <input type="text" 
+                      name="role"
+                      id="role_id"
+                      value={formik.values.role_id}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                      className="form-control"
+                      />
                     </FormGroup>
                     </Col>
                 </Row>

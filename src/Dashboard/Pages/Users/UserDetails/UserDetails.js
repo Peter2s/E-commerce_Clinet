@@ -15,20 +15,25 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import "../../../Assets/css/project.css";
+import { axiosInstance } from "../../../../Axios";
 
 const UserDetail = () => {
   const { id } = useParams();
   const [userdata, setUserData] = useState({});
   useEffect(() => {
-    axios
-      .get(`http://localhost:8000/user/${id}`)
+    fetchContactUsData();
+  }, [id]);
+
+  const fetchContactUsData = async () => {
+    await axiosInstance
+      .get(`/api/v1/users/${id}`)
       .then((res) => {
-        setUserData(res.data);
+        setUserData(res.data.data);
       })
       .catch((err) => {
-        console.log(err.message);
+        console.log(err);
       });
-  }, [id]);
+  };
 
   return (
     <>
@@ -101,8 +106,8 @@ const UserDetail = () => {
                     {/* Address */}
                     <h6 className="heading-small text-muted mb-4">Addresses</h6>
                     <div className="pl-lg-4">
-                      {userdata.addresses &&
-                        userdata.addresses.map((address, address_index) => (
+                      {userdata.address &&
+                        userdata.address.map((address, address_index) => (
                           <Row key={address_index}>
                             <Col md="12">
                               <div className="form-group">
@@ -114,7 +119,7 @@ const UserDetail = () => {
                                 </label>
                                 <div className="custom-input">
                                   {address.area}, {address.city},{" "}
-                                  {address.governate}, {address.country}
+                                  {address.governorate}, {address.country}
                                 </div>
                               </div>
                             </Col>

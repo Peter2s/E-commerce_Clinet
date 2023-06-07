@@ -16,7 +16,7 @@
 
 */
 /*eslint-disable*/
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 // nodejs library to set properties for components
 import { PropTypes } from "prop-types";
@@ -51,10 +51,29 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { axiosInstance } from "../../../Axios";
 
 var ps;
 
 const Sidebar = (props) => {
+  //To show the logo from database
+  const [webInfo, setWebInfo] = useState("");
+
+  useEffect(() => {
+    fetchTermsAndConditionsData();
+  }, []);
+
+  const fetchTermsAndConditionsData = async () => {
+    await axiosInstance
+      .get("/settings")
+      .then((res) => {
+        console.log(res.data);
+        setWebInfo(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const [collapseOpen, setCollapseOpen] = useState();
   // verifies if routeName is the one active (in browser input)
   const activeRoute = (routeName) => {
@@ -121,7 +140,7 @@ const Sidebar = (props) => {
             <img
               alt={logo.imgAlt}
               className="navbar-brand-img"
-              src={logo.imgSrc}
+              src={webInfo.logo}
             />
           </NavbarBrand>
         ) : null}

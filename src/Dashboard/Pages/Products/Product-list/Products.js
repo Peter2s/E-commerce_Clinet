@@ -1,156 +1,108 @@
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Tables from '../../../SharedUI/Table/Tables';
+import axios from 'api/axios';
+import {faPenToSquare,faTrash} from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 
 const Products = () => {
-    return (
-        <>
-            <Tables title="Products Table" 
-            trContent='
-                <th scope="col">Project</th>
-                <th scope="col">Budget</th>
-                <th scope="col">Status</th>
-                <th scope="col">Users</th>
-                <th scope="col">Completion</th>
-                <th scope="col" />'
+  const [product, setProduct] = useState([]);
+  const navigate = useNavigate();
 
-            tableContent='
-            <tr>
-            <th scope="row">
-              first
-            </th>
-            <td>$2,500 USD</td>
+  const handleTableButton = (e) => {
+
+    navigate.path('/addproduct');
+  };
+  
+    useEffect(() => {
+      // Fetch the items from the server
+      axios.get("http://localhost:8000/products")
+        .then((response) => {
+          setProduct(response.data);
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+    }, []);
+  
+
+  const handleDeleteProduct = (id) => {
+        axios.delete(`http://localhost:8000/products/${id}`)
+      .then((response) => {
+        // Update the component's state or perform any other necessary actions
+        setProduct(product.filter((product) => product.id !== id));
+      })
+      .catch((error) => {
+        console.log(error.message);
+      }); 
+     };
+    
+  const handleEditProduct = (id) => {
+    navigate("/edit-product");
+  };
+
+  useEffect(() => {
+    // Fetch the category data from the backend API
+    fetch('/api/products')
+      .then((response) => response.json())
+      .then((data) => setProduct(data))
+      .catch((error) => {
+        // Handle the error if any
+        console.error('Error fetching products data:', error);
+      });
+  }, []);
+
+  return (
+    <>
+   
+      <Tables
+         btnTitle="Add Product" 
+         onClick={handleTableButton} 
+         title="Products" 
+            trContent='
+            <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">الاسم</th>
+                <th scope="col">Image</th>
+                <th scope="col">Category</th>
+                <th scope="col">Description</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Actions</th>
+                <th scope="col" />'
+        tableContent={Products.map((product) => (
+          <tr key={product.id}>
+            <td>{product.id}</td>
+            <td>{product.name_en}</td>
+            <td>{product.name_er}</td>
             <td>
-              <Badge color="" className="badge-dot mr-4">
-                <i className="bg-warning" />
-                pending
-              </Badge>
+              <img src={product.image} alt={product.name} />
             </td>
+            <td>{product.category}</td>
+            <td>{product.description}</td>
+            <td>{product.price}</td>
+            <td>{product.quantity}</td>
             <td>
-                userOne
-            </td>
-            <td>
-              <div className="d-flex align-items-center">
-                <span className="mr-2">60%</span>
-                <div>
-                  <Progress
-                    max="100"
-                    value="60"
-                    barClassName="bg-danger"
-                  />
-                </div>
+              <div>
+                <button onClick={() => handleEditProduct(product.id)}>
+                <FontAwesomeIcon icon={faPenToSquare} />
+                  </button>
+                <button  onClick={() => handleDeleteProduct(product.id)}>
+                <FontAwesomeIcon icon={faTrash} />
+                  </button>
               </div>
             </td>
           </tr>
-          <tr>
-            <th scope="row">
-              first
-            </th>
-            <td>$2,500 USD</td>
-            <td>
-              <Badge color="" className="badge-dot mr-4">
-                <i className="bg-warning" />
-                pending
-              </Badge>
-            </td>
-            <td>
-                userOne
-            </td>
-            <td>
-              <div className="d-flex align-items-center">
-                <span className="mr-2">60%</span>
-                <div>
-                  <Progress
-                    max="100"
-                    value="60"
-                    barClassName="bg-danger"
-                  />
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">
-              first
-            </th>
-            <td>$2,500 USD</td>
-            <td>
-              <Badge color="" className="badge-dot mr-4">
-                <i className="bg-warning" />
-                pending
-              </Badge>
-            </td>
-            <td>
-                userOne
-            </td>
-            <td>
-              <div className="d-flex align-items-center">
-                <span className="mr-2">60%</span>
-                <div>
-                  <Progress
-                    max="100"
-                    value="60"
-                    barClassName="bg-danger"
-                  />
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">
-              first
-            </th>
-            <td>$2,500 USD</td>
-            <td>
-              <Badge color="" className="badge-dot mr-4">
-                <i className="bg-warning" />
-                pending
-              </Badge>
-            </td>
-            <td>
-                userOne
-            </td>
-            <td>
-              <div className="d-flex align-items-center">
-                <span className="mr-2">60%</span>
-                <div>
-                  <Progress
-                    max="100"
-                    value="60"
-                    barClassName="bg-danger"
-                  />
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">
-              first
-            </th>
-            <td>$2,500 USD</td>
-            <td>
-              <Badge color="" className="badge-dot mr-4">
-                <i className="bg-warning" />
-                pending
-              </Badge>
-            </td>
-            <td>
-                userOne
-            </td>
-            <td>
-              <div className="d-flex align-items-center">
-                <span className="mr-2">60%</span>
-                <div>
-                  <Progress
-                    max="100"
-                    value="60"
-                    barClassName="bg-danger"
-                  />
-                </div>
-              </div>
-            </td>
-          </tr>'    
-            />
-        </>
-    )
-}
+        ))}
+      />
+      
+    </>
+  );
+};
 
 export default Products;
