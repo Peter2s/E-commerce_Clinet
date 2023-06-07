@@ -31,12 +31,12 @@ import {
 } from "reactstrap";
 import { useRef,useState,useEffect, Fragment ,useContext} from "react";
 import AuthContext from "Context/Authentication ";
-import axios from "../../../api/axios"
+import { axiosInstance } from "Axios.js";
 import { Link } from "react-router-dom";
 import Btn from "Dashboard/SharedUI/Btn/Btn";
 import { useNavigate } from "react-router-dom";
 
-const Login_URL="/auth"
+const Login_URL="admin/auth"
 const Login = () => {
   const {setAuth}=useContext(AuthContext)
   const userRef=useRef()
@@ -58,14 +58,15 @@ const Navigate =useNavigate()
 },[user,password])
 
 
-const handelSubmit=async (e)=>
+const handelSubmit = async (e)=>
 {
+  e.preventDefault();
  
   try{
-    const response = await axios.post(Login_URL,JSON.stringify({user,password}),
+    const response = await axiosInstance.post(Login_URL,{email:user,password},
     {
       headers:{"Content-Type":"application/json"},
-      withCredentials:(true)
+      // withCredentials:(true)
     })
     console.log(JSON.stringify(response?.data))
     const accessToken=response?.data?.accessToken;
@@ -79,6 +80,7 @@ const handelSubmit=async (e)=>
   
   //handle error response 
   catch(err){
+    console.error(err)
     if(!err?.response){
     seterrmsg("no server response ")
     }
@@ -153,7 +155,7 @@ const handelSubmit=async (e)=>
                 </InputGroup>
               </FormGroup>
               <div className="text-center">
-                <Btn name="btn btn-info" title=" Sign in " onClick={() => handelSubmit()}/>
+                <Btn name="btn btn-info" type="submit" title=" Sign in "/>
                    
               </div>
             </Form>
