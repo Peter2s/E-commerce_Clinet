@@ -1,143 +1,198 @@
-import {
-    Card,
-    CardHeader,
-    CardBody,
-    CardFooter,
-    Container,
-    Col,
-    Row,
-    Navbar,
-  } from "reactstrap";
-  // core components
-import Tables from '../../../SharedUI/Table/Tables';
-import { useEffect, useState } from "react";
-import { useParams} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Card, CardHeader, CardBody, CardFooter, Container, Col, Row, Navbar } from "reactstrap";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-
+import "../OrderDetails/OrderDetails";
+import Btn from "Dashboard/SharedUI/Btn/Btn";
 
 const OrderDetail = () => {
-    const {id} = useParams();
+  const { id } = useParams();
+  const [orderdata, setOrderData] = useState({});
+  const [productData, setProductData] = useState([]);
+  const [paymentStatus, setPaymentStatus] = useState(orderdata.payment_status);
 
-    const [orderdata, setOrderData] = useState({});
+  const handleUpdatePaymentStatus =  () => {
+    try {
+      // Make an API call to update the payment status
+     axios.patch(`http://localhost:5000/order/${orderdata.id}`, { payment_status: 'completed' });
+      setPaymentStatus('completed');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/order/${id}`)
+      .then((res) => {
+        setOrderData(res.data);
+        fetchProductData(res.data.products);
+        const updatedOrderData = res.data;
+        setPaymentStatus(updatedOrderData.payment_status);
+        
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
 
-    useEffect(() => {
-        axios
-          .get(`http://localhost:5000/order/${id}`)
-          .then((res) => {
-            setOrderData(res.data);
-          })
-          .catch((err) => {
-            console.log(err.message);
-          });
-      }, [id]);
+  }, [id]);
 
-    return (
-      <>
-        <Navbar />
-        {/* Page content */}
-        <Container className="mt--7" fluid>
-          {/* Table */}
-          <Row>
-            <div className="col">
+  const fetchProductData = async (products) => {
+    const productId = products.map((product) => product.id);
+    const productResponse = await axios.get("http://localhost:5000/products");
+    const productDataWithImage = productResponse.data.map((product) => {
+      if (productId.includes(product.id)) {
+        const productImage = product.images[0] || "";
+        return { ...product, image: productImage };
+      }
+      return product;
+    });
+    setProductData(productDataWithImage);
+  };
+
+  const getProductImageById = (productId) => {
+    const product = productData.find((product) => product.id === productId);
+    return product ? product.image : "";
+  };
+
+  const getProductNameById = (productId) => {
+    const product = productData.find((product) => product.id === productId);
+    return product ? product.name_en : "";
+  };
+
+  
+
+
+ 
+
+  return (
+    <>
+      <Navbar />
+      {/* Page content */}
+      <Container className="mt--7" fluid>
+        <Row>
+          <div className="col">
+            {orderdata && (
               <Card className="shadow">
-                <CardHeader className="border-0">
-                  <h1 className="mb-0">Order Details</h1> 
-                  <div>
-                        <h3>Order ID: <b>{orderdata.id}</b></h3>
-                        <h3>User ID: <b>{orderdata.user_id}</b></h3>
-                        {/* <h3>Placed On:<b>{new Date(orderdata.status_history[0].date).toLocaleDateString()}</b></h3> */}
-
+                <CardHeader className="border-0 ">
+                  <h1 className="mb-0">Order Details</h1>
+                  <div className="d-flex justify-content-around">
+                    <h3>
+                      Order ID: <b>{orderdata.id}</b>
+                    </h3>
+                    <h3>
+                      User ID: <b>{orderdata.user_id}</b>
+                    </h3>
                   </div>
                 </CardHeader>
-                
-               
+                <div className="container">
+                  <CardBody className="border-0 shadow">
+                    <div>
+                      <h2>Order Products</h2>
+                      {orderdata.products?.map((product) => (
+                        <div key={product.product_id}>
+                          <Row>
+                            <Col xs="3">
+                              <img src={getProductImageById(product.product_id)} alt="Product" style={{ width: "100%", height: "100%" }} />
+                            </Col>
+                            <Col xs="9">
+                              <h5>Product ID: {product.product_id}</h5>
+                              <h5>Product Name: {getProductNameById(product.product_id)}</h5>
+                              <h5>Quantity: {product.quantity}</h5>
+                              <h5>Price: {product.price.toFixed(2)}$</h5>
+                              <h5>Total: {(product.quantity * product.price).toFixed(2)}$</h5>
+                            </Col>
+                          </Row>
+                          <hr />
+                        </div>
+                      ))}
+                    </div>
 
-               {orderdata &&
+                    <div style={{ textAlign: "left" }}>
+                      {orderdata && (
+                        <>
+                          <Card>
+                            <CardHeader>
+                              <i className="fa fa-sack-dollar mr-3 text-warning"></i> Payment Details:
+                            </CardHeader>
+                            <CardBody>
+                              <Row>
+                                <Col>
+                                  <h4>
+                                    Total Price: <b>{orderdata.total_price}$</b>
+                                  </h4>
+                                  <h4>
+                                    Payment Method: <b>{orderdata.payment_method}</b>
+                                  </h4>
+                                </Col>
+                                <Col>
+                                  <h4>
+                                    Payment Id: <b>{orderdata.payment_id}</b>
+                                  </h4>
+                                  <h4>Payment Status :  {paymentStatus === 'pending' ? (
+                                    <button
+                                      className="btn btn-warning"
+                                      disabled={paymentStatus === 'completed'}
+                                      onClick={handleUpdatePaymentStatus}
+                                    >
+                                      {paymentStatus}
+                                    </button>
+                                  ) : (
+                                    <button className="btn btn-success" disabled>
+                                      {paymentStatus}
+                                    </button>
+                                  )}</h4>
+                                 
+                                </Col>
+                              </Row>
+                            </CardBody>
+                          </Card>
+                          <Card className="mt-3">
+                            <CardHeader>
+                              <i className=" fa fa-truck  mr-3 text-danger"></i> Delivery Address:
+                            </CardHeader>
+                            <CardBody>
+                              <Row>
+                                <Col>
+                                  {orderdata.address ? (
+                                    <>
+                                      <h4>
+                                        {orderdata.address.area}
+                                        {orderdata.address.city},{" "}
+                                        {orderdata.address.governate} {orderdata.address.country}
+                                      </h4>
+                                    </>
+                                  ) : (
+                                    <p>No address found</p>
+                                  )}
+                                </Col>
+                              </Row>
+                            </CardBody>
+                          </Card>
+                          <Card className="mt-3">
+                            <CardHeader>
+                              <i className=" fa fa-list-check  mr-3 text-danger"></i> Order Status:
+                            </CardHeader>
+                            <CardBody>
+                              <Row>
+                                <Col>
+                                 
+                                </Col>
+                              </Row>
+                            </CardBody>
+                          </Card>
+                        </>
+                      )}
+                    </div>
+                  </CardBody>
+                </div>
                 
-                       <Tables className="m-5" title="Order Products" 
-            
-            trContent={
-              <>
-                <th scope="col">Product Id</th>
-                <th scope="col">Product Name</th>
-                <th scope="col">Quantity</th>
-                <th scope="col"> Price</th>
-                <th scope="col"> Total</th>
-              </>
-            }
-            
-            const tableContent = {orderdata.products?.map(product => (
-                <>
-                <tr key={product.product_id}>
-                  <td>{product.product_id}</td>
-                  <td>{product.name}</td>
-                  <td>{product.quantity}</td>
-                  <td>{product.price.toFixed(2)}$</td>
-                  <td>{(product.quantity * product.price).toFixed(2)}$</td>
-              </tr>
-               
-               </>
-            ))}
-             
-            />
-                  
-               }
-          
-           <CardBody className="border-0">
-                <div>
-           
-           <div className="container">
-               
-           <div className="card row" style={{ "textAlign": "left" }}>
-               
-
-               {orderdata &&
-                   <Card>
-                   <CardHeader>Order Details</CardHeader>
-                   <CardBody>
-                     <Row>
-                       <Col>
-                         <h2>Total Price: <b>{orderdata.total_price}$</b></h2>
-                         <h2>Payment Method: <b>{orderdata.payment_method}</b></h2>
-                       </Col>
-                       <Col>
-                         <h2>Payment Id: <b>{orderdata.payment_id}</b></h2>
-                         <h2>Payment Status: <b>{orderdata.payment_status}</b></h2>
-                       </Col>
-                     </Row>
-                     <Row>
-      <Col>
-        <h2>Delivery Address:</h2>
-        {orderdata.address ? (
-          <>
-            <p>{orderdata.address.area}و
-            {orderdata.address.city}, {orderdata.address.governate} {orderdata.address.country}</p>
-          </>
-        ) : (
-          <p>No address found</p>
-        )}
-      </Col>
-    </Row>
-                   </CardBody>
-                 </Card>
-               }
-           </div>
-           </div>
-           </div>
-                </CardBody>
-              
-           
-                <CardFooter className="py-4">
-                  <nav aria-label="...">
-                    
-                  </nav>
-                </CardFooter>
               </Card>
-            </div>
-          </Row>
-        </Container>
-      </>
-    );
-  };
-  
+            )}
+          </div>
+        </Row>
+      </Container>
+    </>
+  );
+};
+
 export default OrderDetail;

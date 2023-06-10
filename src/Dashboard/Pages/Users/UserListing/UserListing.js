@@ -62,6 +62,7 @@ const Users = () => {
           return updatedData;
         });
       })
+      
       .catch((err) => {
         console.log(err.message);
       });
