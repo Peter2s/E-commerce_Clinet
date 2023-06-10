@@ -15,7 +15,8 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import { Link } from "react-router-dom";
+import jwtDecode from "jwt-decode";
+import { Link, Navigate } from "react-router-dom";
 // reactstrap components
 import {
   DropdownMenu,
@@ -35,6 +36,20 @@ import {
 } from "reactstrap";
 
 const AdminNavbar = (props) => {
+  const jwt = localStorage.getItem('token');
+  const decodedToken = jwt ? jwtDecode(jwt) : null;
+  const userName = decodedToken ? decodedToken.role : null;
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    return <Navigate to="/auth/auth" />;
+  }
+
+  // Redirect to login page if no token is found
+  if (!jwt) {
+    return <Navigate to="/auth/auth" />;
+  }
+
   return (
     <>
       <div className="header bg-gradient-info pb-8 pt-md-6">
@@ -70,7 +85,7 @@ const AdminNavbar = (props) => {
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                      Jessica Jones
+                      {userName}
                     </span>
                   </Media>
                 </Media>
@@ -88,7 +103,7 @@ const AdminNavbar = (props) => {
                   <span>Settings</span>
                 </DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
+                <DropdownItem href="#pablo" onClick={handleLogout}>
                   <i className="ni ni-user-run" />
                   <span>Logout</span>
                 </DropdownItem>

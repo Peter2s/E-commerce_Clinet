@@ -19,6 +19,7 @@ import {
 import { axiosInstance } from "Axios.js";
 import Btn from "Dashboard/SharedUI/Btn/Btn.js";
 import "./Profile.css";
+import jwtDecode from "jwt-decode";
 
 const Profile = () => {
   const [editMode, setEditMode] = useState(false);
@@ -36,17 +37,17 @@ const Profile = () => {
   const [originalProfileData, setOriginalProfileData] = useState(null); // New state for storing original profile data
   const [phoneError, setPhoneError] = useState(false);
   const [errorEmpty, setErrorEmpty] = useState(false);
-  const jwt = localStorage.getItem('jwt');
-  
+  const jwt = localStorage.getItem('token');
+  const decodedToken = jwtDecode(jwt);
+  const userId = decodedToken.id;
+
   useEffect(() => {
     fetchProfileData();
   }, []);
 
   const fetchProfileData = async () => {
     try {
-      const res = await axiosInstance.get(
-        "/api/v1/employees/647e61d24e6f0f88521bdf71"
-      );
+      const res = await axiosInstance.get(`/api/v1/employees/${userId}`);
       setProfileData(res.data.data);
       setOriginalProfileData(res.data.data); // Store the original profile data
     } catch (err) {
@@ -113,18 +114,11 @@ const Profile = () => {
       setErrorEmpty(false);
       try {
         await axiosInstance.patch(
-          "http://e-commerce.nader-mo.tech/api/v1/employees/update-password",
-          { newPassword },
-          {
-            headers: {
-              Authorization: `Bearer ${jwt}`, // Include the authentication token
-            },
-          }
+          `/api/v1/employees/${userId}`,
+        
         );
-        // Password successfully changed
       } catch (err) {
         console.log(err);
-        // Handle error if password change failed
       }
     }
   };
@@ -140,7 +134,7 @@ const Profile = () => {
     }
     try {
       await axiosInstance.patch(
-        "/api/v1/employees/647e61d24e6f0f88521bdf71",
+        `/api/v1/employees/${userId}`,
         updatedProfileData
       );
       toggleEditMode();

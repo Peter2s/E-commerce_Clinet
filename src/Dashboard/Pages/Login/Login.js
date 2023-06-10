@@ -70,6 +70,7 @@ const handelSubmit = async (e)=>
     console.log(response?.data.data.user)
     const authUser = response?.data.data.user;
     const accessToken =  response?.data.data.token;
+    localStorage.setItem("token", accessToken);
     setAuthUser(authUser);
     setUserToken(accessToken);
     setuser('');
