@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardFooter, CardHeader, Container, Input, Row } from 'reactstrap';
 import * as Yup from 'yup';
 import axios from 'axios';
+import MySwal from 'sweetalert2';
 import Btn from 'Dashboard/SharedUI/Btn/Btn';
+import { axiosInstance } from '../../../../Axios';
+import { useNavigate } from 'react-router';
 
 const CreateRole = () => {
-  const rolesEndpoint = 'http://e-commerce.nader-mo.tech/api/v1/roles';
-
   const initialRole = {
     newRole: '',
     permissions: [],
@@ -14,12 +15,13 @@ const CreateRole = () => {
 
   const [role, setRole] = useState(initialRole);
   const [permissionsData, setPermissionsData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch permissions from the JSON server
     const fetchPermissions = async () => {
       try {
-        const response = await axios.get(rolesEndpoint);
+        const response = await axiosInstance.get("/api/v1/roles");
         const roles = response.data.data;
         console.log(roles);
         if (roles && roles.length > 0) {
@@ -50,9 +52,9 @@ const CreateRole = () => {
       }));
     }
   };
+
   const handleSave = async () => {
     try {
-      // Split the permissions by entity
       const permissionsByEntity = {};
       role.permissions.forEach(permission => {
         const [entity, access] = permission.split(':');
@@ -64,20 +66,27 @@ const CreateRole = () => {
         }
         permissionsByEntity[entity].access[access.toLowerCase()] = true;
       });
-  
-      // Create the role object in the desired format
+      
       const roleData = {
         name: role.newRole,
-        // is_active: true,
         permissions: Object.values(permissionsByEntity)
       };
   
-      const response = await axios.post(rolesEndpoint, roleData);
+      const response = await axiosInstance.post("/api/v1/roles", roleData);
       console.log('Role saved:', response.data);
+  
+      MySwal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'New Role has been added successfully.',
+      });
+      
+      navigate("/admin/roles");
     } catch (error) {
       console.error('Error saving role:', error);
     }
   };
+  
 
   return (
     <>
@@ -104,6 +113,7 @@ const CreateRole = () => {
                     value={role.newRole}
                     onChange={(e) => setRole({ ...role, newRole: e.target.value })}
                   />
+                  
                   <br />
                   <label htmlFor="permissions">
                     <b>Permissions</b><span className="required">*</span>

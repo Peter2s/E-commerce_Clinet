@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import MySwal from 'sweetalert2';
 import { Card, CardHeader, Container, Input, Row } from 'reactstrap';
 import { axiosInstance } from '../../../../Axios';
 
@@ -8,6 +9,7 @@ const EditRole = () => {
   const { id } = useParams();
   const [name, setName] = useState('');
   const [permissions, setPermissions] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchRoleData();
@@ -32,7 +34,13 @@ const EditRole = () => {
         permissions,
       });
       console.log(response.data);
-      window.location.href = '/admin/roles';
+      MySwal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Your Changes have been saved successfully.',
+      });
+      
+      navigate("/admin/roles");
     } catch (error) {
       console.log(error);
     }
