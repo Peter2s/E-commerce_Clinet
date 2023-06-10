@@ -143,8 +143,7 @@ const handelSubmit = async (e)=>
                 </InputGroup>
               </FormGroup>
               <div className="text-center">
-                <Btn name="btn btn-info" type="submit" title=" Sign in "/>
-                   
+                <Btn className="btn btn-info" type="submit" title=" Sign in "/>
               </div>
             </Form>
           </CardBody>

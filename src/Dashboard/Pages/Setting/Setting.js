@@ -6,8 +6,6 @@ import "./Setting.css";
 import { Container, Row, Navbar, Card } from "reactstrap";
 import Btn from "Dashboard/SharedUI/Btn/Btn";
 
-// core components
-
 const Setting = () => {
   const [activeLink, setActiveLink] = useState("website-info");
 
