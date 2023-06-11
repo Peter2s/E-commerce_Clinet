@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { axiosInstance } from '../../../../Axios';
 
-
 const Emps = () => {
   const [empData, setEmpData] = useState([]);
 

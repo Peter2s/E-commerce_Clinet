@@ -14,6 +14,7 @@ import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword";
 import Login from "Dashboard/Pages/Login/Login";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const jwt = localStorage.getItem("jwt");
 
 root.render(
   <BrowserRouter>
@@ -26,7 +27,6 @@ root.render(
       <Route path="/ForgetPssword/*" element={<ForgetPssword/>} />
       <Route path="*" element={<Navigate to="/admin/index" replace />} />
     </Routes>
-  </Authentication>
-   
+  </Authentication>   
   </BrowserRouter>
 );

@@ -1,2 +1,12 @@
 import axios from 'axios';
-export const axiosInstance = axios.create({baseURL:'http://e-commerce.nader-mo.tech/'});
+const axiosInstance = axios.create({baseURL:'http://e-commerce.nader-mo.tech/'});
+
+axiosInstance.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+
+export {axiosInstance};

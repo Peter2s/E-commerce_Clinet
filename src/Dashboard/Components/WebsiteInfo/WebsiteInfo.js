@@ -44,17 +44,17 @@ const WebsiteInfo = () => {
     });
   };
 
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   const reader = new FileReader();
-  //   reader.onloadend = () => {
-  //     setWebInfo({ ...webInfo, logo: file.name });
-  //     reader.readAsDataURL(file);
-  //   };
-  //   if (file) {
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setWebInfo({ ...webInfo, logo: file.name });
+      reader.readAsDataURL(file);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
   
 
   const handleEditClick = () => {
@@ -143,8 +143,8 @@ const WebsiteInfo = () => {
         banners: bannersData,
       };
   
-      const response = await axios.patch(
-        "http://e-commerce.nader-mo.tech/settings",
+      await axiosInstance.patch(
+        "/settings",
         updatedData
       );
   
@@ -195,9 +195,9 @@ const WebsiteInfo = () => {
                       <input
                         className="form-control w-25"
                         type="file"
-                        // accept="image/*"
+                        accept="image/*"
                         name="logo"
-                        // onChange={handleFileChange}
+                        onChange={handleFileChange}
                       />
                       {webInfo.logo && (
                         <img src={webInfo.logo} className="w-25" alt="logo" />

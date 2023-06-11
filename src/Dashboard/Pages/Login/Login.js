@@ -53,6 +53,7 @@ const handelSubmit = async (e)=>
     console.log(response?.data.data.user)
     const authUser = response?.data.data.user;
     const accessToken =  response?.data.data.token;
+    localStorage.setItem("token", accessToken);
     setAuthUser(authUser);
     setUserToken(accessToken);
     setuser('');
@@ -126,8 +127,7 @@ const handelSubmit = async (e)=>
                 </InputGroup>
               </FormGroup>
               <div className="text-center">
-                <Btn name="btn btn-info" type="submit" title=" Sign in "/>
-                   
+                <Btn className="btn btn-info" type="submit" title=" Sign in "/>
               </div>
             </Form>
           </CardBody>
