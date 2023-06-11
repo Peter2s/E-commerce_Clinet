@@ -1,29 +1,23 @@
-
-
-
-
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import Tables from '../../../SharedUI/Table/Tables';
-import axios from 'api/axios';
+import { axiosInstance } from "Axios.js";
 import {faPenToSquare,faTrash} from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Btn from "../../../SharedUI/Btn/Btn";
 
 
 const Products = () => {
-  const [product, setProduct] = useState([]);
-  const navigate = useNavigate();
+    const Product_URL="api/v1/products"
+    const [product, setProduct] = useState([]);
+    const navigate = useNavigate();
 
-  const handleTableButton = (e) => {
-
-    navigate.path('/addproduct');
-  };
-  
     useEffect(() => {
       // Fetch the items from the server
-      axios.get("http://localhost:8000/products")
+        axiosInstance.get(Product_URL)
         .then((response) => {
-          setProduct(response.data);
+            console.log(response.data)
+          setProduct(response.data.data);
         })
         .catch((error) => {
           console.log(error)
@@ -32,7 +26,7 @@ const Products = () => {
   
 
   const handleDeleteProduct = (id) => {
-        axios.delete(`http://localhost:8000/products/${id}`)
+      axiosInstance.delete(`${Product_URL}/${id}`)
       .then((response) => {
         // Update the component's state or perform any other necessary actions
         setProduct(product.filter((product) => product.id !== id));
@@ -46,26 +40,22 @@ const Products = () => {
     navigate("/edit-product");
   };
 
-  useEffect(() => {
-    // Fetch the category data from the backend API
-    fetch('/api/products')
-      .then((response) => response.json())
-      .then((data) => setProduct(data))
-      .catch((error) => {
-        // Handle the error if any
-        console.error('Error fetching products data:', error);
-      });
-  }, []);
-
   return (
     <>
-   
       <Tables
-         btnTitle="Add Product" 
-         onClick={handleTableButton} 
+         btn={
+          <>
+             <Link to="/admin/addProducts" className='d-flex'>
+                 <Btn
+                     className="btn btn-primary ml-auto"
+                     title="Add Product"
+                 />
+             </Link>
+         </>
+      }
          title="Products" 
-            trContent='
-            <th scope="col">ID</th>
+            trContent={
+                <>
                 <th scope="col">Name</th>
                 <th scope="col">الاسم</th>
                 <th scope="col">Image</th>
@@ -74,25 +64,26 @@ const Products = () => {
                 <th scope="col">Price</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Actions</th>
-                <th scope="col" />'
-        tableContent={Products.map((product) => (
-          <tr key={product.id}>
-            <td>{product.id}</td>
+                <th scope="col"></th>
+                </>
+      }
+        tableContent={product.map((product) => (
+          <tr key={product._id}>
             <td>{product.name_en}</td>
-            <td>{product.name_er}</td>
-            <td>
-              <img src={product.image} alt={product.name} />
+            <td>{product.name_ar}</td>
+            <td style={{width:'200px'}}>
+              <img className="img-thumbnail" style={{minWidth:'200px',width:'50%'}} src={product.image} alt={product.name} />
             </td>
-            <td>{product.category}</td>
-            <td>{product.description}</td>
-            <td>{product.price}</td>
+            <td>{product.category_id.name_en}</td>
+            <td>{product.desc_en}</td>
+            <td>{product.price.$numberDecimal}</td>
             <td>{product.quantity}</td>
             <td>
               <div>
-                <button onClick={() => handleEditProduct(product.id)}>
+                <button className="btn btn-primary" onClick={() => handleEditProduct(product._id)}>
                 <FontAwesomeIcon icon={faPenToSquare} />
                   </button>
-                <button  onClick={() => handleDeleteProduct(product.id)}>
+                <button className="btn btn-danger"  onClick={() => handleDeleteProduct(product._id)}>
                 <FontAwesomeIcon icon={faTrash} />
                   </button>
               </div>
@@ -100,7 +91,6 @@ const Products = () => {
           </tr>
         ))}
       />
-      
     </>
   );
 };
