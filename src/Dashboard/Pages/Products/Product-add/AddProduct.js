@@ -1,55 +1,63 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Input from "Dashboard/SharedUI/Input/Input";
-import { Card, CardHeader, Container, Navbar, Row } from "reactstrap";
-import Form from "react-bootstrap/Form";
+import {
+  Card,
+  CardHeader,
+  Container,
+  FormGroup,
+  Input,
+  Navbar,
+  Row,
+} from "reactstrap";
 import { axiosInstance } from "../../../../Axios";
+import { useFormik } from "formik";
+import { FormLabel, FormSelect } from "react-bootstrap";
 
 const AddProduct = () => {
-  const [name_en, setName_en] = useState("");
-  const [name_ar, setName_ar] = useState("");
-  const [image, setImage] = useState("");
-  const [images, setImages] = useState([]);
-  const [category, setCategory] = useState("");
-  const [descriptionEn, setDescriptionEn] = useState("");
-  const [descriptionAr, setDescriptionAr] = useState("");
-  const [price, setPrice] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [validation, setValidation] = useState(false);
-
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
   const CategoriesURL = "api/v1/categories";
   const ProductsURL = "api/v1/products";
+  const formik = useFormik({
+    initialValues: {
+      name_en: "",
+      name_ar: "",
+      descriptionEn: "",
+      descriptionAr: "",
+      image: "",
+      images: "",
+      category: "",
+      price: "",
+      quantity: "",
+    },
+    onSubmit: (values) => {
+      const productData = {
+        name_en: values.name_en,
+        name_ar: values.name_ar,
+        image: values.image,
+        category: values.category,
+        descriptionEn: values.descriptionEn,
+        descriptionAr: values.descriptionAr,
+        price: values.price,
+        quantity: values.quantity,
+      };
+      axiosInstance
+        .post(ProductsURL, productData, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          alert("Saved successfully.");
+          navigate("/");
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    },
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const productData = {
-      name_en,
-      name_ar,
-      image,
-      category,
-      descriptionEn,
-      descriptionAr,
-      price,
-      quantity,
-    };
-
-    axiosInstance
-      .post(ProductsURL, productData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        alert("Saved successfully.");
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  };
   const getCategories = async () => {
     const res = await axiosInstance.get(CategoriesURL);
     console.log(res.data);
@@ -77,72 +85,173 @@ const AddProduct = () => {
 
             <div className="row">
               <div className="offset-lg-3 col-lg-6">
-                <form className="container mt-2" onSubmit={handleSubmit}>
-                  <label>Name</label>
-                  <Input
-                    onMouseDown={(e) => setValidation(true)}
-                    onChange={(e) => setName_en(e.target.value)}
-                    Class={"form-control"}
-                    type="text"
-                    name="categoryName_en"
-                    value={name_en}
-                  />
-                  <label>الاسم</label>
-                  <Input
-                    onMouseDown={(e) => setValidation(true)}
-                    onChange={(e) => setName_ar(e.target.value)}
-                    Class={"form-control"}
-                    type="text"
-                    name="categoryName_en"
-                    value={name_ar}
-                  />
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlTextarea1"
-                  >
-                    <Form.Label>Description </Form.Label>
-                    <Form.Control as="textarea" rows={3} />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>الوصف</Form.Label>
-                    <Form.Control as="textarea" rows={3} />
-                  </Form.Group>
-                  <label>Image</label>
-                  <Input
-                    type="file"
-                    Class={"form-control"}
-                    value={image}
-                    handleChange={(e) => setImage(e.target.value)}
-                  ></Input>
-                  <label>Images</label>
-                  <input
-                    type="file"
-                    Class={"form-control"}
-                    value={images}
-                    onChange={(e) => setImage(e.target.value)}
-                    multiple="true"
-                  />
-                  <label>Category</label>
-                  <select className="form-control" aria-label="Category">
-                    <option selected>Select product category</option>
-                    {categories.map((category) => (
-                      <option value={category._id}>{category.name_en}</option>
-                    ))}
-                  </select>
-                  <label>Price</label>
-                  <Input
-                    type="text"
-                    Class={"form-control"}
-                    value={price}
-                    handleChange={(e) => setPrice(e.target.value)}
-                  ></Input>
-                  <label>Quantity</label>
-                  <Input
-                    type="text"
-                    Class={"form-control"}
-                    value={quantity}
-                    handleChange={(e) => setQuantity(e.target.value)}
-                  ></Input>
+                <form className="container mt-2" onSubmit={formik.handleSubmit}>
+                  <FormGroup>
+                    <FormLabel>Name</FormLabel>
+                    <Input
+                      type="text"
+                      name="name_en"
+                      placeholder="name"
+                      value={formik.values.name_en}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                    />
+                    {formik.errors.name_en && formik.touched.name_en && (
+                      <span className="text-danger">
+                        {formik.errors.name_en}
+                      </span>
+                    )}
+                  </FormGroup>
+                  <FormGroup>
+                    <FormLabel>الاسم</FormLabel>
+                    <Input
+                      type="text"
+                      name="categoryName_en"
+                      value={formik.values.name_ar}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                    />
+                    {formik.errors.name_ar && formik.touched.name_ar && (
+                      <span className="text-danger">
+                        {formik.errors.name_ar}
+                      </span>
+                    )}
+                  </FormGroup>
+                  <FormGroup>
+                    <FormLabel>Description</FormLabel>
+                    <Input
+                      type="textarea"
+                      rows="3"
+                      name="categoryName_en"
+                      value={formik.values.descriptionEn}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                    />
+                    {formik.errors.descriptionEn &&
+                      formik.touched.descriptionEn && (
+                        <span className="text-danger">
+                          {formik.errors.descriptionEn}
+                        </span>
+                      )}
+                  </FormGroup>
+                  <FormGroup>
+                    <FormLabel>الوصف</FormLabel>
+                    <Input
+                      type="textarea"
+                      rows="3"
+                      name="categoryName_en"
+                      value={formik.values.descriptionAr}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                    />
+                    {formik.errors.descriptionAr &&
+                      formik.touched.descriptionAr && (
+                        <span className="text-danger">
+                          {formik.errors.descriptionAr}
+                        </span>
+                      )}
+                  </FormGroup>
+                  <FormGroup>
+                    <FormLabel>Category</FormLabel>
+                    <FormSelect
+                      className="form-control"
+                      onChange={formik.handleChange}
+                      value={formik.values.category}
+                      onBlur={formik.handleBlur}
+                    >
+                      <option selected="true">Select Category</option>
+                      {categories &&
+                        categories.map((category) => (
+                          <option key={category._id} value={category._id}>
+                            {category.name_en}
+                          </option>
+                        ))}
+                    </FormSelect>
+                    {formik.errors.descriptionAr &&
+                      formik.touched.descriptionAr && (
+                        <span className="text-danger">
+                          {formik.errors.descriptionAr}
+                        </span>
+                      )}
+                  </FormGroup>
+
+                  <FormGroup>
+                    <FormLabel
+                      htmlFor="coverImage"
+                      className="btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                    >
+                      Cover Image : Browse
+                    </FormLabel>
+                    <Input
+                      id="coverImage"
+                      type="file"
+                      name="image"
+                      className="form-control"
+                      style={{ display: "none" }}
+                      value={formik.values.image}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                    />
+                    {formik.errors.image && formik.touched.image && (
+                      <span className="text-danger">{formik.errors.image}</span>
+                    )}
+                  </FormGroup>
+                  <FormGroup>
+                    <FormLabel
+                      htmlFor="images"
+                      className="btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                    >
+                      Images : Browse
+                    </FormLabel>
+                    <Input
+                      type="file"
+                      name="images"
+                      id="images"
+                      style={{ display: "none" }}
+                      value={formik.values.images}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                      multiple="true"
+                    />
+                    {formik.errors.images && formik.touched.images && (
+                      <span className="text-danger">
+                        {formik.errors.images}
+                      </span>
+                    )}
+                  </FormGroup>
+                  <FormGroup>
+                    <FormLabel>Price</FormLabel>
+                    <Input
+                      type="text"
+                      name="price"
+                      placeholder="Price"
+                      value={formik.values.price}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                    />
+                    {formik.errors.price && formik.touched.price && (
+                      <span className="text-danger">{formik.errors.price}</span>
+                    )}
+                  </FormGroup>
+
+                  <FormGroup>
+                    <FormLabel>Quantity</FormLabel>
+                    <Input
+                      type="text"
+                      name="quantity"
+                      placeholder="quantity"
+                      value={formik.values.quantity}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                    />
+                    {formik.errors.quantity && formik.touched.quantity && (
+                      <span className="text-danger">
+                        {formik.errors.quantity}
+                      </span>
+                    )}
+                  </FormGroup>
                   <div className="col-lg-12 mt-3">
                     <div className="form-group">
                       <button className="btn btn-success" type="submit">
