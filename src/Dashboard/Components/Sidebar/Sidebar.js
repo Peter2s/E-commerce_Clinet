@@ -68,7 +68,7 @@ const Sidebar = (props) => {
       .get("/settings")
       .then((res) => {
         console.log(res.data);
-        setWebInfo(res.data);
+        setWebInfo(res.data.data);
       })
       .catch((err) => {
         console.log(err);

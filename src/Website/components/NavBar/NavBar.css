@@ -1,0 +1,34 @@
+#navBar{
+    height: 8vh;
+    background-color: white;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
+    display: flex;
+}
+
+#navBar ul{
+    display: flex;
+}
+
+#navBar li{
+    list-style: none;
+    margin-top: 2vh;
+}
+
+#navBar a{
+    color: black;
+    margin-right: 3vw;
+
+}
+
+.Icons{
+    margin-left: 5px;
+    color: #000000;
+}
+
+#cartIcon:hover{
+    cursor: pointer;
+}
+
+.left{
+    margin-right: auto;
+}

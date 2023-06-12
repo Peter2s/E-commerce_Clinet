@@ -11,15 +11,18 @@
     "socialMedia": [
       {
         "URL": "linkedin.com/e-commerce",
-        "name": "linkedin"
+        "name": "linkedin",
+        "alt": "linkedin"
       },
       {
         "URL": "github.com/e-commerce",
-        "name": "github"
+        "name": "github",
+        "alt": "github"
       },
       {
         "URL": "facebook.com/e-commerce",
-        "name": "facebook"
+        "name": "facebook",
+        "alt": "facebook"
       }
     ],
     "banners": [

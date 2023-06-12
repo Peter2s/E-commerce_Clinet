@@ -6,6 +6,7 @@ import Btn from 'Dashboard/SharedUI/Btn/Btn';
 import Tables from './../../../SharedUI/Table/Tables';
 import { Link } from 'react-router-dom';
 import './ListRoles.css';
+import PaginationAdmin from './../../../SharedUI/PaginationAdmin/PaginationAdmin';
 
 const Roles = () => {
   const [roles, setRoles] = useState([]);
@@ -173,20 +174,12 @@ const Roles = () => {
             </tr>
           ))
         }
-        pagination={    
-      <div className="pagination">
-      {Array.from({ length: pagination.totalPages }, (_, index) => (
-        <button
-          key={index + 1}
-          className={`btn ${
-            pagination.currentPage === index + 1 ? 'active' : ''
-          }`}
-          onClick={() => handlePageChange(index + 1)}
-        >
-          {index + 1}
-        </button>
-      ))}
-    </div>
+        pagination={
+          <PaginationAdmin
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={handlePageChange}
+          />
         }
       />
     </>
