@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { Card, CardHeader, Container, Row, Col, CardBody , FormGroup } from "reactstrap";
+import { Card, CardHeader, Container, Row, Col, CardBody, FormGroup } from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import MySwal from 'sweetalert2';
+import MySwal from "sweetalert2";
 import Btn from "Dashboard/SharedUI/Btn/Btn";
 import Input from "Dashboard/SharedUI/Input/Input";
 import { axiosInstance } from "../../../../Axios";
+
 const EmpCreate = () => {
   const navigate = useNavigate();
+  const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    axiosInstance
+      .get("/api/v1/roles")
+      .then((res) => {
+        setRoles(res.data.data); // Assuming the response contains an array of roles
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -17,10 +29,13 @@ const EmpCreate = () => {
       email: "",
       phone: "",
       password: "",
-      role_id:""
+      confirmPassword: "",
+      role_id: "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().matches(/^[a-zA-Z\s]*$/, "Invalid name format").required("Enter the name"),
+      name: Yup.string()
+        .matches(/^[a-zA-Z\s]*$/, "Invalid name format")
+        .required("Enter the name"),
       email: Yup.string().email("Invalid email address").required("Enter the email"),
       phone: Yup.string().matches(/^[0-9]{11}$/, "Invalid phone number").required("Enter the phone number"),
       password: Yup.string()
@@ -28,36 +43,45 @@ const EmpCreate = () => {
         .max(20, "Password must be less than 20 characters")
         .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Invalid password format")
         .required("Enter the password"),
-     
+      confirmPassword: Yup.string()
+        .oneOf([Yup.ref("password"), null], "Passwords must match")
+        .required("Confirm password is required"),
     }),
     onSubmit: (values) => {
-        const empData = {
-          name: values.name,
-          email: values.email,
-          phone: values.phone,
-          password: values.password,
-          role_id:values.role_id
-        };
-  
-        axiosInstance
-          .post("/api/v1/employees", empData, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-          .then((res) => {
-            MySwal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: 'Your changes have been saved successfully.',
-              });
-            navigate("/admin/employees");
-          })
-          .catch((err) => {
-            console.log(err.message);
+      console.log(values);
+      if (values.password != values.confirmPassword) {
+        console.log("aaaaaaa");
+        console.log(values.password);
+        console.log(values. passwordConfirm);
+        
+        formik.setFieldError("confirmPassword", "Passwords must match");
+        return;
+      }
+      console.log(values);
+      const empData = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
+        passwordConfirm: values.confirmPassword,
+        role_id: values.role_id,
+      };
+
+      axiosInstance
+        .post("/api/v1/employees", empData)
+        .then((res) => {
+          MySwal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Your changes have been saved successfully.",
           });
-      },
-    });
+          navigate("/admin/employees");
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    },
+  });
 
   return (
     <Container className="mt--7" fluid>
@@ -136,10 +160,25 @@ const EmpCreate = () => {
                   </Col>
                 </Row>
                 <Row>
-                    <Col>
+                  <Col>
+                    <div className="form-group">
+                      <label>Confirm Password</label>
+                      <input
+                        type="password"
+                        name="confirmPassword"
+                        value={formik.values.passwordConfirm}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        className="form-control"
+                      />
+                      {formik.errors.passwordConfirm && formik.touched.passwordConfirm && (
+                        <span className="text-danger">{formik.errors.passwordConfirm}</span>
+                      )}
+                    </div>
+                  </Col>
+                  <Col>
                     <FormGroup>
-                      <label htmlFor="role_id">role_id</label>
-                      {/* <select
+                      <select
                         name="role_id"
                         id="role_id"
                         value={formik.values.role_id}
@@ -147,30 +186,24 @@ const EmpCreate = () => {
                         onChange={formik.handleChange}
                         className="form-control"
                       >
-                        <option value="">Select role_id</option>
-                        <option value="employee">Employee</option>
-                        <option value="admin">Admin</option>
+                        <option value="">Select a role</option>
+                        {roles.map((role) => (
+                          <option key={role._id} value={role._id}>
+                            {role.name}
+                          </option>
+                        ))}
                       </select>
                       {formik.errors.role_id && formik.touched.role_id && (
                         <span className="text-danger">{formik.errors.role_id}</span>
-                      )} */}
-                      <input type="text" 
-                      name="role"
-                      id="role_id"
-                      value={formik.values.role_id}
-                      onBlur={formik.handleBlur}
-                      onChange={formik.handleChange}
-                      className="form-control"
-                      />
+                      )}
                     </FormGroup>
-                    </Col>
+                  </Col>
                 </Row>
-               
                 <div className="form-group">
                   <button type="submit" className="btn btn-primary mr-2">
                     Create
                   </button>
-                  <Link to="/admin/users" className="btn btn-secondary">
+                  <Link to="/admin/employees" className="btn btn-secondary">
                     Cancel
                   </Link>
                 </div>

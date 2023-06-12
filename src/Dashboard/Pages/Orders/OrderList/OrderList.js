@@ -30,7 +30,7 @@ const Orders = () => {
   const handleCancelOrder = async (id , status) => {
     try {
   
-      if (status === 'Processing' || status === 'Completed') {
+      if (status === 'Processing' || status === 'Completed' || status === 'Cancelled') {
         return; // Disable cancel button if order status is processing or completed
       }
   
@@ -63,7 +63,7 @@ const Orders = () => {
   };
   const confirmOrder = async (id, status) => {
     try {
-      if (status === 'Cancelled') {
+      if (status === 'Cancelled' || status === 'Processing' ) {
         return; // Disable the button if the order is already cancelled
       }
   
@@ -164,7 +164,7 @@ const Orders = () => {
                 disabled={order.status === 'Processing' || order.status === 'Completed'}
               />
               <Btn 
-                onClick={() => confirmOrder(order.id, order.status)}
+                onClick={() => confirmOrder(order._id, order.status)}
                 disabled={order.status === 'Cancelled' || order.status === 'Completed'}
                 className="btn-success btn fa fa-circle-check"
               />

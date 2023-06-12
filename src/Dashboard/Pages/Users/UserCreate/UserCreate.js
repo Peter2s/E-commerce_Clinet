@@ -22,7 +22,7 @@ const UserCreate = () => {
       bio: "",
       country: "",
       city: "",
-      governate: "",
+      governorate: "",
       area: "",
       // active: true,
     },
@@ -61,7 +61,7 @@ const UserCreate = () => {
           address: {
             country: values.country,
             city: values.city,
-            governate: values.governate,
+            governorate: values.governorate,
             area: values.area,
           },
           // active: values.active,
@@ -72,7 +72,7 @@ const UserCreate = () => {
         axiosInstance
         .post("/api/v1/users", userData, {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         })
         .then((res) => {
@@ -255,14 +255,14 @@ const UserCreate = () => {
                       <label>Governate</label>
                       <input
                         type="text"
-                        name="governate"
-                        value={formik.values.governate}
+                        name="governorate"
+                        value={formik.values.governorate}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         className="form-control form-control-alternative"
                       />
-                      {formik.errors.governate && formik.touched.governate && (
-                        <span className="text-danger">{formik.errors.governate}</span>
+                      {formik.errors.governorate && formik.touched.governorate && (
+                        <span className="text-danger">{formik.errors.governorate}</span>
                       )}
                     </div>
                   </Col>
