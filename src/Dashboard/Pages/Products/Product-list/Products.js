@@ -65,7 +65,7 @@ const Products = () => {
     }
 
     const handleEditProduct = (id) => {
-        navigate("/admin/edit-product");
+        navigate(`/admin/edit-product/${id}`,);
     };
 
     return (
