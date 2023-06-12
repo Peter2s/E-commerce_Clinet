@@ -5,19 +5,20 @@ import { Link } from "react-router-dom";
 import { Input } from 'reactstrap';
 import Tables from '../../../SharedUI/Table/Tables';
 import Btn from 'Dashboard/SharedUI/Btn/Btn';
+import { axiosInstance } from '../../../../Axios';
 
 const Orders = () => {
   const [orderdata, setOrderData] = useState([]);
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/order/")
+    axiosInstance.get("/api/v1/orders")
       .then((res) => {
-        setOrderData(res.data);
+        setOrderData(res.data.data);
       }).catch((err) => {
         console.log(err.message);
       });
-    axios.get("http://localhost:5000/products/") // Fetch products data
+      axiosInstance.get("/api/v1/products") // Fetch products data
       .then((res) => {
         setProducts(res.data);
       })
@@ -26,8 +27,13 @@ const Orders = () => {
       });
   }, []);
 
-  const handleCancelOrder = async (id) => {
+  const handleCancelOrder = async (id , status) => {
     try {
+  
+      if (status === 'Processing' || status === 'Completed' || status === 'Cancelled') {
+        return; // Disable cancel button if order status is processing or completed
+      }
+  
       const result = await Swal.fire({
         title: 'Are you sure?',
         text: 'You are about to cancel this order!',
@@ -36,30 +42,65 @@ const Orders = () => {
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Yes, cancel it!',
-        cancelButtonText: 'No, keep it'
+        cancelButtonText: 'No, keep it',
       });
   
       if (result.isConfirmed) {
-        await axios.patch(`http://localhost:5000/order/${id}`, { status: 'cancelled' });
-        setOrderData((prevOrders) => prevOrders.map((order) => {
-          if (order.id === id) {
-            return { ...order, status: 'cancelled' };
-          }
-          return order;
-        }));
+        await axiosInstance.patch(`/api/v1/orders/${id}`, { status: 'Cancelled' });
+        setOrderData((prevOrders) =>
+          prevOrders.map((order) => {
+            if (order._id === id) {
+              return { ...order, status: 'Cancelled' };
+            }
+            return order;
+          })
+        );
         Swal.fire('Cancelled!', 'The order has been cancelled.', 'success');
       }
     } catch (error) {
       console.log(error);
     }
   };
-  const updateOrderStatus = (orderId, newStatus) => {
+  const confirmOrder = async (id, status) => {
+    try {
+      if (status === 'Cancelled' || status === 'Processing' ) {
+        return; // Disable the button if the order is already cancelled
+      }
+  
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to update the order status!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, update it!',
+        cancelButtonText: 'No, keep it'
+      });
+  
+      if (result.isConfirmed) {
+        await axiosInstance.patch(`/api/v1/orders/${id}`, { status: 'Processing' });
+        setOrderData((prevOrders) =>
+          prevOrders.map((order) => {
+            if (order._id === id) {
+              return { ...order, status: 'Processing' };
+            }
+            return order;
+          })
+        );
+        Swal.fire('Updated!', 'The order status has been updated to processing.', 'success');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const updateOrderStatus = (id, newStatus) => {
     // Update request status in the API
-    axios.patch(`http://localhost:5000/order/${orderId}`, { status: newStatus })
+    axiosInstance.patch(`/api/v1/orders/${id}`, { status: newStatus })
       .then(() => {
         // Update the requests state with the updated status
         const updatedOrders = orderdata.map((order) => {
-          if (order.id === orderId) {
+          if (order._id === id) {
             return { ...order, status: newStatus };
           }
           return order;
@@ -71,9 +112,9 @@ const Orders = () => {
       });
   };
 
-  const handleStatusChange = (orderId, event) => {
+  const handleStatusChange = (id, event) => {
     const newStatus = event.target.value;
-    updateOrderStatus(orderId, newStatus);
+    updateOrderStatus(id, newStatus);
   };
 
   const getProductNames = (order) => {
@@ -98,24 +139,38 @@ const Orders = () => {
         }
         tableContent={
           orderdata.map((order, index) => (
-            <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>{order.status_history.length > 0 && (
+            <tr key={order._id}>
+              <td>{order._id}</td>
+              <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              {/* <td>{order.status_history.length > 0 && (
   <p>
     Last Updated: {new Date(order.status_history[order.status_history.length - 1].date).toLocaleDateString()}
   </p>
-)}</td>
-              <td>{order.products.reduce((acc, product) => acc + product.quantity, 0)}</td>
+)}</td> */}
+              {/* <td>{order.products.reduce((acc, product) => acc + product.quantity, 0)}</td>
               <td>{order.total_price}</td>
               
                 
-                <td>{getProductNames(order)}</td>
+                <td>{getProductNames(order)}</td> */}
             
               <td>{order.status}</td>
               <td>
-              <Btn  name="btn-danger btn fa fa-ban"  onClick={() => handleCancelOrder(order.id)}/>  
-                    <Link to={`/admin/OrderDetails/${order.id}`}>
-                        <Btn name="btn-primary btn fa fa-circle-info" />
+              <Btn
+                className="btn-danger btn fa fa-ban"
+                onClick={() => handleCancelOrder(order._id ,order.status)}
+                disabled={order.status === 'Processing' || order.status === 'Completed'}
+              />
+              <Btn 
+                onClick={() => confirmOrder(order._id, order.status)}
+                disabled={order.status === 'Cancelled' || order.status === 'Completed'}
+                className="btn-success btn fa fa-circle-check"
+              />
+  
+              <Link to={`/admin/OrderDetails/${order._id}`}>
+                <Btn className="btn-primary btn fa fa-circle-info" />
                     </Link>
               </td>
             </tr>

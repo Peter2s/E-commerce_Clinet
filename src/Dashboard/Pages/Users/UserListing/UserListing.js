@@ -12,7 +12,8 @@ const Users = () => {
 
   useEffect(() => {
     fetchContactUsData();
-  });
+    
+  },[]);
 
   const fetchContactUsData = async () => {
     await axiosInstance
@@ -39,7 +40,7 @@ const Users = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await axios.delete(`http://localhost:8000/user/${id}`);
+        const response = await axiosInstance.delete(`/api/v1/users/${id}`);
         setUserData((prevUser) =>prevUser.filter((user) => user.id !== id));
         console.log(response.data);
         Swal.fire('Deleted!', 'The role has been deleted.', 'success');
@@ -50,7 +51,7 @@ const Users = () => {
   };
   const handleActivate = async (userId) => {
     await axiosInstance
-    .get(`/api/v1/users/${userId}/activate`)
+    .post(`/api/v1/users/${userId}/activate`)
       .then((res) => {
         // Update the user data
         setUserData(prevData => {
@@ -70,7 +71,7 @@ const Users = () => {
 
   const handleDeactivate = async (userId) => {
     await axiosInstance
-    .get(`/api/v1/users/${userId}/deactivate`)
+    .post(`/api/v1/users/${userId}/deactivate`)
       .then((res) => {
         // Update the user data
         setUserData(prevData => {

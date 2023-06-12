@@ -20,18 +20,6 @@
         {
           "status": "pending",
           "date": "2023-05-26T14:00:00.000Z"
-        },
-        {
-          "status": "completed",
-          "date": "2023-06-06T21:33:11.861Z"
-        },
-        {
-          "status": "completed",
-          "date": "2023-06-06T21:33:48.045Z"
-        },
-        {
-          "status": "completed",
-          "date": "2023-06-06T21:33:49.270Z"
         }
       ],
       "address": {
@@ -43,7 +31,7 @@
       "payment_method": "credit card",
       "payment_status": "completed",
       "payment_id": "9876543210",
-      "status": "completed"
+      "status": "cancelled"
     },
     {
       "id": "6",
