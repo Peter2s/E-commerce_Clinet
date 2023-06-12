@@ -65,12 +65,24 @@ const AddProduct = () => {
                 price: values.price,
                 quantity: values.quantity,
             };
-            console.log(productData.images);
+            const formData = new FormData();
+
+            formData.append('name_en', productData.name_en);
+            formData.append('name_ar', productData.name_ar);
+            formData.append('image', productData.image[0]);
+            formData.append('images[]', productData.images);
+            formData.append('category_id', productData.category_id);
+            formData.append('desc_en', productData.desc_en);
+            formData.append('desc_ar', productData.desc_ar);
+            formData.append('price', productData.price);
+            formData.append('quantity', productData.quantity);
+            console.log(formData.images);
             axiosInstance
-                .post(ProductsURL, productData, {
+                .post(ProductsURL, formData, {
                     headers: {
-                        headers: {"Content-Type": "multipart/form-data"},
-                    }
+                        "Content-Type": "multipart/form-data"
+                    },
+
                 })
                 .then((res) => {
                     alert("Saved successfully.");
@@ -122,7 +134,7 @@ const AddProduct = () => {
 
                         <div className="row">
                             <div className="offset-lg-3 col-lg-6">
-                                <form className="container mt-2" onSubmit={formik.handleSubmit}>
+                                <form className="container mt-2" onSubmit={formik.handleSubmit} a>
                                     <FormGroup>
                                         <FormLabel>Name</FormLabel>
                                         <Input
