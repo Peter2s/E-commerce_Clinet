@@ -1,20 +1,3 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.2.3
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 
 // reactstrap components
 import {
@@ -70,6 +53,7 @@ const handelSubmit = async (e)=>
     console.log(response?.data.data.user)
     const authUser = response?.data.data.user;
     const accessToken =  response?.data.data.token;
+    localStorage.setItem("token", accessToken);
     setAuthUser(authUser);
     setUserToken(accessToken);
     setuser('');
@@ -143,8 +127,7 @@ const handelSubmit = async (e)=>
                 </InputGroup>
               </FormGroup>
               <div className="text-center">
-                <Btn name="btn btn-info" type="submit" title=" Sign in "/>
-                   
+                <Btn className="btn btn-info" type="submit" title=" Sign in "/>
               </div>
             </Form>
           </CardBody>

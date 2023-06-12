@@ -18,7 +18,7 @@ import EmpDetails from "Dashboard/Pages/Employees/EmpDetail/EmpDetail.js";
 import OrderDetail from "Dashboard/Pages/Orders/OrderDetails/OrderDetails.js";
 import EditRole from "Dashboard/Pages/Roles/EditRole/EditRole.js";
 import AboutUS from "Dashboard/Pages/AboutUs/ShowAboutUs/ShowAboutUs.js";
-import ContactUs from "./Dashboard/Pages/ContactUs/ShowContactUs/ShowContactUs.js";
+import ContactUs from "Dashboard/Pages/ContactUs/ShowContactUs/ShowContactUs.js";
 import AddProduct from "Dashboard/Pages/Products/Product-add/AddProduct.js";
 import AddCategory from "Dashboard/Pages/Categories/AddCategory/AddCategory.js";
 import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword.js";
@@ -158,6 +158,7 @@ var routes = [
     name: "Contact us",
     icon: "fa fa-info text-blue",
     component: <ContactUs />,
+    layout: "/admin",
   },
   {
     path: "/employees",
@@ -189,7 +190,7 @@ var routes = [
   },
   {
     path: "/auth",
-    name: "Login",
+    name: "New",
     icon: "ni ni-key-25 text-info",
     component: <Login />,
     layout: "/auth",

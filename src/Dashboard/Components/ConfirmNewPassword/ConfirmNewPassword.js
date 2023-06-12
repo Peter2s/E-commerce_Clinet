@@ -112,7 +112,7 @@ const ConfirmNewPassword = () => {
               ) : (
                 <>
                   {errorMsg && <p>{errorMsg}</p>}
-                  <Btn name="btn btn-info" title="Confirm Password" type="submit" />
+                  <Btn className="btn btn-info" title="Confirm Password" type="submit" />
                 </>
               )}
             </div>

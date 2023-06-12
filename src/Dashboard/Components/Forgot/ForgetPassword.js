@@ -76,7 +76,7 @@ const ForgetPssword = () => {
               ) : (
                 <>
                   {errorMsg && <p>{errorMsg}</p>}
-                  <Btn name="btn btn-info" title="Reset Password" type="submit" />
+                  <Btn className="btn btn-info" title="Reset Password" type="submit" />
                 </>
               )}
             </div>

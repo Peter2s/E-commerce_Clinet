@@ -18,6 +18,7 @@
 /*eslint-disable*/
 
 // reactstrap components
+import { Link } from "react-router-dom";
 import { Container, Row, Col, Nav, NavItem, NavLink } from "reactstrap";
 
 const Footer = () => {
@@ -33,7 +34,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               target="_blank"
             >
-              Creative Tim
+              <Link to="/home">Go to website</Link>
             </a>
           </div>
         </Col>

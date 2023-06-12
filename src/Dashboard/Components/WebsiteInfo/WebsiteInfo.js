@@ -8,6 +8,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import MySwal from 'sweetalert2';
 import { axiosInstance } from "../../../Axios";
+import { CloudinaryContext, Image } from "cloudinary-react";
+import { cloudinaryConfig } from "../../../cloudinaryConfig";
 
 const WebsiteInfo = () => {
   const [webInfo, setWebInfo] = useState({});
@@ -21,6 +23,7 @@ const WebsiteInfo = () => {
   const [bannersData, setBannersData] = useState(
     webInfo.banners || []
   );
+  const cloudName = "dcjzco86z";
 
   useEffect(() => {
     fetchTermsAndConditionsData();
@@ -44,17 +47,17 @@ const WebsiteInfo = () => {
     });
   };
 
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   const reader = new FileReader();
-  //   reader.onloadend = () => {
-  //     setWebInfo({ ...webInfo, logo: file.name });
-  //     reader.readAsDataURL(file);
-  //   };
-  //   if (file) {
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setWebInfo({ ...webInfo, logo: file.name });
+      reader.readAsDataURL(file);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
   
 
   const handleEditClick = () => {
@@ -91,18 +94,40 @@ const WebsiteInfo = () => {
     setSocialMediaData(updatedSocialMediaData);
   };
 
-  const handleBannersChange = (e, index, field) => {
+  const handleBannersChange = async (e, index, field) => {
     const updatedBannersData = [...bannersData];
-    updatedBannersData[index][field] = e.target.value;
-    setBannersData(updatedBannersData);
+  
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "bannersImages");
+  
+      try {
+        const response = await axios.post(
+          `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
+          formData
+        );
+  
+        const imageURL = response.data.secure_url;
+        updatedBannersData[index][field] = imageURL;
+        setBannersData(updatedBannersData);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      updatedBannersData[index][field] = e.target.value;
+      setBannersData(updatedBannersData);
+    }
   };
-
+  
   const handleAddBanners = (e) => {
     e.preventDefault();
     setAddOper(true);
     const newBanners = {
       image: "",
       link: "",
+      alt:""
     };
     setBannersData([...bannersData, newBanners]);
   };
@@ -143,8 +168,8 @@ const WebsiteInfo = () => {
         banners: bannersData,
       };
   
-      const response = await axios.patch(
-        "http://e-commerce.nader-mo.tech/settings",
+      await axiosInstance.patch(
+        "/settings",
         updatedData
       );
   
@@ -195,9 +220,9 @@ const WebsiteInfo = () => {
                       <input
                         className="form-control w-25"
                         type="file"
-                        // accept="image/*"
+                        accept="image/*"
                         name="logo"
-                        // onChange={handleFileChange}
+                        onChange={handleFileChange}
                       />
                       {webInfo.logo && (
                         <img src={webInfo.logo} className="w-25" alt="logo" />
@@ -284,7 +309,7 @@ const WebsiteInfo = () => {
                           <a href={banner.link}>
                             <img
                               src={banner.image}
-                              alt="banner"
+                              alt={banner.alt}
                               className="w-75"
                               style={{height: "160px"}}
                             />
@@ -309,9 +334,7 @@ const WebsiteInfo = () => {
                         <Input
                           className="form-control w-25 mr-2"
                           type="file"
-                          onChange={(e) =>
-                            handleBannersChange(e, index, "image")
-                          }
+                          onChange={(e) => handleBannersChange(e, index, "image")}
                           placeholder="image"
                         />
                         <Input
@@ -322,6 +345,15 @@ const WebsiteInfo = () => {
                             handleBannersChange(e, index, "link")
                           }
                           placeholder="link"
+                        />
+                         <Input
+                          className="form-control w-25"
+                          type="text"
+                          value={item.alt}
+                          onChange={(e) =>
+                            handleBannersChange(e, index, "alt")
+                          }
+                          placeholder="alt"
                         />
                           <i
                             className="fa fa-minus-circle fa-2x text-danger mt-2 ml-2"
@@ -350,7 +382,7 @@ const WebsiteInfo = () => {
                         <></>
                       ) : (
                         <>
-                          <div className={"fa-brands fa-" + item.name}></div>
+                          <div className={"fa-brands fa-" + (item.name || "facebook")}></div>
                           <b> {item.name}: </b> &nbsp;
                           <span>{item.url}</span>
                         </>

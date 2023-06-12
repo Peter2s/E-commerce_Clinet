@@ -1,43 +1,53 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import { axiosInstance } from '../../../../Axios';
 import Btn from 'Dashboard/SharedUI/Btn/Btn';
 import Tables from './../../../SharedUI/Table/Tables';
 import { Link } from 'react-router-dom';
+import './ListRoles.css';
+import PaginationAdmin from './../../../SharedUI/PaginationAdmin/PaginationAdmin';
 
 const Roles = () => {
   const [roles, setRoles] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rolesPerPage, setRolesPerPage] = useState(5);
-  const [totalPages, setTotalPages] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+  });
 
   useEffect(() => {
-    fetchRolesData(currentPage);
-  }, [currentPage]);
+    fetchRolesData();
+  }, []);
 
-  const fetchRolesData = async (page) => {
+  const fetchRolesData = async (page = 1) => {
     try {
       const response = await axiosInstance.get(`/api/v1/roles?page=${page}`);
-      setRoles(response.data.data);
-      setTotalPages(response.data.paginationResult.totalPages);
+      const { data, pagination } = response.data;
+      setRoles(data);
+      setPagination({
+        currentPage: pagination.current_page,
+        totalPages: pagination.total_pages,
+      });
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
   };
-  
+
   const handleDeactivate = async (id) => {
     try {
-      const response = await axios.patch(`http://localhost:8000/roles/${id}`, {
-        is_active: false
-      });
+      const response = await axios.patch(
+        `http://localhost:8000/roles/${id}`,
+        {
+          is_active: false,
+        }
+      );
       setRoles((prevRoles) =>
         prevRoles.map((role) => {
           if (role.id === id) {
             return {
               ...role,
-              is_active: false
+              is_active: false,
             };
           }
           return role;
@@ -51,15 +61,18 @@ const Roles = () => {
 
   const handleActivate = async (id) => {
     try {
-      const response = await axios.patch(`http://localhost:8000/roles/${id}`, {
-        is_active: true
-      });
+      const response = await axios.patch(
+        `http://localhost:8000/roles/${id}`,
+        {
+          is_active: true,
+        }
+      );
       setRoles((prevRoles) =>
         prevRoles.map((role) => {
           if (role.id === id) {
             return {
               ...role,
-              is_active: true
+              is_active: true,
             };
           }
           return role;
@@ -71,19 +84,6 @@ const Roles = () => {
     }
   };
 
-   // Change the current page
-   const paginate = (pageNumber) => {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      setCurrentPage(pageNumber);
-    }
-  };
-
-  const indexOfLastRole = currentPage * rolesPerPage;
-  const indexOfFirstRole = indexOfLastRole - rolesPerPage;
-  console.log(roles);
-  const currentRoles = roles.slice(indexOfFirstRole, indexOfLastRole);
-
-  
   const handleButtonClick = (idRole) => {
     window.location.href = `/admin/roles/edit/${idRole}`;
   };
@@ -98,13 +98,12 @@ const Roles = () => {
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel'
+        cancelButtonText: 'Cancel',
       });
 
       if (result.isConfirmed) {
-        const response = await axiosInstance.delete(`/api/v1/roles/${id}`);
-        setRoles((prevRoles) => prevRoles.filter((role) => role.id !== id));
-        console.log(response.data.data);
+        await axiosInstance.delete(`/api/v1/roles/${id}`);
+        setRoles((prevRoles) => prevRoles.filter((role) => role._id !== id));
         Swal.fire('Deleted!', 'The role has been deleted.', 'success');
       }
     } catch (error) {
@@ -112,29 +111,31 @@ const Roles = () => {
     }
   };
 
+  const handlePageChange = (page) => {
+    fetchRolesData(page);
+  };
+
   return (
     <>
-<Tables
-         btn={<>
-          <Link to="/admin/roles/create" className='d-flex'>
-                          <Btn
-                            className="btn btn-primary ml-auto"
-                            title="Add Role"
-                          />
-                        </Link>
-          </>}
+      <Tables
+        btn={
+          <>
+            <Link to="/admin/roles/create" className="d-flex">
+              <Btn className="btn btn-primary ml-auto" title="Add Role" />
+            </Link>
+          </>
+        }
         title="Roles Table"
         trContent={
           <>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Permissions</th>
-                <th scope="col">Actions</th>
-            
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Permissions</th>
+            <th scope="col">Actions</th>
           </>
         }
         tableContent={
-          currentRoles.map((role) => (
+          roles.map((role) => (
             <tr key={role._id}>
               <td>{role._id}</td>
               <td>{role.name}</td>
@@ -171,44 +172,15 @@ const Roles = () => {
                 )}
               </td>
             </tr>
-          ))}
-          pagination={
-            <>
-              {/* Pagination */}
-              <ul className="pagination">
-              {currentPage > 1 && (
-                <li className="page-item">
-                  <button
-                    className="page-link"
-                    onClick={() => paginate(currentPage - 1)}
-                  >
-                    Previous
-                  </button>
-                </li>
-              )}
-              {Array.from({ length: totalPages }).map((_, index) => (
-                <li key={index + 1} className="page-item">
-                  <button
-                    className={`page-link ${currentPage === index + 1 ? 'active' : ''}`}
-                    onClick={() => paginate(index + 1)}
-                  >
-                    {index + 1}
-                  </button>
-                </li>
-              ))}
-              {currentPage < totalPages && (
-                <li className="page-item">
-                  <button
-                    className="page-link"
-                    onClick={() => paginate(currentPage + 1)}
-                  >
-                    Next
-                  </button>
-                </li>
-              )}
-            </ul>
-            </>
-          }
+          ))
+        }
+        pagination={
+          <PaginationAdmin
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={handlePageChange}
+          />
+        }
       />
     </>
   );
