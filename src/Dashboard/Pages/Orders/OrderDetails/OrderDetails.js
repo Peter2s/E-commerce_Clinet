@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardBody, CardFooter, Container, Col, Row, Navbar } from "reactstrap";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+
 import "../OrderDetails/OrderDetails";
 import Btn from "Dashboard/SharedUI/Btn/Btn";
+import { axiosInstance } from '../../../../Axios';
 
 const OrderDetail = () => {
   const { id } = useParams();
@@ -14,19 +15,20 @@ const OrderDetail = () => {
   const handleUpdatePaymentStatus =  () => {
     try {
       // Make an API call to update the payment status
-     axios.patch(`http://localhost:5000/order/${orderdata.id}`, { payment_status: 'completed' });
-      setPaymentStatus('completed');
+      axiosInstance.patch(`/api/v1/orders/${orderdata.id}`, { payment_status: 'Completed' });
+      setPaymentStatus('Completed');
     } catch (error) {
       console.log(error);
     }
   };
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/order/${id}`)
+    axiosInstance
+      .get(`/api/v1/orders/${id}`)
       .then((res) => {
-        setOrderData(res.data);
-        fetchProductData(res.data.products);
-        const updatedOrderData = res.data;
+        console.log(res.data);
+        setOrderData(res.data.data);
+        fetchProductData(res.data.data.products);
+        const updatedOrderData = res.data.data;
         setPaymentStatus(updatedOrderData.payment_status);
         
       })
@@ -38,8 +40,9 @@ const OrderDetail = () => {
 
   const fetchProductData = async (products) => {
     const productId = products.map((product) => product.id);
-    const productResponse = await axios.get("http://localhost:5000/products");
-    const productDataWithImage = productResponse.data.map((product) => {
+    const productResponse = await axiosInstance.get("/api/v1/products");
+    console.log(productResponse.data); // Add this line to check the structure of the response
+    const productDataWithImage = productResponse.data.data.map((product) => {
       if (productId.includes(product.id)) {
         const productImage = product.images[0] || "";
         return { ...product, image: productImage };
@@ -48,7 +51,7 @@ const OrderDetail = () => {
     });
     setProductData(productDataWithImage);
   };
-
+  
   const getProductImageById = (productId) => {
     const product = productData.find((product) => product.id === productId);
     return product ? product.image : "";
@@ -77,10 +80,10 @@ const OrderDetail = () => {
                   <h1 className="mb-0">Order Details</h1>
                   <div className="d-flex justify-content-around">
                     <h3>
-                      Order ID: <b>{orderdata.id}</b>
+                      Order ID: <b>{orderdata._id}</b>
                     </h3>
                     <h3>
-                      User ID: <b>{orderdata.user_id}</b>
+                      User ID: <b>{orderdata.user}</b>
                     </h3>
                   </div>
                 </CardHeader>
@@ -128,10 +131,10 @@ const OrderDetail = () => {
                                   <h4>
                                     Payment Id: <b>{orderdata.payment_id}</b>
                                   </h4>
-                                  <h4>Payment Status :  {paymentStatus === 'pending' ? (
+                                  <h4>Payment Status :  {paymentStatus === 'Pending' ? (
                                     <button
                                       className="btn btn-warning"
-                                      disabled={paymentStatus === 'completed'}
+                                      disabled={paymentStatus === 'Completed'}
                                       onClick={handleUpdatePaymentStatus}
                                     >
                                       {paymentStatus}

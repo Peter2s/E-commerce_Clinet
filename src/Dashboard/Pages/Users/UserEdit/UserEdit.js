@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import MySwal from "sweetalert2";
 import Btn from "Dashboard/SharedUI/Btn/Btn";
 import Input from "Dashboard/SharedUI/Input/Input";
+import { axiosInstance } from '../../../../Axios';
 
 const UserEdit = () => {
   const navigate = useNavigate();
@@ -14,11 +15,13 @@ const UserEdit = () => {
 
   useEffect(() => {
     // Fetch the user data based on the ID and populate the form fields
-    axios
-      .get(`http://localhost:8000/user/${id}`)
+    axiosInstance
+      .get(`/api/v1/users/${id}`)
       .then((res) => {
-        const userData = res.data;
+        const userData = res.data.data;
+        console.log(userData);
         formik.setValues(userData);
+        
       })
       .catch((err) => {
         console.log(err.message);
@@ -42,7 +45,7 @@ const UserEdit = () => {
     validationSchema: Yup.object({
       name: Yup.string().matches(/^[a-zA-Z\s]*$/, "Invalid name format").required("Enter the name"),
       email: Yup.string().email("Invalid email address").required("Enter the email"),
-      phone: Yup.string().matches(/^[0-9]{10}$/, "Invalid phone number").required("Enter the phone number"),
+      phone: Yup.string().matches(/^[0-9]{11}$/, "Invalid phone number").required("Enter the phone number"),
       password: Yup.string()
         .min(8, "Password must be at least 8 characters")
         .max(20, "Password must be less than 20 characters")
@@ -51,7 +54,7 @@ const UserEdit = () => {
       image: Yup.mixed()
         .test("fileFormat", "Unsupported file format", (value) => {
           if (value) {
-            const supportedFormats = ["image/png", "image/jpg", "image/jpeg"];
+            const supportedFormats = ["image/png", "image/jpg", "image/jpeg","image/PNG"];
             return supportedFormats.includes(value.type);
           }
           return true; // Allow empty field
@@ -77,8 +80,8 @@ const UserEdit = () => {
         active: values.active,
       };
 
-      axios
-        .put(`http://localhost:8000/user/${id}`, userData, {
+      axiosInstance
+        .patch(`/api/v1/users/${id}`, userData, {
           headers: {
             "Content-Type": "application/json",
           },
