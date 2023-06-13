@@ -2,14 +2,14 @@ import Index from "./Dashboard/Pages/HomePage/Index.js";
 import Profile from "./Dashboard/Pages/Profile/Profile.js";
 import Login from "./Dashboard/Pages/Login/Login.js";
 import Orders from "./Dashboard/Pages/Orders/OrderList/OrderList.js";
-import Products from './Dashboard/Pages/Products/Product-list/Products.js';
-import Categories from './Dashboard/Pages/Categories/Categories/Categories.js';
-import ListRoles from './Dashboard/Pages/Roles/ListRoles/ListRoles.js';
-import CreateRole from './Dashboard/Pages/Roles/CreateRole/CreateRole.js';
-import Setting from './Dashboard/Pages/Setting/Setting.js';
-import Users from './Dashboard/Pages/Users/UserListing/UserListing.js';
-import UserCreate from './Dashboard/Pages/Users/UserCreate/UserCreate.js';
-import UserEdit from './Dashboard/Pages/Users/UserEdit/UserEdit.js';
+import Products from "./Dashboard/Pages/Products/Product-list/Products.js";
+import Categories from "./Dashboard/Pages/Categories/Categories/Categories.js";
+import ListRoles from "./Dashboard/Pages/Roles/ListRoles/ListRoles.js";
+import CreateRole from "./Dashboard/Pages/Roles/CreateRole/CreateRole.js";
+import Setting from "./Dashboard/Pages/Setting/Setting.js";
+import Users from "./Dashboard/Pages/Users/UserListing/UserListing.js";
+import UserCreate from "./Dashboard/Pages/Users/UserCreate/UserCreate.js";
+import UserEdit from "./Dashboard/Pages/Users/UserEdit/UserEdit.js";
 import UserDetail from "Dashboard/Pages/Users/UserDetails/UserDetails.js";
 import Emps from "Dashboard/Pages/Employees/EmpListing/EmpListing.js";
 import EmpCreate from "Dashboard/Pages/Employees/EmpCreate/EmpCreate.js";
@@ -24,7 +24,7 @@ import AddCategory from "Dashboard/Pages/Categories/AddCategory/AddCategory.js";
 import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword.js";
 import ConfirmNewPassword from "Dashboard/Components/ConfirmNewPassword/ConfirmNewPassword.js";
 import UpdateCategory from "Dashboard/Pages/Categories/updateCategory/UpdateCategory.js";
-import UPdateProduct from "Dashboard/Pages/Products/Product-edit/Product-edit.js";
+import UpdateProduct from "Dashboard/Pages/Products/Product-edit/Product-edit.js";
 
 var routes = [
   {
@@ -63,7 +63,7 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/editcategory",
+    path: "/editcategory/:id",
     name: "New",
     icon: "ni ni-bullet-list-67 text-blue",
     component: <UpdateCategory />,
@@ -80,14 +80,14 @@ var routes = [
     path: "/addProducts",
     name: "New",
     icon: "ni ni-bullet-list-67 text-blue",
-    component: <AddProduct/>,
+    component: <AddProduct />,
     layout: "/admin",
   },
   {
-    path: "/edit-product",
+    path: "/edit-product/:id",
     name: "New",
     icon: "ni ni-bullet-list-67 text-blue",
-    component: <UPdateProduct/>,
+    component: <UpdateProduct />,
     layout: "/admin",
   },
   {
@@ -101,21 +101,21 @@ var routes = [
     path: "/users/create",
     name: "New",
     icon: "fa fa-users text-blue",
-    component: <UserCreate/>,
+    component: <UserCreate />,
     layout: "/admin",
   },
   {
     path: "/UserEdit/:id",
     name: "New",
     icon: "fa fa-users text-blue",
-    component: <UserEdit/>,
+    component: <UserEdit />,
     layout: "/admin",
   },
   {
     path: "/UserDetail/:id",
     name: "New",
     icon: "fa fa-users text-blue",
-    component: <UserDetail/>,
+    component: <UserDetail />,
     layout: "/admin",
   },
   {
@@ -171,21 +171,21 @@ var routes = [
     path: "/employees/create",
     name: "New",
     icon: "fa fa-users text-blue",
-    component: <EmpCreate/>,
+    component: <EmpCreate />,
     layout: "/admin",
   },
   {
     path: "/EmpEdit/:id",
     name: "New",
     icon: "fa fa-users text-blue",
-    component: <EmpEdit/>,
+    component: <EmpEdit />,
     layout: "/admin",
   },
   {
     path: "/EmpDetails/:id",
     name: "New",
     icon: "fa fa-users text-blue",
-    component: <EmpDetails/>,
+    component: <EmpDetails />,
     layout: "/admin",
   },
   {
@@ -198,7 +198,7 @@ var routes = [
   {
     path: "/OrderDetails/:id",
     name: "New",
-		component: <OrderDetail/>,
+    component: <OrderDetail />,
     layout: "/admin",
   },
   {
@@ -214,6 +214,6 @@ var routes = [
     icon: "ni ni-key-25 text-info",
     component: <ConfirmNewPassword />,
     layout: "/auth",
-  }
+  },
 ];
 export default routes;

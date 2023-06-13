@@ -1,154 +1,131 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import Input from "Dashboard/SharedUI/Input/Input";
-import Btn from "Dashboard/SharedUI/Btn/Btn";
-import { FormGroup } from "reactstrap";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { axiosInstance } from "../../../../Axios";
+import { ProductsForm } from "../Products-form/ProductsForm";
+import { useFormik } from "formik";
+import MySwal from "sweetalert2";
+import { initValues, validation } from "../Products-form/validation";
 
-const UPdateProduct = ({ productID }) => {
-    const [id, setId] = useState(productID);
-  const [name_en, setName_en] = useState("");
-  const [name_ar, setName_ar] = useState("");
-  const [file, setFile] = useState(null);
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [validation, setValidation] = useState(false);
-
+const UpdateProduct = () => {
+  const [categories, setCategories] = useState(null);
+  const [product, setProduct] = useState({});
+  const productID = useParams().id;
   const navigate = useNavigate();
+
+  const ProductsURL = "api/v1/products";
+  const CategoriesURL = "api/v1/categories";
+
+  const formik = useFormik({
+    initialValues: initValues,
+    validationSchema: validation,
+    onSubmit: (values) => {
+      const productData = new FormData();
+
+      productData.append("name_en", values.name_en);
+      productData.append("name_ar", values.name_ar);
+      productData.append("image", values.image[0]);
+      values.images.forEach((image) => {
+        productData.append("images", image);
+      });
+      productData.append("category_id", values.category);
+      productData.append("desc_en", values.descriptionEn);
+      productData.append("desc_ar", values.descriptionAr);
+      productData.append("price", values.price);
+      productData.append("quantity", values.quantity);
+      console.log(productData);
+      axiosInstance
+        .patch(`${ProductsURL}/${productID}`, productData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          MySwal.fire({
+            icon: "success",
+            title: "success!",
+            text: "product created successfully",
+          });
+          navigate("/admin/products");
+        })
+        .catch((err) => {
+          console.log(err.response.data.error);
+          MySwal.fire({
+            icon: "error",
+            title: "error!",
+            text: err.response.data.error,
+          });
+        });
+    },
+  });
+  const handleImageFile = (event) => {
+    formik.values.image = Array.from(event.target.files);
+    console.log(formik.values.image);
+  };
+  const handleFileChange = (event) => {
+    formik.values.images = Array.from(event.target.files);
+    console.log(formik.values.images);
+  };
 
   useEffect(() => {
     // Fetch the product data based on the categoryId
     const fetchProduct = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8000/categories/${id}`
-        );
-        const productData = response.data;
-        // Update the state with the retrieved product data
-        setName_en(productData.name_en);
-        setName_ar(productData.name_ar);       
-        setFile(productData.file);
-        setCategory(productData.category);
-        setDescription(productData.description);
-        setPrice(productData.price);
-        setQuantity(productData.quantity);
-      } catch (error) {
-        console.log(error.message);
-      }
+      axiosInstance
+        .get(`${ProductsURL}/${productID}`)
+        .then((response) => {
+          console.log(response.data.data);
+          setProduct(response.data.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+    const fetchCategories = async () => {
+      axiosInstance
+        .get(CategoriesURL)
+        .then((response) => {
+          setCategories(response.data.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     };
 
     // Fetch the category data only if categoryId is provided
     if (productID) {
-        fetchProduct();
+      fetchProduct();
+      fetchCategories();
     }
-  }, [productID, id]);
+  }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Create a new form data object
-    const newProduct = new FormData();
-    newProduct.append("id", id);
-    newProduct.append("name_en", name_en);
-    newProduct.append("name_ar", name_ar);
-    newProduct.append("image", file);
-
-    
-    // const image=file
-    // const catData = { id, name_en, name_ar, image };
-
-    axios
-      .post(`http://localhost:8000/categories/${id}`, newProduct, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        alert("Saved successfully.");
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  };
+  useEffect(() => {
+    formik.setFieldValue("name_en", product.name_en);
+    formik.setFieldValue("name_ar", product.name_ar);
+    formik.setFieldValue("descriptionEn", product.desc_en);
+    formik.setFieldValue("descriptionAr", product.desc_ar);
+    formik.setFieldValue("category", product.category_id?._id);
+    formik.setFieldValue("price", product.price?.$numberDecimal);
+    formik.setFieldValue("quantity", product.quantity);
+    formik.setFieldValue("image", product.image);
+    formik.setFieldValue("images", product.images);
+  }, [product]);
 
   return (
     <div>
       <div className="row">
         <div className="offset-lg-3 col-lg-6">
-          <form className="container" onSubmit={handleSubmit}>
-            <div className="card" style={{ textAlign: "left" }}>
-              <div className="card-title">
-                <h2>Update Product</h2>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label>Name</label>
-                      <Input
-                        required
-                        value={name_en}
-                        onChange={(e) => setName_en(e.target.value)}
-                        className="form-control"
-                      ></Input>
-                      {name_en.length === 0 && validation && (
-                        <span className="text-danger">Enter the name</span>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label>الاسم</label>
-                      <Input
-                        value={name_ar}
-                        onChange={(e) => setName_ar(e.target.value)}
-                        className="form-control"
-                      ></Input>
-                    </div>
-                  </div>
-                  <div className="col-lg-12">
-                  <FormGroup>
-                  <label for="image">
-                     Upload image
-                  </label><br/>
-                <Input
-                  name="image"
-                 type="file"
-                  />
-                  </FormGroup>
-                  </div>
-
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label>Category</label>
-                      <Input
-                        required
-                        value={category}
-                        onChange={(e) => setName_en(e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                    <Btn  type="submit" title="Save" className="btn btn-success"/> 
-                      <Link to="/" className="btn btn-danger">
-                        Back
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
+          {product && categories && (
+            <ProductsForm
+              formik={formik}
+              handleImageFile={handleImageFile}
+              handleFileChange={handleFileChange}
+              categories={categories}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default UPdateProduct;
+export default UpdateProduct;
