@@ -7,9 +7,8 @@ import { useEffect } from "react";
 export const HomeCategories = () => {
   const [categories, loading] = HomeCategoriesHook();
   useEffect(() => {
-    // Handle category data after it has been fetched
     if (categories.length > 0) {
-      console.log("useeffect", categories, loading); // Or perform any other operations with the categories data
+      console.log("useeffect", categories, loading);
     }
   }, [categories]);
 
@@ -24,10 +23,10 @@ export const HomeCategories = () => {
         <Row className="my-2 d-flex justify-content-between">
           {loading === false ? (
             categories ? (
-              categories.slice(0, 5).map((item, index) => {
+              categories.slice(0, 5).map((item) => {
                 return (
                   <CategoryCard
-                    key={index}
+                    key={item._id}
                     id={item._id}
                     title={item.name_ar}
                     img={item.image}
