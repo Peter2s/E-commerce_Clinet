@@ -1,0 +1,47 @@
+import { HomeCategoriesHook } from "../../hook/Categories/HomeCategoriesHook";
+import { Container, Row, Spinner } from "reactstrap";
+import { CategoryCard } from "../../Pages/Categories/CategoryCard";
+import { SubTiltle } from "../Uitily/SubTiltle";
+import { useEffect } from "react";
+
+export const HomeCategories = () => {
+  const [categories, loading] = HomeCategoriesHook();
+  useEffect(() => {
+    // Handle category data after it has been fetched
+    if (categories.length > 0) {
+      console.log("useeffect", categories, loading); // Or perform any other operations with the categories data
+    }
+  }, [categories]);
+
+  return (
+    <>
+      <Container>
+        <SubTiltle
+          title="التصنيفات"
+          btntitle="المزيد"
+          pathText="/allcategory"
+        />
+        <Row className="my-2 d-flex justify-content-between">
+          {loading === false ? (
+            categories ? (
+              categories.slice(0, 5).map((item, index) => {
+                return (
+                  <CategoryCard
+                    key={index}
+                    id={item._id}
+                    title={item.name_ar}
+                    img={item.image}
+                  />
+                );
+              })
+            ) : (
+              <h4>لا يوجد تصنيفات</h4>
+            )
+          ) : (
+            <Spinner animation="border" variant="primary" />
+          )}
+        </Row>
+      </Container>
+    </>
+  );
+};
