@@ -5,7 +5,6 @@ import { axiosInstance } from "Axios.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Btn from "../../../SharedUI/Btn/Btn";
-import Swal from "sweetalert2";
 import MySwal from "sweetalert2";
 import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 
@@ -41,7 +40,7 @@ const Categories = () => {
   };
 
   const handleDeleteCategory = (id, name) => {
-    Swal.fire({
+    MySwal.fire({
       title: "Are you sure?",
       text: `You want delete ${name} category!`,
       icon: "warning",
@@ -60,7 +59,6 @@ const Categories = () => {
     axiosInstance
       .delete(`${CategoriesURL}/${id}`)
       .then((response) => {
-        // Update the component's state or perform any other necessary actions
         setCategories(categories.filter((category) => category.id !== id));
         MySwal.fire({
           icon: "success",
@@ -79,7 +77,7 @@ const Categories = () => {
   };
 
   const handleEditCategory = (id) => {
-    navigate("/admin/editcategory");
+    navigate(`/admin/editcategory/${id}`);
   };
   const handlePageChange = (page) => {
     fetchCategories(page);
