@@ -17,7 +17,7 @@ export const LatestProduct = ({ title, btntitle, pathText }) => {
         {products ? (
           <SubTiltle title={title} btntitle={btntitle} pathText={pathText} />
         ) : null}
-        <Row className="my-2 d-flex justify-content-between">
+        <Row className="d-flex justify-content-between">
           {products
             ? products.map((item, index) => (
                 <ProductsCard key={index} item={item} />
