@@ -10,6 +10,9 @@ const NavBar = () => {
         <nav id="navBar">
         <ul>
           <li>
+            <img src="" alt="logo" />
+          </li>
+          <li>
             <Link to="">الرئيسيـــة</Link>
           </li>
           <li>
