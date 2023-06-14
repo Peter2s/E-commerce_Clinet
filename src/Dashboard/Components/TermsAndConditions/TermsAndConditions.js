@@ -14,7 +14,7 @@ const TermsAndConditions = () => {
 
   const fetchTermsAndConditionsData = async () => {
     await axiosInstance
-      .get("/settings")
+      .get("/api/v1/settings")
       .then((res) => {
         setTermsAndConditionsData(res.data.data);
       })
@@ -33,19 +33,27 @@ const TermsAndConditions = () => {
 
   return termsAndConditionsData ? (
     <>
-          {showEditCard ? (
-            <EditTermsAndConditions onUpdate={handleTermsAndConditionsUpdate} />
-          ) : (
-            <Card className="shadow">
-            <CardHeader className="border-0"></CardHeader>
-        <CardBody>
-            <div dangerouslySetInnerHTML={{ __html: termsAndConditionsData.terms_and_conditions }} />
-        </CardBody>
-        <CardFooter className="py-4">
-            <Btn title="Edit" className="btn btn-primary" onClick={toggleEditCard} />
-        </CardFooter>
-      </Card>
-          )}
+      {showEditCard ? (
+        <EditTermsAndConditions onUpdate={handleTermsAndConditionsUpdate} />
+      ) : (
+        <Card className="shadow">
+          <CardHeader className="border-0"></CardHeader>
+          <CardBody>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: termsAndConditionsData.terms_and_conditions,
+              }}
+            />
+          </CardBody>
+          <CardFooter className="py-4">
+            <Btn
+              title="Edit"
+              className="btn btn-primary"
+              onClick={toggleEditCard}
+            />
+          </CardFooter>
+        </Card>
+      )}
     </>
   ) : (
     <Card>
