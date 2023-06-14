@@ -1,55 +1,52 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 import './NavBar.css';
-import { Input } from 'reactstrap';
-import SearchBox from 'react-search-box';
 import { Link } from 'react-router-dom';
+import SearchBox from 'Website/SharedUI/SearchBox/SearchBox';
+import { useState } from 'react';
 
 const NavBar = () => {
     return (
         <nav id="navBar">
+          <Link to="/home">
+            <img src="https://i.ibb.co/5BkDRW0/Screenshot-1-removebg-preview.png" className='logoNav' alt="logo" />
+          </Link>
         <ul>
           <li>
-            <img src="" alt="logo" />
+            <Link to="/home">الرئيسيـــة</Link>
           </li>
           <li>
-            <Link to="">الرئيسيـــة</Link>
+            <Link to="/categories">الأقســام
+            </Link>
           </li>
           <li>
-            <Link to="">الأقســام</Link>
+            <Link to="/products">المنتجــات</Link>
           </li>
           <li>
-            <Link to="">المنتجــات</Link>
+            <Link to="/aboutus">عنّــا</Link>
           </li>
           <li>
-            <Link to="">عنّــا</Link>
-          </li>
-          <li>
-            <Link to="">تواصل معنا</Link>
+            <Link to="/contactus">تواصل معنا</Link>
           </li>
         </ul>
-        <ul className='left'>
-          <li>
-          <SearchBox
-            placeholder="البحث عن المنتجــات"
-            />
+        <li>
+          <SearchBox placeholder="البحث عن المنتجــات..." />
           </li>
           <li>
-            <Link to="">طلباتـي</Link>
+            <Link to="/orders">طلباتـي</Link>
           </li>
           <li>
-            <Link to="">
+            <Link to="/auth/login">
             <FontAwesomeIcon icon={faUser} className='Icons' />
                 تسجيل الدخول
             </Link>
           </li>
           <li>
-          <Link to="">
-            <FontAwesomeIcon icon={faCartShopping} className='Icons' />            
+          <Link to="/cart">
+            <FontAwesomeIcon icon={faCartShopping} className='Icons cartIcon' />            
             عربـة التسـوق
             </Link>
           </li>
-          </ul>
       </nav>
     )
 }
