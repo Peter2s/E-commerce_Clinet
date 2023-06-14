@@ -48,3 +48,7 @@
     letter-spacing: 0;
     line-height: 24px;
 }
+
+.features-card {
+    background-color: #f6f7f9 !important;
+}

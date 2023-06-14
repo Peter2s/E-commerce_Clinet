@@ -25,6 +25,7 @@ export const ProductsCard = ({ item }) => {
           <div className="d-flex justify-content-end mx-2"></div>
           <CardBody>
             <CardTitle>
+              <div className="h6 text-primary">{item.category_id.name_ar}</div>
               <div className="card-title">{item.name_ar}</div>
             </CardTitle>
             <CardText>
