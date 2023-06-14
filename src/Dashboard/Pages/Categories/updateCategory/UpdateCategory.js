@@ -20,7 +20,7 @@ const UpdateCategory = () => {
       categoryData.append("name_ar", values.name_ar);
       categoryData.append("image", values.image[0]);
 
-      console.log(categoryData);
+      console.log(formik.values);
       axiosInstance
         .patch(`${CategoriesURL}/${categoryId}`, categoryData, {
           headers: {

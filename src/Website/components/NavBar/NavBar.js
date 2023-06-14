@@ -3,7 +3,6 @@ import { faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 import './NavBar.css';
 import { Link } from 'react-router-dom';
 import SearchBox from 'Website/SharedUI/SearchBox/SearchBox';
-import { useState } from 'react';
 
 const NavBar = () => {
     return (

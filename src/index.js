@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import "./Dashboard/Assets/plugins/nucleo/css/nucleo.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./Dashboard/Assets/scss/argon-dashboard-react.scss";
+import "./index.css";
 
 import AdminLayout from "./Dashboard/Layouts/Admin.js";
 import AuthLayout from "./Dashboard/Layouts/Auth.js";
@@ -12,7 +13,7 @@ import Home from "Website/Pages/HomePage/HomePage";
 import { Authentication } from "Context/Authentication ";
 import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword";
 import Login from "Dashboard/Pages/Login/Login";
-import Categories from "Website/Pages/Categories/Categories";
+import {CategoryCard} from "Website/Pages/Categories/CategoryCard";
 import Products from "Website/Pages/Products/Products";
 import Orders from "Website/Pages/Orders/Orders";
 import AboutUS from "Website/Pages/AboutUs/AboutUs";
@@ -26,7 +27,6 @@ import './website.css';
 import TermsAndConditions from "Website/Pages/TermsAndConditions/TermsAndConditions";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-const jwt = localStorage.getItem("jwt");
 
 root.render(
   <BrowserRouter>
@@ -35,7 +35,7 @@ root.render(
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/auth/*" element={<AuthLayout />} />
       <Route path="/home" element={<div dir="rtl" className="websitePages"><NavBar/><Home/><FooterSite /></div>} />
-      <Route path="/categories" element={<div dir="rtl" className="websitePages"><NavBar/><Categories/><FooterSite /></div>} />
+      <Route path="/categories" element={<div dir="rtl" className="websitePages"><NavBar/><CategoryCard/><FooterSite /></div>} />
       <Route path="/products" element={<div dir="rtl" className="websitePages"><NavBar/><Products/><FooterSite /></div>} />
       <Route path="/orders" element={<div dir="rtl" className="websitePages"><NavBar/><Orders/><FooterSite /></div>} />
       <Route path="/aboutus" element={<div dir="rtl" className="websitePages"><NavBar/><AboutUS/><FooterSite /></div>} />

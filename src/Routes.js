@@ -189,7 +189,7 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/auth",
+    path: "/login",
     name: "New",
     icon: "ni ni-key-25 text-info",
     component: <Login />,
