@@ -25,6 +25,8 @@ import FooterSite from "Website/components/Footer/FooterSite";
 import "@fontsource/almarai";
 import './website.css';
 import TermsAndConditions from "Website/Pages/TermsAndConditions/TermsAndConditions";
+import Profile from "Website/Pages/Profile/Profile";
+import Address from "Website/Pages/Address/Address";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -42,6 +44,8 @@ root.render(
       <Route path="/contactus" element={<div dir="rtl" className="websitePages"><NavBar/><ContactUs/><FooterSite /></div>} />
       <Route path="/cart" element={<div dir="rtl" className="websitePages"><NavBar/><Cart/><FooterSite /></div>} />
       <Route path="/termsAndConditions" element={<div dir="rtl" className="websitePages"><NavBar/><TermsAndConditions/><FooterSite /></div>} />
+      <Route path="/profile" element={<div dir="rtl" className="websitePages"><NavBar/><Profile/><FooterSite /></div>} />
+      <Route path="/address" element={<div dir="rtl" className="websitePages"><NavBar/><Address/><FooterSite /></div>} />
       <Route path="/auth/login" element={<LoginSite/>} />
       
       <Route path="/login/*" element={<Login/>} />
