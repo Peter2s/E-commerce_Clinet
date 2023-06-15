@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import Btn from 'Dashboard/SharedUI/Btn/Btn';
-import { axiosInstance } from '../../../../Axios';
-import TermsAndConditions from '../TermsAndConditions';
-import Swal from 'sweetalert2';
+import React, { useEffect, useState } from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import Btn from "Dashboard/SharedUI/Btn/Btn";
+import { axiosInstance } from "../../../../Axios";
+import TermsAndConditions from "../TermsAndConditions";
+import Swal from "sweetalert2";
 
 const EditTermsAndConditions = ({ onUpdate }) => {
   const [showTerms, setShowTerms] = useState(false);
-  const [editTermsAndConditionsData, setTermsAndConditionsData] = useState('');
+  const [editTermsAndConditionsData, setTermsAndConditionsData] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const fetchTermsAndConditionsData = async () => {
       try {
-        const response = await axiosInstance.get('/settings');
+        const response = await axiosInstance.get("/api/v1/settings");
         setTermsAndConditionsData(response.data.data.terms_and_conditions);
       } catch (error) {
         console.log(error);
@@ -25,8 +25,8 @@ const EditTermsAndConditions = ({ onUpdate }) => {
 
   const handleSave = async () => {
     try {
-      const response = await axiosInstance.patch('/settings', {
-        terms_and_conditions: editTermsAndConditionsData
+      const response = await axiosInstance.patch("/api/v1/settings", {
+        terms_and_conditions: editTermsAndConditionsData,
       });
       console.log(response);
     } catch (error) {
@@ -52,10 +52,10 @@ const EditTermsAndConditions = ({ onUpdate }) => {
 
   const showSweetAlert = () => {
     Swal.fire({
-      title: 'Changes Saved!',
-      text: 'Your changes have been saved successfully.',
-      icon: 'success',
-      confirmButtonText: 'OK'
+      title: "Changes Saved!",
+      text: "Your changes have been saved successfully.",
+      icon: "success",
+      confirmButtonText: "OK",
     });
   };
 
@@ -69,7 +69,7 @@ const EditTermsAndConditions = ({ onUpdate }) => {
           <div className="card-body">
             <CKEditor
               editor={ClassicEditor}
-              data={editTermsAndConditionsData || ''}
+              data={editTermsAndConditionsData || ""}
               onChange={handleEditorChange}
             />
           </div>
