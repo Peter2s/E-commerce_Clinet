@@ -13,7 +13,7 @@ const EditAboutUs = ({ onUpdate }) => {
   useEffect(() => {
     const fetchTermsAndConditionsData = async () => {
       try {
-        const response = await axiosInstance.get("/settings");
+        const response = await axiosInstance.get("/api/v1/settings");
         setTermsAndConditionsData(response.data.data.about_us);
       } catch (error) {
         console.log(error);
@@ -24,7 +24,7 @@ const EditAboutUs = ({ onUpdate }) => {
 
   const handleSave = async () => {
    try {
-      const response = await axiosInstance.patch("/settings", {
+      const response = await axiosInstance.patch("/api/v1/settings", {
         about_us: editTermsAndConditionsData
       });
       console.log(response);

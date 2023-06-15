@@ -20,7 +20,7 @@ const EmpCreate = () => {
 
   useEffect(() => {
     axiosInstance
-      .get("/api/v1/roles")
+      .get("/api/v1/roles?fields=name&limit=1000")
       .then((res) => {
         setRoles(res.data.data); // Assuming the response contains an array of roles
       })
@@ -62,7 +62,7 @@ const EmpCreate = () => {
     }),
     onSubmit: (values) => {
       console.log(values);
-      if (values.password != values.confirmPassword) {
+      if (values.password !== values.confirmPassword) {
         console.log(values.password);
         console.log(values.passwordConfirm);
 
@@ -201,6 +201,7 @@ const EmpCreate = () => {
                   </Col>
                   <Col>
                     <FormGroup>
+                      <label>Role</label>
                       <select
                         name="role_id"
                         id="role_id"

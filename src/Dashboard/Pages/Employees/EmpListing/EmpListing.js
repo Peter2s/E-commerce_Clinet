@@ -56,7 +56,7 @@ const Emps = () => {
         title="Employees Table"
         trContent={
           <>
-            <th scope="col">ID</th>
+            {/*<th scope="col">ID</th>*/}
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Phone</th>
@@ -67,7 +67,7 @@ const Emps = () => {
         }
         tableContent={empData.map((employee, index) => (
           <tr key={employee.id}>
-            <td>{employee.id}</td>
+            {/*<td>{employee.id}</td>*/}
             <td>{employee.name}</td>
             <td>{employee.email}</td>
             <td>{employee.phone}</td>

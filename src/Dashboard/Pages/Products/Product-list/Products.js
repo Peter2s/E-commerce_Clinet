@@ -122,7 +122,7 @@ const Products = () => {
             </td>
             <td>{product.category_id.name_en}</td>
             <td>{product.desc_en}</td>
-            <td>{product.price.$numberDecimal}</td>
+            <td>{product.price} $</td>
             <td>{product.quantity}</td>
             <td>
               <div>
