@@ -15,6 +15,7 @@ const Products = () => {
   const [pagination, setPagination] = useState({
     currentPage: null,
     totalPages: null,
+      limit:null
   });
   const navigate = useNavigate();
 
@@ -32,6 +33,7 @@ const Products = () => {
         setPagination({
           currentPage: pagination.current_page,
           totalPages: pagination.total_pages,
+            limit:pagination.limit
         });
       })
       .catch((error) => {
@@ -97,6 +99,7 @@ const Products = () => {
         title="Products"
         trContent={
           <>
+            <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">الاسم</th>
             <th scope="col">Image</th>
@@ -108,8 +111,9 @@ const Products = () => {
             <th scope="col"></th>
           </>
         }
-        tableContent={product.map((product) => (
+        tableContent={product.map((product,index) => (
           <tr key={product._id}>
+            <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
             <td>{product.name_en}</td>
             <td>{product.name_ar}</td>
             <td style={{ width: "200px" }}>

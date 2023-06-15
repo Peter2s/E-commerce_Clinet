@@ -1,25 +1,36 @@
 import Tables from '../../../SharedUI/Table/Tables';
 import Btn from 'Dashboard/SharedUI/Btn/Btn';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { axiosInstance } from '../../../../Axios';
+import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 
 
 const Users = () => {
   const [userData, setUserData] = useState([]);
+    const [pagination, setPagination] = useState({
+        currentPage: null,
+        totalPages: null,
+        limit: null,
+    });
 
   useEffect(() => {
-    fetchContactUsData();
+    fetchUsers();
     
   },[]);
 
-  const fetchContactUsData = async () => {
+  const fetchUsers = async (page=1) => {
     await axiosInstance
-      .get("/api/v1/users")
+      .get("/api/v1/users?page="+page)
       .then((res) => {
         setUserData(res.data.data);
+          setPagination({
+              currentPage: res.data.pagination.current_page,
+              totalPages: res.data.pagination.total_pages,
+              limit: res.data.pagination.limit,
+          });
       })
       .catch((err) => {
         console.log(err);
@@ -87,6 +98,10 @@ const Users = () => {
         console.log(err.message);
       });
   };
+
+    const handlePageChange =  (page) => {
+        fetchUsers(page);
+    }
   return (
     <>
       <Tables
@@ -101,7 +116,8 @@ const Users = () => {
         title="Users Table"
         trContent={
           <>
-            <th scope="col">ID</th>
+            {/*<th scope="col">ID</th>*/}
+            <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Phone</th>
@@ -112,7 +128,8 @@ const Users = () => {
         }
         tableContent={userData.map((user, index) => (
           <tr key={user.id}>
-            <td>{user.id}</td>
+            {/*<td>{user.id}</td>*/}
+              <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
             <td>{user.name}</td>
             <td>{user.email}</td>
             <td>{user.phone}</td>
@@ -142,6 +159,13 @@ const Users = () => {
             </td>
           </tr>
         ))}
+         pagination={
+             <PaginationAdmin
+                 currentPage={pagination.currentPage}
+                 totalPages={pagination.totalPages}
+                 onPageChange={handlePageChange}
+             />
+         }
       />
     </>
   );

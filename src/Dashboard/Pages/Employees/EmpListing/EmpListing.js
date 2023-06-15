@@ -1,21 +1,40 @@
 import Tables from '../../../SharedUI/Table/Tables';
 import Btn from './../../../SharedUI/Btn/Btn';
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { axiosInstance } from '../../../../Axios';
+import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 
 const Emps = () => {
   const [empData, setEmpData] = useState([]);
+    const [pagination, setPagination] = useState({
+        currentPage: null,
+        totalPages: null,
+        limit: null,
+    });
+
+    const fetchEmployees = (page = 1) => {
+        axiosInstance
+            .get(`/api/v1/employees?page=${page}`)
+            .then((response) => {
+                console.log(response.data);
+                const { data, pagination } = response.data;
+                setEmpData(data);
+                setPagination({
+                    currentPage: pagination.current_page,
+                    totalPages: pagination.total_pages,
+                    limit: pagination.limit,
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
 
   useEffect(() => {
-    axiosInstance.get("/api/v1/employees")
-      .then((res) => {
-        setEmpData(res.data.data);
-      }).catch((err) => {
-        console.log(err.message);
-      })
+    fetchEmployees();
   }, []);
   
   const handleDelete = async (id) => {
@@ -41,11 +60,16 @@ const Emps = () => {
       console.log(error);
     }
   };
+    const handlePageChange = (page) => {
+        fetchEmployees(page);
+    };
   
   return (
     <>
       <Tables
-         btn={<>
+          title="Employees Table"
+
+          btn={<>
           <Link to="/admin/employees/create" className='d-flex'>
                           <Btn
                             className="btn btn-primary ml-auto"
@@ -53,10 +77,11 @@ const Emps = () => {
                           />
                         </Link>
           </>}
-        title="Employees Table"
+
         trContent={
           <>
             {/*<th scope="col">ID</th>*/}
+            <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Phone</th>
@@ -68,6 +93,8 @@ const Emps = () => {
         tableContent={empData.map((employee, index) => (
           <tr key={employee.id}>
             {/*<td>{employee.id}</td>*/}
+
+            <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
             <td>{employee.name}</td>
             <td>{employee.email}</td>
             <td>{employee.phone}</td>
@@ -92,6 +119,13 @@ const Emps = () => {
             </td>
           </tr>
         ))}
+          pagination={
+              <PaginationAdmin
+                  currentPage={pagination.currentPage}
+                  totalPages={pagination.totalPages}
+                  onPageChange={handlePageChange}
+              />
+          }
       />
     </>
   );

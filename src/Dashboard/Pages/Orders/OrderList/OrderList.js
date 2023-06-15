@@ -6,25 +6,40 @@ import { Input } from 'reactstrap';
 import Tables from '../../../SharedUI/Table/Tables';
 import Btn from 'Dashboard/SharedUI/Btn/Btn';
 import { axiosInstance } from '../../../../Axios';
+import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 
 const Orders = () => {
   const [orderdata, setOrderData] = useState([]);
   const [products, setProducts] = useState([]);
+    const [pagination, setPagination] = useState({
+        currentPage: null,
+        totalPages: null,
+        limit: null,
+    });
+
+    const fetchOrders = async (page = 1) => {
+        axiosInstance.get("/api/v1/orders?page="+page) // Fetch orders data
+            .then((res) => {
+                setOrderData(res.data.data);
+                setPagination({
+                    currentPage: res.data.pagination.current_page,
+                    totalPages: res.data.pagination.total_pages,
+                    limit: res.data.pagination.limit,
+                });
+            }).catch((err) => {
+            console.log(err.message);
+        });
+        axiosInstance.get("/api/v1/products") // Fetch products data
+            .then((res) => {
+                setProducts(res.data);
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
+    }
 
   useEffect(() => {
-    axiosInstance.get("/api/v1/orders")
-      .then((res) => {
-        setOrderData(res.data.data);
-      }).catch((err) => {
-        console.log(err.message);
-      });
-      axiosInstance.get("/api/v1/products") // Fetch products data
-      .then((res) => {
-        setProducts(res.data);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+    fetchOrders();
   }, []);
 
   const handleCancelOrder = async (id , status) => {
@@ -123,23 +138,32 @@ const Orders = () => {
       return matchingProduct ? matchingProduct.name_en : "";
     }).join(",");
   };
+
+    const handlePageChange = (page) => {
+        fetchOrders(page);
+    }
+
+
   return (
     <>
       <Tables title="Orders Table"
         trContent={
           <>
+            <th scope="col">#</th>
             <th scope="col">Order Id</th>
             <th scope="col">Date</th>
-            <th scope="col">Quantity</th>
+            <th scope="col">Products Quantity</th>
             <th scope="col">Total Price</th>
-            <th scope="col">Products</th>
+            {/*<th scope="col">Products</th>*/}
             <th scope="col">Status</th>
+            <th scope="col">Payment Status</th>
             <th scope="col">Actions</th>
           </>
         }
         tableContent={
           orderdata.map((order, index) => (
             <tr key={order._id}>
+                <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
               <td>{order._id}</td>
               <td>{new Date(order.createdAt).toLocaleDateString()}</td>
               <td></td>
@@ -176,6 +200,13 @@ const Orders = () => {
             </tr>
           ))
         }
+              pagination={
+                  <PaginationAdmin
+                      currentPage={pagination.currentPage}
+                      totalPages={pagination.totalPages}
+                      onPageChange={handlePageChange}
+                  />
+              }
       />
     </>
   );

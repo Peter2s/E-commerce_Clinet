@@ -14,6 +14,7 @@ const Categories = () => {
   const [pagination, setPagination] = useState({
     currentPage: null,
     totalPages: null,
+    limit: null,
   });
 
   const CategoriesURL = "api/v1/categories";
@@ -32,6 +33,7 @@ const Categories = () => {
         setPagination({
           currentPage: pagination.current_page,
           totalPages: pagination.total_pages,
+          limit: pagination.limit,
         });
       })
       .catch((error) => {
@@ -96,14 +98,16 @@ const Categories = () => {
         }
         trContent={
           <>
+            <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">الاسم</th>
             <th scope="col">Image</th>
             <th scope="col">Actions</th>
           </>
         }
-        tableContent={categories.map((category) => (
+        tableContent={categories.map((category,index) => (
           <tr key={category.id}>
+            <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
             <td>{category.name_en}</td>
             <td>{category.name_ar}</td>
             <td style={{ width: "200px" }}>

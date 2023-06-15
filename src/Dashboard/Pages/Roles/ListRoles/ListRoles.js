@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { axiosInstance } from '../../../../Axios';
@@ -11,8 +11,9 @@ import PaginationAdmin from './../../../SharedUI/PaginationAdmin/PaginationAdmin
 const Roles = () => {
   const [roles, setRoles] = useState([]);
   const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
+    currentPage: null,
+    totalPages: null,
+    limit: null,
   });
 
   useEffect(() => {
@@ -27,6 +28,7 @@ const Roles = () => {
       setPagination({
         currentPage: pagination.current_page,
         totalPages: pagination.total_pages,
+        limit: pagination.limit,
       });
       console.log(response.data);
     } catch (error) {
@@ -128,16 +130,18 @@ const Roles = () => {
         title="Roles Table"
         trContent={
           <>
-            <th scope="col">ID</th>
+            <th scope="col">#</th>
+            {/*<th scope="col">ID</th>*/}
             <th scope="col">Name</th>
             <th scope="col">Permissions</th>
             <th scope="col">Actions</th>
           </>
         }
         tableContent={
-          roles.map((role) => (
+          roles.map((role,index) => (
             <tr key={role._id}>
-              <td>{role._id}</td>
+              {/*<td>{role._id}</td>*/}
+              <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
               <td>{role.name}</td>
               <td>
                 {role.permissions.map((permission) => (

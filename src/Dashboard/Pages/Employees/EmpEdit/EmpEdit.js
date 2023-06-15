@@ -27,6 +27,7 @@ const EmpEdit = () => {
       .get(`/api/v1/employees/${id}`)
       .then((res) => {
         const EmpData = res.data.data;
+        EmpData.role = EmpData.role_id;
         formik.setValues(EmpData);
       })
       .catch((err) => {
@@ -53,12 +54,14 @@ const EmpEdit = () => {
       //   .required("Enter the password"),
     }),
     onSubmit: (values) => {
+      console.log(values)
+      // return;
       const empData = {
         name: values.name,
         email: values.email,
         phone: values.phone,
         // password: values.password,
-        role:values.role,
+        role_id:values.role,
       };
 
       axiosInstance
@@ -76,7 +79,14 @@ const EmpEdit = () => {
           navigate("/admin/employees");
         })
         .catch((err) => {
+          console.log(err.response.data.error);
           console.log(err.message);
+            MySwal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: JSON.stringify(err.response.data.error),
+            });
+
         });
     },
   });
@@ -167,16 +177,16 @@ const EmpEdit = () => {
                   <FormGroup>
                     <label htmlFor="role">Role</label>
                     <select
-                        name="role_id"
-                        id="role_id"
-                        value={formik.values.role_id}
+                        name="role"
+                        id="role"
+                        value={formik.values.role}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         className="form-control"
                     >
                       <option value="">Select a role</option>
                       {roles.map((role) => (
-                          <option key={role._id} value={role._id} selected={formik.values.role===role.name}>
+                          <option key={role._id} value={role._id} >
                             {role.name}
                           </option>
                       ))}
