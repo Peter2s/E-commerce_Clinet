@@ -51,10 +51,6 @@ const EmpCreate = () => {
       password: Yup.string()
         .min(8, "Password must be at least 8 characters")
         .max(20, "Password must be less than 20 characters")
-        .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-          "Invalid password format"
-        )
         .required("Enter the password"),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
