@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Button,
   Card,
   CardHeader,
   CardBody,
@@ -12,7 +11,6 @@ import {
   Col,
   Modal,
   ModalBody,
-  ModalHeader,
   ModalFooter,
   Alert,
 } from "reactstrap";
@@ -34,7 +32,7 @@ const Profile = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [matchError, setMatchError] = useState(false);
   const [inputError, setInputError] = useState(false);
-  const [originalProfileData, setOriginalProfileData] = useState(null); // New state for storing original profile data
+  const [originalProfileData, setOriginalProfileData] = useState(null);
   const [phoneError, setPhoneError] = useState(false);
   const [errorEmpty, setErrorEmpty] = useState(false);
   const jwt = localStorage.getItem('token');
@@ -49,7 +47,7 @@ const Profile = () => {
     try {
       const res = await axiosInstance.get(`/api/v1/employees/${userId}`);
       setProfileData(res.data.data);
-      setOriginalProfileData(res.data.data); // Store the original profile data
+      setOriginalProfileData(res.data.data);
     } catch (err) {
       console.log(err);
     }
@@ -66,13 +64,13 @@ const Profile = () => {
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
-    setInputError(false); // Reset the input error when toggling edit mode
+    setInputError(false);
   };
 
   const cancelMode = () => {
     setEditMode(false);
     setInputError(false);
-    setProfileData(originalProfileData); // Reset profileData to the original values
+    setProfileData(originalProfileData);
   };
 
   const handleInputChange = (e) => {
@@ -129,6 +127,12 @@ const Profile = () => {
       return;
     }
     const updatedProfileData = { ...profileData };
+    delete updatedProfileData.id;
+    delete updatedProfileData.permissions;
+    delete updatedProfileData.is_banned;
+    delete updatedProfileData.createdAt;
+    delete updatedProfileData.last_password_changed_at;
+  
     if (newPassword !== "" && confirmNewPassword !== "") {
       updatedProfileData.password = newPassword;
     }
@@ -142,7 +146,7 @@ const Profile = () => {
       console.log(err);
     }
   };
-
+  
   return (
     <div>
       <>
@@ -195,8 +199,8 @@ const Profile = () => {
                       </h6>
                     </Col>
                   </Row>
-                  <div className="pl-lg-4">
-                    <Row>
+                  {/* <div className="pl-lg-4"> */}
+                    {/* <Row>
                       <Col lg="2" style={{ height: "150px" }} className="mt-5">
                         <div className="card-profile-image">
                           <a href="#pablo" onClick={(e) => e.preventDefault()}>
@@ -208,8 +212,8 @@ const Profile = () => {
                           </a>
                         </div>
                       </Col>
-                    </Row>
-                    <Row className="mb-4">
+                    </Row> */}
+                    {/* <Row className="mb-4">
                       <Col lg="4">
                         {editMode ? (
                           <input type="file" className="form-control" />
@@ -217,8 +221,8 @@ const Profile = () => {
                           ""
                         )}
                       </Col>
-                    </Row>
-                  </div>
+                    </Row> */}
+                  {/* </div> */}
                 </div>
                 <>
                   <Row>
@@ -354,8 +358,16 @@ const Profile = () => {
                         <Input
                           type="password"
                           name="password"
-                          id="new_password"
+                          id="current_password"
                           className="form-control mt-5"
+                          placeholder="Current Password"
+                          onChange={handleInputChange}
+                        />
+                        <Input
+                          type="password"
+                          name="password"
+                          id="new_password"
+                          className="form-control mt-3"
                           placeholder="New Password"
                           onChange={handleInputChange}
                         />

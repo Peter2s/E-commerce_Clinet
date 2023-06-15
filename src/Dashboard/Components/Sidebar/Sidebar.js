@@ -65,7 +65,7 @@ const Sidebar = (props) => {
 
   const fetchTermsAndConditionsData = async () => {
     await axiosInstance
-      .get("/settings")
+      .get("/api/v1/settings")
       .then((res) => {
         console.log(res.data);
         setWebInfo(res.data.data);
@@ -89,20 +89,21 @@ const Sidebar = (props) => {
   };
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {
-    return routes.filter((prop) => prop.name !== "New").map((prop, key) => {
-      return (
-        <NavItem key={key}>
-          <NavLink
-            to={prop.layout + prop.path}
-            tag={NavLinkRRD}
-            onClick={closeCollapse}
-          >
-            <i className={prop.icon} />
-            {prop.name}
-          </NavLink>
-        </NavItem>
-      );
-    });
+    return routes
+      .filter((prop) => prop.name !== "New")
+      .map((prop, key) => {
+        return (
+          <NavItem key={key}>
+            <NavLink
+              to={prop.layout + prop.path}
+              tag={NavLinkRRD}
+              onClick={closeCollapse}>
+              <i className={prop.icon} />
+              {prop.name}
+            </NavLink>
+          </NavItem>
+        );
+      });
   };
 
   const { bgColor, routes, logo } = props;
@@ -123,15 +124,13 @@ const Sidebar = (props) => {
     <Navbar
       className="navbar-vertical fixed-left navbar-light bg-white"
       expand="md"
-      id="sidenav-main"
-    >
+      id="sidenav-main">
       <Container fluid>
         {/* Toggler */}
         <button
           className="navbar-toggler"
           type="button"
-          onClick={toggleCollapse}
-        >
+          onClick={toggleCollapse}>
           <span className="navbar-toggler-icon" />
         </button>
         {/* Brand */}
@@ -153,8 +152,7 @@ const Sidebar = (props) => {
             <DropdownMenu
               aria-labelledby="navbar-default_dropdown_1"
               className="dropdown-menu-arrow"
-              right
-            >
+              right>
               <DropdownItem>Action</DropdownItem>
               <DropdownItem>Another action</DropdownItem>
               <DropdownItem divider />
@@ -222,8 +220,7 @@ const Sidebar = (props) => {
                 <button
                   className="navbar-toggler"
                   type="button"
-                  onClick={toggleCollapse}
-                >
+                  onClick={toggleCollapse}>
                   <span />
                   <span />
                 </button>
@@ -249,8 +246,7 @@ const Sidebar = (props) => {
           {/* Navigation */}
           <Nav navbar>{createLinks(routes)}</Nav>
           {/* Navigation */}
-          <Nav className="mb-md-3" navbar>
-          </Nav>
+          <Nav className="mb-md-3" navbar></Nav>
         </Collapse>
       </Container>
     </Navbar>

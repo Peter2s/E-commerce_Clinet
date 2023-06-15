@@ -1,129 +1,92 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import Input from "Dashboard/SharedUI/Input/Input";
-import Btn from "Dashboard/SharedUI/Btn/Btn";
-import { FormGroup } from "reactstrap";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { axiosInstance } from "../../../../Axios";
+import { CategoriesForm } from "../CategoriesForm/CategoriesForm";
+import MySwal from "sweetalert2";
+import { useFormik } from "formik";
+import { initValues, validation } from "../CategoriesForm/validation";
 
-const UpdateCategory = ({ categoryId }) => {
-  const [id, setId] = useState(categoryId);
-  const [name_en, setName_en] = useState("");
-  const [name_ar, setName_ar] = useState("");
-  const [file, setFile] = useState(null);
-  const [validation, setValidation] = useState(false);
-
+const UpdateCategory = () => {
+  const categoryId = useParams().id;
   const navigate = useNavigate();
+  const [category, setCategory] = useState({});
+  const CategoriesURL = "api/v1/categories";
+  const formik = useFormik({
+    initialValues: initValues,
+    validationSchema: validation,
+    onSubmit: (values) => {
+      const categoryData = new FormData();
+      categoryData.append("name_en", values.name_en);
+      categoryData.append("name_ar", values.name_ar);
+      categoryData.append("image", values.image[0]);
+
+      console.log(formik.values);
+      axiosInstance
+        .patch(`${CategoriesURL}/${categoryId}`, categoryData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          MySwal.fire({
+            icon: "success",
+            title: "success!",
+            text: "category updated successfully",
+          });
+          navigate("/admin/categories");
+        })
+        .catch((err) => {
+          console.log(err.response.data.error);
+          MySwal.fire({
+            icon: "error",
+            title: "error!",
+            text: err.response.data.error,
+          });
+        });
+    },
+  });
 
   useEffect(() => {
-    // Fetch the category data based on the categoryId
     const fetchCategory = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8000/categories/${id}`
-        );
-        const categoryData = response.data;
-        // Update the state with the retrieved category data
-        setName_en(categoryData.name_en);
-        setName_ar(categoryData.name_ar);
-        setFile(categoryData.file);
-      } catch (error) {
-        console.log(error.message);
-      }
+      axiosInstance
+        .get(`${CategoriesURL}/${categoryId}`)
+        .then((res) => {
+          console.log(res.data.data);
+          setCategory(res.data.data);
+        })
+        .catch((error) => {
+          console.log(error.response.data.error);
+          MySwal.fire({
+            icon: "error",
+            title: "error!",
+            text: error.response.data.error,
+          });
+        });
     };
-
     // Fetch the category data only if categoryId is provided
     if (categoryId) {
       fetchCategory();
     }
-  }, [categoryId, id]);
+  }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    formik.setFieldValue("name_en", category.name_en);
+    formik.setFieldValue("name_ar", category.name_ar);
+    formik.setFieldValue("image", category.image);
+  }, [category]);
 
-    // Create a new form data object
-    const newCatData = new FormData();
-    newCatData.append("id", id);
-    newCatData.append("name_en", name_en);
-    newCatData.append("name_ar", name_ar);
-    newCatData.append("image", file);
-
-    
-    // const image=file
-    // const catData = { id, name_en, name_ar, image };
-
-    axios
-      .post(`http://localhost:8000/categories/${id}`, newCatData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        alert("Saved successfully.");
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+  const handleImageFile = (event) => {
+    formik.values.image = Array.from(event.target.files);
+    console.log(formik.values.image);
   };
 
   return (
     <div>
       <div className="row">
         <div className="offset-lg-3 col-lg-6">
-          <form className="container" onSubmit={handleSubmit}>
-            <div className="card" style={{ textAlign: "left" }}>
-              <div className="card-title">
-                <h2>Update Category</h2>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label>Name</label>
-                      <Input
-                        required
-                        value={name_en}
-                        onChange={(e) => setName_en(e.target.value)}
-                        className="form-control"
-                      ></Input>
-                      {name_en.length === 0 && validation && (
-                        <span className="text-danger">Enter the name</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label>الاسم</label>
-                      <Input
-                        value={name_ar}
-                        onChange={(e) => setName_ar(e.target.value)}
-                        className="form-control"
-                      ></Input>
-                    </div>
-                  </div>
-                  <div className="col-lg-12">
-                  <FormGroup>
-                  <label for="image">
-                     Upload image
-                  </label><br/>
-                <Input
-                  name="image"
-                 type="file"
-                  />
-                  </FormGroup>
-                  </div>
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                    <Btn  type="submit" title="Save" className="btn btn-success"/> 
-                      <Link to="/" className="btn btn-danger">
-                        Back
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
+          {category && (
+            <CategoriesForm formik={formik} handleImageFile={handleImageFile} />
+          )}
         </div>
       </div>
     </div>

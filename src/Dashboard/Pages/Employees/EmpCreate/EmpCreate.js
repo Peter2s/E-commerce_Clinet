@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Card, CardHeader, Container, Row, Col, CardBody, FormGroup } from "reactstrap";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Container,
+  FormGroup,
+  Row,
+} from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import MySwal from "sweetalert2";
-import Btn from "Dashboard/SharedUI/Btn/Btn";
-import Input from "Dashboard/SharedUI/Input/Input";
 import { axiosInstance } from "../../../../Axios";
 
 const EmpCreate = () => {
@@ -36,12 +42,19 @@ const EmpCreate = () => {
       name: Yup.string()
         .matches(/^[a-zA-Z\s]*$/, "Invalid name format")
         .required("Enter the name"),
-      email: Yup.string().email("Invalid email address").required("Enter the email"),
-      phone: Yup.string().matches(/^[0-9]{11}$/, "Invalid phone number").required("Enter the phone number"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Enter the email"),
+      phone: Yup.string()
+        .matches(/^[0-9]{11}$/, "Invalid phone number")
+        .required("Enter the phone number"),
       password: Yup.string()
         .min(8, "Password must be at least 8 characters")
         .max(20, "Password must be less than 20 characters")
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Invalid password format")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+          "Invalid password format"
+        )
         .required("Enter the password"),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
@@ -50,10 +63,9 @@ const EmpCreate = () => {
     onSubmit: (values) => {
       console.log(values);
       if (values.password != values.confirmPassword) {
-        console.log("aaaaaaa");
         console.log(values.password);
-        console.log(values. passwordConfirm);
-        
+        console.log(values.passwordConfirm);
+
         formik.setFieldError("confirmPassword", "Passwords must match");
         return;
       }
@@ -104,7 +116,9 @@ const EmpCreate = () => {
                         className="form-control"
                       />
                       {formik.errors.name && formik.touched.name && (
-                        <span className="text-danger">{formik.errors.name}</span>
+                        <span className="text-danger">
+                          {formik.errors.name}
+                        </span>
                       )}
                     </div>
                   </Col>
@@ -120,7 +134,9 @@ const EmpCreate = () => {
                         className="form-control"
                       />
                       {formik.errors.email && formik.touched.email && (
-                        <span className="text-danger">{formik.errors.email}</span>
+                        <span className="text-danger">
+                          {formik.errors.email}
+                        </span>
                       )}
                     </div>
                   </Col>
@@ -138,7 +154,9 @@ const EmpCreate = () => {
                         className="form-control"
                       />
                       {formik.errors.phone && formik.touched.phone && (
-                        <span className="text-danger">{formik.errors.phone}</span>
+                        <span className="text-danger">
+                          {formik.errors.phone}
+                        </span>
                       )}
                     </div>
                   </Col>
@@ -154,7 +172,9 @@ const EmpCreate = () => {
                         className="form-control"
                       />
                       {formik.errors.password && formik.touched.password && (
-                        <span className="text-danger">{formik.errors.password}</span>
+                        <span className="text-danger">
+                          {formik.errors.password}
+                        </span>
                       )}
                     </div>
                   </Col>
@@ -171,9 +191,12 @@ const EmpCreate = () => {
                         onChange={formik.handleChange}
                         className="form-control"
                       />
-                      {formik.errors.passwordConfirm && formik.touched.passwordConfirm && (
-                        <span className="text-danger">{formik.errors.passwordConfirm}</span>
-                      )}
+                      {formik.errors.passwordConfirm &&
+                        formik.touched.passwordConfirm && (
+                          <span className="text-danger">
+                            {formik.errors.passwordConfirm}
+                          </span>
+                        )}
                     </div>
                   </Col>
                   <Col>
@@ -194,7 +217,9 @@ const EmpCreate = () => {
                         ))}
                       </select>
                       {formik.errors.role_id && formik.touched.role_id && (
-                        <span className="text-danger">{formik.errors.role_id}</span>
+                        <span className="text-danger">
+                          {formik.errors.role_id}
+                        </span>
                       )}
                     </FormGroup>
                   </Col>

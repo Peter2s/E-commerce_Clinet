@@ -6,7 +6,7 @@ import Btn from "Dashboard/SharedUI/Btn/Btn";
 import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import MySwal from 'sweetalert2';
+import MySwal from "sweetalert2";
 import { axiosInstance } from "../../../Axios";
 import { CloudinaryContext, Image } from "cloudinary-react";
 import { cloudinaryConfig } from "../../../cloudinaryConfig";
@@ -20,9 +20,7 @@ const WebsiteInfo = () => {
   const [socialMediaData, setSocialMediaData] = useState(
     webInfo.social_media || []
   );
-  const [bannersData, setBannersData] = useState(
-    webInfo.banners || []
-  );
+  const [bannersData, setBannersData] = useState(webInfo.banners || []);
   const cloudName = "dcjzco86z";
 
   useEffect(() => {
@@ -38,13 +36,14 @@ const WebsiteInfo = () => {
   }, [webInfo]);
 
   const fetchTermsAndConditionsData = async () => {
-      await axiosInstance.get("/settings")
+    await axiosInstance
+      .get("/api/v1/settings")
       .then((response) => {
-        setWebInfo(response.data.data);      
+        setWebInfo(response.data.data);
       })
-    .catch ((err) => {
-      console.log(err);
-    });
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleFileChange = (e) => {
@@ -58,7 +57,6 @@ const WebsiteInfo = () => {
       reader.readAsDataURL(file);
     }
   };
-  
 
   const handleEditClick = () => {
     setEditMode(true);
@@ -96,19 +94,19 @@ const WebsiteInfo = () => {
 
   const handleBannersChange = async (e, index, field) => {
     const updatedBannersData = [...bannersData];
-  
+
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "bannersImages");
-  
+
       try {
         const response = await axios.post(
           `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
           formData
         );
-  
+
         const imageURL = response.data.secure_url;
         updatedBannersData[index][field] = imageURL;
         setBannersData(updatedBannersData);
@@ -120,25 +118,23 @@ const WebsiteInfo = () => {
       setBannersData(updatedBannersData);
     }
   };
-  
+
   const handleAddBanners = (e) => {
     e.preventDefault();
     setAddOper(true);
     const newBanners = {
       image: "",
       link: "",
-      alt:""
+      alt: "",
     };
     setBannersData([...bannersData, newBanners]);
   };
 
   const handleRemoveBanners = (index) => {
-    const updatedBannersData = bannersData.filter(
-      (_, i) => i !== index
-    );
+    const updatedBannersData = bannersData.filter((_, i) => i !== index);
     setBannersData(updatedBannersData);
   };
-  
+
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email").required("Required"),
     // phone: Yup.string().required("Required"),
@@ -162,22 +158,24 @@ const WebsiteInfo = () => {
       const updatedData = {
         ...webInfo,
         email: editedData.email || webInfo.email,
-        phone: editedData.phone !== undefined ? editedData.phone : webInfo.phone,
+        phone:
+          editedData.phone !== undefined ? editedData.phone : webInfo.phone,
         locations: editedData.locations || webInfo.locations,
         social_media: socialMediaData,
         banners: bannersData,
       };
-  
-      await axiosInstance.patch(
-        "/settings",
-        updatedData
-      );
-  
+
+      await axiosInstance.patch("/api/v1/settings", updatedData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       setWebInfo(updatedData); // Update with the edited data
       setEditedData({});
       setSelectedImage(null);
       setEditMode(false);
-  
+
       MySwal.fire({
         icon: "success",
         title: "Success!",
@@ -187,214 +185,232 @@ const WebsiteInfo = () => {
       console.log(error);
     }
   };
-  
+
   return (
     <>
       <Card className="shadow">
-        <CardHeader className="border-0 d-flex">  
-        <div className="ml-auto">
-    <Btn
-      title={editMode ? "Save" : "Edit"}
-      className="btn btn-primary"
-      onClick={editMode ? handleSaveClick : handleEditClick}
-    />
-    {editMode ? (<Btn
-      title= "Cancel"
-      className="btn btn-secondary"
-      onClick={handleCancelClick}
-    />):""}
-  </div>
-    </CardHeader>
+        <CardHeader className="border-0 d-flex">
+          <div className="ml-auto">
+            <Btn
+              title={editMode ? "Save" : "Edit"}
+              className="btn btn-primary"
+              onClick={editMode ? handleSaveClick : handleEditClick}
+            />
+            {editMode ? (
+              <Btn
+                title="Cancel"
+                className="btn btn-secondary"
+                onClick={handleCancelClick}
+              />
+            ) : (
+              ""
+            )}
+          </div>
+        </CardHeader>
         <CardBody>
-        <form onSubmit={formik.handleSubmit}>
-          <table className="table">
-            <tbody>
-              <tr>
-                <td width="10%">Logo</td>
-                <td>
-                  {editMode ? (
-                    <>
-                      <label className="form-control-label" htmlFor="logo">
+          <form onSubmit={formik.handleSubmit}>
+            <table className="table">
+              <tbody>
+                <tr>
+                  <td width="10%">Logo</td>
+                  <td>
+                    {editMode ? (
+                      <>
+                        <label className="form-control-label" htmlFor="logo">
                           Image
                         </label>
-                      <input
+                        <input
+                          className="form-control w-25"
+                          type="file"
+                          accept="image/*"
+                          name="logo"
+                          onChange={handleFileChange}
+                        />
+                        {webInfo.logo && (
+                          <img src={webInfo.logo} className="w-25" alt="logo" />
+                        )}
+                      </>
+                    ) : (
+                      <img src={webInfo.logo} className="w-25" alt="logo" />
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td width="10%">Email</td>
+                  <td>
+                    {editMode ? (
+                      <Input
                         className="form-control w-25"
-                        type="file"
-                        accept="image/*"
-                        name="logo"
-                        onChange={handleFileChange}
+                        type="text"
+                        value={editedData.email || webInfo.email}
+                        onChange={(e) =>
+                          setEditedData({
+                            ...editedData,
+                            email: e.target.value,
+                          })
+                        }
                       />
-                      {webInfo.logo && (
-                        <img src={webInfo.logo} className="w-25" alt="logo" />
-                      )}
-                    </>
-                  ) : (
-                    <img src={webInfo.logo} className="w-25" alt="logo" />
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td width="10%">Email</td>
-                <td>
-                  {editMode ? (
-                    <Input
-                      className="form-control w-25"
-                      type="text"
-                      value={editedData.email || webInfo.email}
-                      onChange={(e) =>
-                        setEditedData({ ...editedData, email: e.target.value })
-                      }
-                    />
-                  ) : (
-                    webInfo.email
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td width="10%">Mobile Number</td>
-                <td>
-                  {editMode ? (
-                    <Input
-                      className="form-control w-25"
-                      type="text"
-                      value={editedData.phone || webInfo.phone}
-                      onChange={(e) =>
-                        setEditedData({ ...editedData, phone: e.target.value })
-                      }
-                    />
-                  ) : (
-                    webInfo.phone
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td width="10%">Locations</td>
-                <td>
-                  {editMode ? (
-                    <>
-                    <Input
-                      className="form-control w-25"
-                      type="text"
-                      value={editedData.locations || webInfo.locations}
-                      onChange={(e) =>
-                        {
-                          formik.handleChange(e);
-                        setEditedData({
-                          ...editedData,
-                          locations: e.target.value,
-                        },formik.handleChange)
-                      }
-                    }
-                    />
-                    {formik.touched.locations && formik.errors.locations && (
-  <div className="text-danger">
-    {formik.errors.locations}
-  </div>
-)}
-                    </>
-                  ) : (
-                    webInfo.locations
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td width="10%">Banner and Ads</td>
-                <td>
-                  {webInfo.banners?.map((banner, index) => (
-                    <div key={index}>
-                      {editMode ? (
-                        <></>
-                      ) : (
-                        <>
-                          <a href={banner.link}>
+                    ) : (
+                      webInfo.email
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td width="10%">Mobile Number</td>
+                  <td>
+                    {editMode ? (
+                      <Input
+                        className="form-control w-25"
+                        type="text"
+                        value={editedData.phone || webInfo.phone}
+                        onChange={(e) =>
+                          setEditedData({
+                            ...editedData,
+                            phone: e.target.value,
+                          })
+                        }
+                      />
+                    ) : (
+                      webInfo.phone
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td width="10%">Locations</td>
+                  <td>
+                    {editMode ? (
+                      <>
+                        <Input
+                          className="form-control w-25"
+                          type="text"
+                          value={editedData.locations || webInfo.locations}
+                          onChange={(e) => {
+                            formik.handleChange(e);
+                            setEditedData(
+                              {
+                                ...editedData,
+                                locations: e.target.value,
+                              },
+                              formik.handleChange
+                            );
+                          }}
+                        />
+                        {formik.touched.locations &&
+                          formik.errors.locations && (
+                            <div className="text-danger">
+                              {formik.errors.locations}
+                            </div>
+                          )}
+                      </>
+                    ) : (
+                      webInfo.locations
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td width="10%">Banner and Ads</td>
+                  <td>
+                    {webInfo.banners?.map((banner, index) => (
+                      <div key={index}>
+                        {editMode ? (
+                          <></>
+                        ) : (
+                          <>
+                            <a href={banner.link}>
+                              <img
+                                src={banner.image}
+                                alt={banner.alt}
+                                className="w-75"
+                                style={{ height: "160px" }}
+                              />
+                            </a>
+                            <p>{banner.link}</p>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                    {/* New Banner */}
+                    {editMode &&
+                      bannersData.map((item, index) => (
+                        <div key={index} className="form-row mb-2">
+                          {!addOper ? (
                             <img
-                              src={banner.image}
-                              alt={banner.alt}
-                              className="w-75"
-                              style={{height: "160px"}}
-                            />
-                          </a>
-                          <p>{banner.link}</p>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                        {/* New Banner */}
-                          {editMode &&
-                    bannersData.map((item, index) => (
-                      <div key={index} className="form-row mb-2">
-                        {!addOper?(
-                          <img
                               src={item.image}
                               alt="alt"
                               className="w-75 mb-2 m-2"
-                              style={{height: "160px"}}
+                              style={{ height: "160px" }}
                             />
-                        ):("")}  
-                        <Input
-                          className="form-control w-25 mr-2"
-                          type="file"
-                          onChange={(e) => handleBannersChange(e, index, "image")}
-                          placeholder="image"
-                        />
-                        <Input
-                          className="form-control w-25"
-                          type="text"
-                          value={item.link}
-                          onChange={(e) =>
-                            handleBannersChange(e, index, "link")
-                          }
-                          placeholder="link"
-                        />
-                         <Input
-                          className="form-control w-25"
-                          type="text"
-                          value={item.alt}
-                          onChange={(e) =>
-                            handleBannersChange(e, index, "alt")
-                          }
-                          placeholder="alt"
-                        />
+                          ) : (
+                            ""
+                          )}
+                          <Input
+                            className="form-control w-25 mr-2"
+                            type="file"
+                            onChange={(e) =>
+                              handleBannersChange(e, index, "image")
+                            }
+                            placeholder="image"
+                          />
+                          <Input
+                            className="form-control w-25"
+                            type="text"
+                            value={item.link}
+                            onChange={(e) =>
+                              handleBannersChange(e, index, "link")
+                            }
+                            placeholder="link"
+                          />
+                          <Input
+                            className="form-control w-25"
+                            type="text"
+                            value={item.alt}
+                            onChange={(e) =>
+                              handleBannersChange(e, index, "alt")
+                            }
+                            placeholder="alt"
+                          />
                           <i
                             className="fa fa-minus-circle fa-2x text-danger mt-2 ml-2"
-                            onClick={() => handleRemoveBanners(index)}
-                          ></i>
+                            onClick={() => handleRemoveBanners(index)}></i>
+                        </div>
+                      ))}
+                  </td>
+                  {/* "+" button */}
+                  {editMode && (
+                    <div className="form-row mb-2">
+                      <Btn
+                        title="+"
+                        className="btn btn-primary border m-2 mr-5"
+                        onClick={handleAddBanners}
+                      />
+                    </div>
+                  )}
+                </tr>
+                <tr>
+                  <td width="10%">Social Media</td>
+                  <td>
+                    {socialMediaData.map((item, index) => (
+                      <div key={index}>
+                        {editMode ? (
+                          <></>
+                        ) : (
+                          <>
+                            <div
+                              className={
+                                "fa-brands fa-" + (item.name || "facebook")
+                              }></div>
+                            <b> {item.name}: </b> &nbsp;
+                            <span>{item.url}</span>
+                          </>
+                        )}
                       </div>
                     ))}
-                </td>
-                {/* "+" button */}
-                {editMode && (
-                  <div className="form-row mb-2">
-                    <Btn
-                      title="+"
-                      className="btn btn-primary border m-2 mr-5"
-                      onClick={handleAddBanners}
-                    />
-                  </div>
-                )}
-              </tr>
-              <tr>
-                <td width="10%">Social Media</td>
-                <td>
-                  {socialMediaData.map((item, index) => (
-                    <div key={index}>
-                      {editMode ? (
-                        <></>
-                      ) : (
-                        <>
-                          <div className={"fa-brands fa-" + (item.name || "facebook")}></div>
-                          <b> {item.name}: </b> &nbsp;
-                          <span>{item.url}</span>
-                        </>
-                      )}
-                    </div>
-                  ))}
 
-                  {/* New Social Media */}
-                  {editMode &&
-                    socialMediaData.map((item, index) => (
-                      <div key={index} className="form-row mb-2">
-                        {/* <Input
+                    {/* New Social Media */}
+                    {editMode &&
+                      socialMediaData.map((item, index) => (
+                        <div key={index} className="form-row mb-2">
+                          {/* <Input
                           className="form-control w-25 mr-2"
                           type="text"
                           value={item.Name}
@@ -403,44 +419,43 @@ const WebsiteInfo = () => {
                           }
                           placeholder="Name"
                         /> */}
-                        <Input
-                          className="form-control w-25 mr-2"
-                          type="text"
-                          value={item.url}
-                          onChange={(e) =>
-                            handleSocialMediaChange(e, index, "url")
-                          }
-                          placeholder="url"
-                        />
-                        <Input
-                          className="form-control w-25"
-                          type="text"
-                          value={item.name}
-                          onChange={(e) =>
-                            handleSocialMediaChange(e, index, "name")
-                          }
-                          placeholder="Name"
-                        />
-                        <i
+                          <Input
+                            className="form-control w-25 mr-2"
+                            type="text"
+                            value={item.url}
+                            onChange={(e) =>
+                              handleSocialMediaChange(e, index, "url")
+                            }
+                            placeholder="url"
+                          />
+                          <Input
+                            className="form-control w-25"
+                            type="text"
+                            value={item.name}
+                            onChange={(e) =>
+                              handleSocialMediaChange(e, index, "name")
+                            }
+                            placeholder="Name"
+                          />
+                          <i
                             className="fa fa-minus-circle fa-2x text-danger mt-2 ml-2"
-                            onClick={() => handleRemoveSocialMedia(index)}
-                          ></i>
-                      </div>
-                    ))}
-                </td>
-                {/* "+" button */}
-                {editMode && (
-                  <div className="form-row">
-                    <Btn
-                      title="+"
-                      className="btn btn-primary border m-2 mr-5"
-                      onClick={handleAddSocialMedia}
-                    />
-                  </div>
-                )}
-              </tr>
-            </tbody>
-          </table>
+                            onClick={() => handleRemoveSocialMedia(index)}></i>
+                        </div>
+                      ))}
+                  </td>
+                  {/* "+" button */}
+                  {editMode && (
+                    <div className="form-row">
+                      <Btn
+                        title="+"
+                        className="btn btn-primary border m-2 mr-5"
+                        onClick={handleAddSocialMedia}
+                      />
+                    </div>
+                  )}
+                </tr>
+              </tbody>
+            </table>
           </form>
         </CardBody>
       </Card>

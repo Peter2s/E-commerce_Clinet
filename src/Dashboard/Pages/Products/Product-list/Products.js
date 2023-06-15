@@ -5,39 +5,83 @@ import { axiosInstance } from "Axios.js";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Btn from "../../../SharedUI/Btn/Btn";
+import Swal from "sweetalert2";
+import MySwal from "sweetalert2";
+import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 
 const Products = () => {
   const Product_URL = "api/v1/products";
   const [product, setProduct] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: null,
+    totalPages: null,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the items from the server
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = (page = 1) => {
     axiosInstance
-      .get(Product_URL)
+      .get(`${Product_URL}?page=${page}`)
       .then((response) => {
         console.log(response.data);
-        setProduct(response.data.data);
+        const { data, pagination } = response.data;
+        setProduct(data);
+        setPagination({
+          currentPage: pagination.current_page,
+          totalPages: pagination.total_pages,
+        });
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  };
 
-  const handleDeleteProduct = (id) => {
+  const handleDeleteProduct = (id, name) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You want delete ${name} Product!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        callApiToDelete(id);
+      }
+    });
+  };
+
+  const callApiToDelete = (id) => {
     axiosInstance
       .delete(`${Product_URL}/${id}`)
       .then((response) => {
         // Update the component's state or perform any other necessary actions
         setProduct(product.filter((product) => product.id !== id));
+        MySwal.fire({
+          icon: "success",
+          title: "success!",
+          text: "Product deleted successfully",
+        });
       })
       .catch((error) => {
         console.log(error.message);
+        MySwal.fire({
+          icon: "error",
+          title: "error!",
+          text: error.response.data.error,
+        });
       });
   };
 
   const handleEditProduct = (id) => {
-    navigate("/admin/edit-product");
+    navigate(`/admin/edit-product/${id}`);
+  };
+  const handlePageChange = (page) => {
+    fetchProducts(page);
   };
 
   return (
@@ -90,7 +134,9 @@ const Products = () => {
                 </button>
                 <button
                   className="btn btn-danger"
-                  onClick={() => handleDeleteProduct(product._id)}
+                  onClick={() =>
+                    handleDeleteProduct(product._id, product.name_en)
+                  }
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -98,6 +144,13 @@ const Products = () => {
             </td>
           </tr>
         ))}
+        pagination={
+          <PaginationAdmin
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={handlePageChange}
+          />
+        }
       />
     </>
   );

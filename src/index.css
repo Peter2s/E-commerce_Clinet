@@ -1,0 +1,54 @@
+.allCard {
+    position: relative;
+    height: 130px;
+    width: 130px;
+}
+
+.categoty-card {
+    height: 140px;
+    width: 100%;
+    border-radius: 50%;
+    opacity: 0.3;
+}
+
+.categoty-card-img {
+    max-width: 110px;
+    max-height: 100px;
+    position: absolute;
+    top: 20%;
+    left: 10%;
+}
+
+.categoty-card-text {
+    color: #555550;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-title {
+    color: #555550;
+    font-size: 16px;
+    letter-spacing: 0;
+    line-height: 20px;
+    text-align: right;
+}
+
+.card-price {
+    color: #272727;
+    font-size: 21px;
+    font-weight: bold;
+    letter-spacing: 0;
+    line-height: 28px;
+}
+
+.card-currency {
+    color: #555550;
+    font-size: 18px;
+    letter-spacing: 0;
+    line-height: 24px;
+}
+
+.features-card {
+    background-color: #f6f7f9 !important;
+}

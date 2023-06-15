@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import "./Dashboard/Assets/plugins/nucleo/css/nucleo.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./Dashboard/Assets/scss/argon-dashboard-react.scss";
+import "./index.css";
 
 import AdminLayout from "./Dashboard/Layouts/Admin.js";
 import AuthLayout from "./Dashboard/Layouts/Auth.js";
@@ -12,9 +13,22 @@ import Home from "Website/Pages/HomePage/HomePage";
 import { Authentication } from "Context/Authentication ";
 import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword";
 import Login from "Dashboard/Pages/Login/Login";
+import {CategoryCard} from "Website/Pages/Categories/CategoryCard";
+import Products from "Website/Pages/Products/Products";
+import Orders from "Website/Pages/Orders/Orders";
+import AboutUS from "Website/Pages/AboutUs/AboutUs";
+import ContactUs from "Website/Pages/ContactUS/ContactUs";
+import Cart from "Website/Pages/Cart/Cart";
+import LoginSite from "Website/Pages/Login/Login";
+import NavBar from "Website/components/NavBar/NavBar";
+import FooterSite from "Website/components/Footer/FooterSite";
+import "@fontsource/almarai";
+import './website.css';
+import TermsAndConditions from "Website/Pages/TermsAndConditions/TermsAndConditions";
+import Profile from "Website/Pages/Profile/Profile";
+import Address from "Website/Pages/Address/Address";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-const jwt = localStorage.getItem("jwt");
 
 root.render(
   <BrowserRouter>
@@ -22,7 +36,18 @@ root.render(
   <Routes>
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/auth/*" element={<AuthLayout />} />
-      <Route path="/home" element={<Home/>} />
+      <Route path="/home" element={<div dir="rtl" className="websitePages"><NavBar/><Home/><FooterSite /></div>} />
+      <Route path="/categories" element={<div dir="rtl" className="websitePages"><NavBar/><CategoryCard/><FooterSite /></div>} />
+      <Route path="/products" element={<div dir="rtl" className="websitePages"><NavBar/><Products/><FooterSite /></div>} />
+      <Route path="/orders" element={<div dir="rtl" className="websitePages"><NavBar/><Orders/><FooterSite /></div>} />
+      <Route path="/aboutus" element={<div dir="rtl" className="websitePages"><NavBar/><AboutUS/><FooterSite /></div>} />
+      <Route path="/contactus" element={<div dir="rtl" className="websitePages"><NavBar/><ContactUs/><FooterSite /></div>} />
+      <Route path="/cart" element={<div dir="rtl" className="websitePages"><NavBar/><Cart/><FooterSite /></div>} />
+      <Route path="/termsAndConditions" element={<div dir="rtl" className="websitePages"><NavBar/><TermsAndConditions/><FooterSite /></div>} />
+      <Route path="/profile" element={<div dir="rtl" className="websitePages"><NavBar/><Profile/><FooterSite /></div>} />
+      <Route path="/address" element={<div dir="rtl" className="websitePages"><NavBar/><Address/><FooterSite /></div>} />
+      <Route path="/auth/login" element={<LoginSite/>} />
+      
       <Route path="/login/*" element={<Login/>} />
       <Route path="/ForgetPssword/*" element={<ForgetPssword/>} />
       <Route path="*" element={<Navigate to="/admin/index" replace />} />

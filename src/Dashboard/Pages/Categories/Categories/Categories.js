@@ -5,44 +5,82 @@ import { axiosInstance } from "Axios.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Btn from "../../../SharedUI/Btn/Btn";
+import MySwal from "sweetalert2";
+import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
+  const [pagination, setPagination] = useState({
+    currentPage: null,
+    totalPages: null,
+  });
 
   const CategoriesURL = "api/v1/categories";
 
-  const handleTableButton = (e) => {
-    navigate("/addCategory");
-  };
-
   useEffect(() => {
-    // Fetch the items from the server
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = (page = 1) => {
     axiosInstance
-      .get(CategoriesURL)
+      .get(`${CategoriesURL}?page=${page}`)
       .then((response) => {
         console.log(response.data);
-        setCategories(response.data.data);
+        const { data, pagination } = response.data;
+        setCategories(data);
+        setPagination({
+          currentPage: pagination.current_page,
+          totalPages: pagination.total_pages,
+        });
       })
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  };
 
-  const handleDeleteCategory = (id) => {
+  const handleDeleteCategory = (id, name) => {
+    MySwal.fire({
+      title: "Are you sure?",
+      text: `You want delete ${name} category!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        callApiToDelete(id);
+      }
+    });
+  };
+
+  const callApiToDelete = (id) => {
     axiosInstance
       .delete(`${CategoriesURL}/${id}`)
       .then((response) => {
-        // Update the component's state or perform any other necessary actions
         setCategories(categories.filter((category) => category.id !== id));
+        MySwal.fire({
+          icon: "success",
+          title: "success!",
+          text: "category deleted successfully",
+        });
       })
       .catch((error) => {
         console.log(error.message);
+        MySwal.fire({
+          icon: "error",
+          title: "error!",
+          text: error.response.data.error,
+        });
       });
   };
 
   const handleEditCategory = (id) => {
-    navigate("/admin/editcategory");
+    navigate(`/admin/editcategory/${id}`);
+  };
+  const handlePageChange = (page) => {
+    fetchCategories(page);
   };
 
   return (
@@ -86,7 +124,9 @@ const Categories = () => {
                 </button>
                 <button
                   className="btn btn-danger"
-                  onClick={() => handleDeleteCategory(category._id)}
+                  onClick={() =>
+                    handleDeleteCategory(category._id, category.name_en)
+                  }
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -94,6 +134,13 @@ const Categories = () => {
             </td>
           </tr>
         ))}
+        pagination={
+          <PaginationAdmin
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={handlePageChange}
+          />
+        }
       />
     </>
   );
