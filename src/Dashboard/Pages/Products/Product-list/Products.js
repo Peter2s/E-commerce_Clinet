@@ -107,7 +107,7 @@ const Products = () => {
             <th scope="col">Image</th>
             <th scope="col">Category</th>
             <th scope="col">Description</th>
-            <th scope="col">Price</th>
+            <th scope="col">Price ($)</th>
             <th scope="col">Quantity</th>
             <th scope="col">Actions</th>
             <th scope="col"></th>
@@ -118,17 +118,17 @@ const Products = () => {
             <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
             <td>{product.name_en}</td>
             <td>{product.name_ar}</td>
-            <td style={{ width: "200px" }}>
-              <img
-                className="img-thumbnail"
-                style={{ minWidth: "200px", width: "50%" }}
-                src={product.image}
-                alt={product.name}
-              />
-            </td>
+              <td style={{ maxWidth: "200px" }}>
+                  <img
+                      className="img-thumbnail"
+                      style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}
+                      src={product.image}
+                      alt={product.name}
+                  />
+              </td>
             <td>{product.category_id.name_en}</td>
             <td>{product.desc_en}</td>
-            <td>{product.price} $</td>
+            <td>{product.price}</td>
             <td>{product.quantity}</td>
             <td>
               <div>

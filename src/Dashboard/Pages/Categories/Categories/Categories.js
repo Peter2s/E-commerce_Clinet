@@ -112,10 +112,10 @@ const Categories = () => {
             <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
             <td>{category.name_en}</td>
             <td>{category.name_ar}</td>
-            <td style={{ width: "200px" }}>
+            <td style={{ maxWidth: "200px" }}>
               <img
                 className="img-thumbnail"
-                style={{ minWidth: "200px", width: "50%" }}
+                style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}
                 src={category.image}
                 alt={category.name}
               />
