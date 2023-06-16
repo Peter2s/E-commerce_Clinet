@@ -8,6 +8,7 @@ import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 
 const Emps = () => {
   const [empData, setEmpData] = useState([]);
+  const [total, setTotal] = useState(0);
     const [pagination, setPagination] = useState({
         currentPage: null,
         totalPages: null,
@@ -21,6 +22,7 @@ const Emps = () => {
                 console.log(response.data);
                 const { data, pagination } = response.data;
                 setEmpData(data);
+                setTotal(pagination.total);
                 setPagination({
                     currentPage: pagination.current_page,
                     totalPages: pagination.total_pages,
@@ -67,7 +69,7 @@ const Emps = () => {
   return (
     <>
       <Tables
-          title="Employees Table"
+          title={`Employees (${total})`}
 
           btn={<>
           <Link to="/admin/employees/create" className='d-flex'>

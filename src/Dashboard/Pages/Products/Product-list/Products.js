@@ -12,6 +12,7 @@ import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 const Products = () => {
   const Product_URL = "api/v1/products";
   const [product, setProduct] = useState([]);
+  const [total, setTotal] = useState(0);
   const [pagination, setPagination] = useState({
     currentPage: null,
     totalPages: null,
@@ -30,6 +31,7 @@ const Products = () => {
         console.log(response.data);
         const { data, pagination } = response.data;
         setProduct(data);
+        setTotal(pagination.total);
         setPagination({
           currentPage: pagination.current_page,
           totalPages: pagination.total_pages,
@@ -96,7 +98,7 @@ const Products = () => {
             </Link>
           </>
         }
-        title="Products"
+        title={`Products (${total})`}
         trContent={
           <>
             <th scope="col">#</th>

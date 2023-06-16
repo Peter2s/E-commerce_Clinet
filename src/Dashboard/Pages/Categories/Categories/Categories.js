@@ -11,6 +11,7 @@ import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
+  const [total, setTotal] = useState(0);
   const [pagination, setPagination] = useState({
     currentPage: null,
     totalPages: null,
@@ -30,6 +31,7 @@ const Categories = () => {
         console.log(response.data);
         const { data, pagination } = response.data;
         setCategories(data);
+        setTotal(pagination.total);
         setPagination({
           currentPage: pagination.current_page,
           totalPages: pagination.total_pages,
@@ -88,7 +90,7 @@ const Categories = () => {
   return (
     <>
       <Tables
-        title="Categories"
+        title={`Categories (${total})`}
         btn={
           <>
             <Link to="/admin/addCategory" className="d-flex">

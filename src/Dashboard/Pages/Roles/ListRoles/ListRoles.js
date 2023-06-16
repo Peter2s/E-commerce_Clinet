@@ -10,6 +10,7 @@ import PaginationAdmin from './../../../SharedUI/PaginationAdmin/PaginationAdmin
 
 const Roles = () => {
   const [roles, setRoles] = useState([]);
+  const [total, setTotal] = useState(0);
   const [pagination, setPagination] = useState({
     currentPage: null,
     totalPages: null,
@@ -25,6 +26,7 @@ const Roles = () => {
       const response = await axiosInstance.get(`/api/v1/roles?page=${page}`);
       const { data, pagination } = response.data;
       setRoles(data);
+        setTotal(pagination.total);
       setPagination({
         currentPage: pagination.current_page,
         totalPages: pagination.total_pages,
@@ -127,7 +129,7 @@ const Roles = () => {
             </Link>
           </>
         }
-        title="Roles Table"
+        title={`Roles (${total})`}
         trContent={
           <>
             <th scope="col">#</th>

@@ -11,6 +11,7 @@ import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 const Orders = () => {
   const [orderdata, setOrderData] = useState([]);
   const [products, setProducts] = useState([]);
+  const [total, setTotal] = useState(0);
     const [pagination, setPagination] = useState({
         currentPage: null,
         totalPages: null,
@@ -21,6 +22,7 @@ const Orders = () => {
         axiosInstance.get("/api/v1/orders?page="+page) // Fetch orders data
             .then((res) => {
                 setOrderData(res.data.data);
+                setTotal(res.data.pagination.total);
                 setPagination({
                     currentPage: res.data.pagination.current_page,
                     totalPages: res.data.pagination.total_pages,
@@ -146,7 +148,7 @@ const Orders = () => {
 
   return (
     <>
-      <Tables title="Orders Table"
+      <Tables title={`Orders (${total})`}
         trContent={
           <>
             <th scope="col">#</th>

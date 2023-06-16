@@ -10,6 +10,7 @@ import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 
 const Users = () => {
   const [userData, setUserData] = useState([]);
+  const [total, setTotal] = useState(0);
     const [pagination, setPagination] = useState({
         currentPage: null,
         totalPages: null,
@@ -26,6 +27,7 @@ const Users = () => {
       .get("/api/v1/users?page="+page)
       .then((res) => {
         setUserData(res.data.data);
+        setTotal(res.data.pagination.total);
           setPagination({
               currentPage: res.data.pagination.current_page,
               totalPages: res.data.pagination.total_pages,
@@ -113,7 +115,7 @@ const Users = () => {
                           />
                         </Link>
           </>}
-        title="Users Table"
+        title={`Users (${total})`}
         trContent={
           <>
             {/*<th scope="col">ID</th>*/}
