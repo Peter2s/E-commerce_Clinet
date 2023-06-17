@@ -13,28 +13,41 @@ const CreateRole = () => {
     newRole: '',
     permissions: [],
   };
-
+  const [routes, setRoutes] = useState([]);
   const [permissionsData, setPermissionsData] = useState([]);
   const navigate = useNavigate();
 
+  const fetchRoutes = async () => {
+    try {
+      const response = await axiosInstance.get('/api/v1/routes');
+      const { routes:route } = response.data.data;
+      setRoutes(route);
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   useEffect(() => {
-    const fetchPermissions = async () => {
-      try {
-        const response = await axiosInstance.get("/api/v1/roles");
-        const roles = response.data.data;
-        console.log(roles);
-        if (roles && roles.length > 0) {
-          const permissions = roles[0].permissions;
-          setPermissionsData(permissions);
-        }
-      } catch (error) {
-        console.error('Error fetching permissions:', error);
-      }
-    };
+    fetchRoutes();
 
-    fetchPermissions();
+
+    // fetchPermissions();
   }, []);
-
+  const fetchPermissions = async () => {
+    try {
+      const response = await axiosInstance.get("/api/v1/roles");
+      const roles = response.data.data;
+      console.log(roles);
+      if (roles && roles.length > 0) {
+        const permissions = roles[0].permissions;
+        setPermissionsData(permissions);
+      }
+    } catch (error) {
+      console.error('Error fetching permissions:', error);
+    }
+  };
   const validationSchema = Yup.object().shape({
     newRole: Yup.string()
       .required('Role name is required')
@@ -207,7 +220,7 @@ const CreateRole = () => {
                         </label>
                       </div>
                     </div>
-                    <div className='col-6 mt-4'>
+                    {/*<div className='col-6 mt-4'>
                       <label htmlFor="permissions">Products</label>
                       <div className="custom-control custom-checkbox">
                         <input
@@ -261,7 +274,7 @@ const CreateRole = () => {
                           Delete
                         </label>
                       </div>
-                    </div>
+                    </div>*/}
                   </div>
                   {formik.touched.permissions && formik.errors.permissions && (
                     <div className="text-danger my-2">{formik.errors.permissions}</div>
