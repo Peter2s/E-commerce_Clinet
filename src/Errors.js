@@ -6,7 +6,7 @@ const handleErrors = (err) => {
     if (typeof error === 'string') {
         MySwal.fire({
             icon: 'error',
-            title: 'Oops....',
+            title: 'Oops...',
             text: error,
         });
     } else if (typeof error === 'object') {

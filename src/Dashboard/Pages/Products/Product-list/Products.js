@@ -80,7 +80,44 @@ const Products = () => {
         });
       });
   };
+    const handleActivate = async (userId) => {
+        await axiosInstance
+            .post(`/api/v1/users/${userId}/ban`)
+            .then((res) => {
+                // Update the user data
+                setProduct(prevData => {
+                    const updatedData = [...prevData];
+                    const userIndex = updatedData.findIndex(user => user._id === userId);
+                    if (userIndex !== -1) {
+                        updatedData[userIndex] = { ...updatedData[userIndex], is_active: true };
+                    }
+                    return updatedData;
+                });
+            })
 
+            .catch((err) => {
+                console.log(err.message);
+            });
+    };
+
+    const handleDeactivate = async (userId) => {
+        await axiosInstance
+            .post(`/api/v1/users/${userId}/unban`)
+            .then((res) => {
+                // Update the user data
+                setProduct(prevData => {
+                    const updatedData = [...prevData];
+                    const userIndex = updatedData.findIndex(user => user._id === userId);
+                    if (userIndex !== -1) {
+                        updatedData[userIndex] = { ...updatedData[userIndex], is_active: false };
+                    }
+                    return updatedData;
+                });
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
+    };
   const handleEditProduct = (id) => {
     navigate(`/admin/edit-product/${id}`);
   };
@@ -121,7 +158,8 @@ const Products = () => {
               <td style={{ maxWidth: "200px" }}>
                   <img
                       className="img-thumbnail"
-                      style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}
+                      /*style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}*/
+                      style={{ maxWidth: "100px",maxHeight: "50px", objectFit: "cover" }}
                       src={product.image}
                       alt={product.name}
                   />
@@ -132,6 +170,11 @@ const Products = () => {
             <td>{product.quantity}</td>
             <td>
               <div>
+                  {product.is_active ? (
+                      <Btn className="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(product.id)}/>
+                  ) : (
+                      <Btn className="btn-success btn fa fa-lock-open" onClick={() => handleActivate(product.id)}/>
+                  )}
                 <button
                   className="btn btn-primary"
                   onClick={() => handleEditProduct(product._id)}

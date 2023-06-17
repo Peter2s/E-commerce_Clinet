@@ -62,6 +62,46 @@ const Emps = () => {
       console.log(error);
     }
   };
+    const handleActivate = async (userId) => {
+        await axiosInstance
+            .post(`/api/v1/employees/${userId}/ban`)
+            .then((res) => {
+                // Update the user data
+                setEmpData(prevData => {
+                    const updatedData = [...prevData];
+                    const userIndex = updatedData.findIndex(user => user.id === userId);
+                    // console.log(userIndex)
+                    if (userIndex !== -1) {
+                        updatedData[userIndex] = { ...updatedData[userIndex], is_banned: true };
+                    }
+                    return updatedData;
+                });
+            })
+
+            .catch((err) => {
+                console.log(err.message);
+            });
+    };
+
+    const handleDeactivate = async (userId) => {
+        await axiosInstance
+            .post(`/api/v1/employees/${userId}/unban`)
+            .then((res) => {
+                // Update the user data
+                setEmpData(prevData => {
+                    const updatedData = [...prevData];
+                    const userIndex = updatedData.findIndex(user => user.id === userId);
+                    // console.log(userIndex)
+                    if (userIndex !== -1) {
+                        updatedData[userIndex] = { ...updatedData[userIndex], is_banned: false };
+                    }
+                    return updatedData;
+                });
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
+    };
     const handlePageChange = (page) => {
         fetchEmployees(page);
     };
@@ -103,6 +143,11 @@ const Emps = () => {
             <td>{employee.role}</td>
             
                 <td>
+                    {employee.is_banned ? (
+                        <Btn className="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(employee.id)}/>
+                    ) : (
+                        <Btn className="btn-success btn fa fa-lock-open" onClick={() => handleActivate(employee.id)}/>
+                    )}
                 <Link to={`/admin/EmpEdit/${employee.id}`}>
                   <Btn className="btn-primary btn fa fa-edit" />
                 </Link>

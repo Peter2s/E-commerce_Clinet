@@ -79,7 +79,44 @@ const Categories = () => {
         });
       });
   };
+  const handleActivate = async (userId) => {
+    await axiosInstance
+        .post(`${CategoriesURL}/${userId}/ban`)
+        .then((res) => {
+          // Update the user data
+          setCategories(prevData => {
+            const updatedData = [...prevData];
+            const userIndex = updatedData.findIndex(user => user._id === userId);
+            if (userIndex !== -1) {
+              updatedData[userIndex] = { ...updatedData[userIndex], is_active: true };
+            }
+            return updatedData;
+          });
+        })
 
+        .catch((err) => {
+          console.log(err.message);
+        });
+  };
+
+  const handleDeactivate = async (userId) => {
+    await axiosInstance
+        .post(`${CategoriesURL}/${userId}/unban`)
+        .then((res) => {
+          // Update the user data
+          setCategories(prevData => {
+            const updatedData = [...prevData];
+            const userIndex = updatedData.findIndex(user => user._id === userId);
+            if (userIndex !== -1) {
+              updatedData[userIndex] = { ...updatedData[userIndex], is_active: false };
+            }
+            return updatedData;
+          });
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+  };
   const handleEditCategory = (id) => {
     navigate(`/admin/editcategory/${id}`);
   };
@@ -115,7 +152,8 @@ const Categories = () => {
             <td style={{ maxWidth: "200px" }}>
               <img
                 className="img-thumbnail"
-                style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}
+                // style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}
+                style={{ maxWidth: "100px",maxHeight: "50px", objectFit: "cover" }}
                 src={category.image}
                 alt={category.name}
               />
