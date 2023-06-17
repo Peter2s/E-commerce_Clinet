@@ -82,14 +82,14 @@ const Products = () => {
   };
     const handleActivate = async (userId) => {
         await axiosInstance
-            .post(`/api/v1/users/${userId}/ban`)
+            .post(`${Product_URL}/${userId}/ban`)
             .then((res) => {
                 // Update the user data
                 setProduct(prevData => {
                     const updatedData = [...prevData];
                     const userIndex = updatedData.findIndex(user => user._id === userId);
                     if (userIndex !== -1) {
-                        updatedData[userIndex] = { ...updatedData[userIndex], is_active: true };
+                        updatedData[userIndex] = { ...updatedData[userIndex], is_active: false };
                     }
                     return updatedData;
                 });
@@ -102,14 +102,14 @@ const Products = () => {
 
     const handleDeactivate = async (userId) => {
         await axiosInstance
-            .post(`/api/v1/users/${userId}/unban`)
+            .post(`${Product_URL}/${userId}/unban`)
             .then((res) => {
                 // Update the user data
                 setProduct(prevData => {
                     const updatedData = [...prevData];
                     const userIndex = updatedData.findIndex(user => user._id === userId);
                     if (userIndex !== -1) {
-                        updatedData[userIndex] = { ...updatedData[userIndex], is_active: false };
+                        updatedData[userIndex] = { ...updatedData[userIndex], is_active: true };
                     }
                     return updatedData;
                 });
@@ -170,7 +170,7 @@ const Products = () => {
             <td>{product.quantity}</td>
             <td>
               <div>
-                  {product.is_active ? (
+                  {!product.is_active ? (
                       <Btn className="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(product.id)}/>
                   ) : (
                       <Btn className="btn-success btn fa fa-lock-open" onClick={() => handleActivate(product.id)}/>

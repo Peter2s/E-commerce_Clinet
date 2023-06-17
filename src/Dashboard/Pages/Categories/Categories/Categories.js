@@ -153,13 +153,18 @@ const Categories = () => {
               <img
                 className="img-thumbnail"
                 // style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}
-                style={{ maxWidth: "100px",maxHeight: "50px", objectFit: "cover" }}
+                style={{ maxWidth: "100px",maxHeight: "50px", objectFit: "cover" }}ء
                 src={category.image}
                 alt={category.name}
               />
             </td>
             <td>
               <div>
+                  {category.is_active ? (
+                      <Btn className="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(category.id)}/>
+                  ) : (
+                      <Btn className="btn-success btn fa fa-lock-open" onClick={() => handleActivate(category.id)}/>
+                  )}
                 <button
                   className="btn btn-primary"
                   onClick={() => handleEditCategory(category._id)}
