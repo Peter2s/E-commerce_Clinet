@@ -12,13 +12,13 @@ const Orders = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    axiosInstance.get("/api/v1/orders")
+    axiosInstance.get("/orders")
       .then((res) => {
         setOrderData(res.data.data);
       }).catch((err) => {
         console.log(err.message);
       });
-      axiosInstance.get("/api/v1/products") // Fetch products data
+      axiosInstance.get("/products") // Fetch products data
       .then((res) => {
         setProducts(res.data);
       })

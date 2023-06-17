@@ -16,6 +16,7 @@ import Login from "Dashboard/Pages/Login/Login";
 import {CategoryCard} from "Website/Pages/Categories/CategoryCard";
 import Products from "Website/Pages/Products/Products";
 import Orders from "Website/Pages/Orders/Orders";
+import OrderDetail from "Website/Pages/Orders/OrderDetails/OrderDetail";
 import AboutUS from "Website/Pages/AboutUs/AboutUs";
 import ContactUs from "Website/Pages/ContactUS/ContactUs";
 import Cart from "Website/Pages/Cart/Cart";
@@ -40,6 +41,7 @@ root.render(
       <Route path="/categories" element={<div dir="rtl" className="websitePages"><NavBar/><CategoryCard/><FooterSite /></div>} />
       <Route path="/products" element={<div dir="rtl" className="websitePages"><NavBar/><Products/><FooterSite /></div>} />
       <Route path="/orders" element={<div dir="rtl" className="websitePages"><NavBar/><Orders/><FooterSite /></div>} />
+      <Route path="/orders/OrderDetail/:id" element={<div dir="rtl" className="websitePages"><NavBar/><OrderDetail/><FooterSite /></div>} />
       <Route path="/aboutus" element={<div dir="rtl" className="websitePages"><NavBar/><AboutUS/><FooterSite /></div>} />
       <Route path="/contactus" element={<div dir="rtl" className="websitePages"><NavBar/><ContactUs/><FooterSite /></div>} />
       <Route path="/cart" element={<div dir="rtl" className="websitePages"><NavBar/><Cart/><FooterSite /></div>} />
