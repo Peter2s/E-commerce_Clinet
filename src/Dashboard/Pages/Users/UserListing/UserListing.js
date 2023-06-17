@@ -53,10 +53,16 @@ const Users = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await axiosInstance.delete(`/api/v1/users/${id}`);
-        setUserData((prevUser) =>prevUser.filter((user) => user.id !== id));
-        console.log(response.data);
-        Swal.fire('Deleted!', 'The role has been deleted.', 'success');
+        await axiosInstance.delete(`/api/v1/users/${id}`).then((res) => {
+            console.log(res);
+            setUserData((prevUser) =>prevUser.filter((user) => user.id !== id));
+            Swal.fire('Deleted!', 'The User has been deleted.', 'success');
+        }).catch((err) => {
+            console.log(err);
+            Swal.fire('Error!', err?.response?.data?.error || 'The User can not been deleted.', 'error');
+        });
+
+
       }
     } catch (error) {
       console.log(error);
@@ -64,7 +70,7 @@ const Users = () => {
   };
   const handleActivate = async (userId) => {
     await axiosInstance
-    .post(`/api/v1/users/${userId}/activate`)
+    .post(`/api/v1/users/${userId}/ban`)
       .then((res) => {
         // Update the user data
         setUserData(prevData => {
@@ -84,7 +90,7 @@ const Users = () => {
 
   const handleDeactivate = async (userId) => {
     await axiosInstance
-    .post(`/api/v1/users/${userId}/deactivate`)
+    .post(`/api/v1/users/${userId}/unban`)
       .then((res) => {
         // Update the user data
         setUserData(prevData => {

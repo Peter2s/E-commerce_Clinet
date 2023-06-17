@@ -1,13 +1,15 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Card, CardHeader, Container, Row, Col, CardBody } from "reactstrap";
+import {Card, CardHeader, Container, Row, Col, CardBody, FormGroup, Input} from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import MySwal from 'sweetalert2';
 import Btn from "Dashboard/SharedUI/Btn/Btn";
 import input from "Dashboard/SharedUI/Input/Input";
 import { axiosInstance } from "../../../../Axios";
+import {FormLabel} from "react-bootstrap";
+import handleError from "../../../../Errors";
 const UserCreate = () => {
   const navigate = useNavigate();
 
@@ -29,24 +31,28 @@ const UserCreate = () => {
     validationSchema: Yup.object({
       name: Yup.string().matches(/^[a-zA-Z\s]*$/, "Invalid name format").required("Enter the name"),
       email: Yup.string().email("Invalid email address").required("Enter the email"),
-      phone: Yup.string().matches(/^[0-9]{11}$/, "Invalid phone number").required("Enter the phone number"),
+      phone: Yup.string().matches(/^0[0125][0-9]{9}$/, "Invalid phone number").required("Enter the phone number"),
       password: Yup.string()
         .min(8, "Password must be at least 8 characters")
         .max(20, "Password must be less than 20 characters")
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Invalid password format")
+        // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Invalid password format")
         .required("Enter the password"),
-      image: Yup.mixed()
+      /*image: Yup.mixed()
         .test("fileFormat", "Unsupported file format", (value) => {
           if (value) {
             const supportedFormats = ["image/png", "image/jpg", "image/jpeg"];
             return supportedFormats.includes(value.type);
           }
           return true; // Allow empty field
-        }),
+        }),*/
+      // is same as password
+
+      confirmPassword: Yup.string().required("Confirm password is required").oneOf([Yup.ref("password"), null], "Passwords must match"),
+      image: Yup.mixed().required("Please select Valid image"),
       bio: Yup.string().required("Enter the bio"),
       country: Yup.string().required("Enter the country"),
       city: Yup.string().required("Enter the city"),
-      governate: Yup.string().required("Enter the governate"),
+      governorate: Yup.string().required("Enter the governorate"),
       area: Yup.string().required("Enter the area"),
     }),
     onSubmit: (values) => {
@@ -56,7 +62,7 @@ const UserCreate = () => {
           phone: values.phone,
           password: values.password,
           confirmPassword: values.confirmPassword,
-          image: values.image,
+          image: values.image[0],
           bio: values.bio,
           address: {
             country: values.country,
@@ -84,7 +90,8 @@ const UserCreate = () => {
           navigate("/admin/users");
         })
         .catch((err) => {
-          console.log(err.message);
+          handleError(err);
+
         });
     },
     });
@@ -149,23 +156,51 @@ const UserCreate = () => {
                     </div>
                   </Col>
                   <Col>
+                    <FormGroup>
+                      <label>Image</label>
+                      <FormLabel
+                          htmlFor="coverImage"
+                          className="btn btn-primary"
+                          style={{ cursor: "pointer" }}
+                      >
+                        Category Image : Browse
+                      </FormLabel>
+                      <Input
+                          id="coverImage"
+                          type="file"
+                          name="image"
+                          className="form-control"
+                          style={{ display: "none" }}
+                          onBlur={formik.handleBlur}
+                          onChange={(event) => {
+                            formik.values.image = Array.from(event.target.files);
+                            console.log(formik.values.image);
+                          }}
+                      />
+                      {formik.errors.image && formik.touched.image && (
+                          <span className="text-danger">{formik.errors.image}</span>
+                      )}
+                    </FormGroup>
+                  </Col>
+
+                </Row>
+                <Row>
+                  <Col>
                     <div className="form-group">
                       <label>Password</label>
                       <input
-                        type="password"
-                        name="password"
-                        value={formik.values.password}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        className="form-control form-control-alternative"
+                          type="password"
+                          name="password"
+                          value={formik.values.password}
+                          onBlur={formik.handleBlur}
+                          onChange={formik.handleChange}
+                          className="form-control form-control-alternative"
                       />
                       {formik.errors.password && formik.touched.password && (
-                        <span className="text-danger">{formik.errors.password}</span>
+                          <span className="text-danger">{formik.errors.password}</span>
                       )}
                     </div>
                   </Col>
-                </Row>
-                <Row>
                 <Col>
                     <div className="form-group">
                       <label>confirmPassword</label>
@@ -184,22 +219,7 @@ const UserCreate = () => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col>
-                    <div className="form-group">
-                      <label>Image</label>
-                      <input
-                        type="file"
-                        name="image"
-                        onChange={(event) => {
-                          formik.setFieldValue("image", event.currentTarget.files[0]);
-                        }}
-                        className="form-control form-control-alternative"
-                      />
-                      {formik.errors.image && formik.touched.image && (
-                        <span className="text-danger">{formik.errors.image}</span>
-                      )}
-                    </div>
-                  </Col>
+
                   <Col>
                     <div className="form-group">
                       <label>Bio</label>
