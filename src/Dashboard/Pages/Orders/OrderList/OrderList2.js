@@ -5,42 +5,44 @@ import Tables from '../../../SharedUI/Table/Tables';
 import Btn from 'Dashboard/SharedUI/Btn/Btn';
 import {axiosInstance} from '../../../../Axios';
 import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
+import DataTable from "../../../SharedUI/DataTable/DataTable";
 
 const Orders = () => {
     const [orderdata, setOrderData] = useState([]);
-    const [products, setProducts] = useState([]);
-    const [total, setTotal] = useState(0);
+
+    // For pagination
+    const [rows, setRows] = useState(5); // Number of rows per page
+    const [page, setPage] = useState(1); // Current page number
+    const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({
         currentPage: null,
         totalPages: null,
         limit: null,
+        total: null,
     });
 
-    const fetchOrders = async (page = 1) => {
-        axiosInstance.get("/api/v1/orders?page=" + page) // Fetch orders data
+    // check that there is no page as argument and the url is clearly using pagination
+    const fetchOrders = async () => {
+        setLoading(true);
+        axiosInstance.get(`/api/v1/orders?page=${page}&limit=${rows}`)
             .then((res) => {
                 setOrderData(res.data.data);
-                setTotal(res.data.pagination.total);
                 setPagination({
                     currentPage: res.data.pagination.current_page,
                     totalPages: res.data.pagination.total_pages,
                     limit: res.data.pagination.limit,
+                    total : res.data.pagination.total,
                 });
             }).catch((err) => {
             console.log(err.message);
         });
-        axiosInstance.get("/api/v1/products") // Fetch products data
-            .then((res) => {
-                setProducts(res.data);
-            })
-            .catch((err) => {
-                console.log(err.message);
-            });
+        setLoading(false);
     }
 
     useEffect(() => {
+        setLoading(true);
         fetchOrders();
-    }, []);
+    }, [rows, page]);
 
     const handleCancelOrder = async (id, status) => {
         try {
@@ -109,80 +111,45 @@ const Orders = () => {
             console.log(error);
         }
     };
-    const updateOrderStatus = (id, newStatus) => {
-        // Update request status in the API
-        axiosInstance.patch(`/api/v1/orders/${id}`, {status: newStatus})
-            .then(() => {
-                // Update the requests state with the updated status
-                const updatedOrders = orderdata.map((order) => {
-                    if (order._id === id) {
-                        return {...order, status: newStatus};
-                    }
-                    return order;
-                });
-                setOrderData(updatedOrders);
-            })
-            .catch((error) => {
-                console.error("Error updating order status:", error);
-            });
-    };
 
-    const handleStatusChange = (id, event) => {
-        const newStatus = event.target.value;
-        updateOrderStatus(id, newStatus);
-    };
+    const handlePageChange = async (event) => {
 
-    const getProductNames = (order) => {
-        return order.products.map((product) => {
-            const matchingProduct = products.find((p) => p.id === product.product_id);
-            return matchingProduct ? matchingProduct.name_en : "";
-        }).join(",");
-    };
+        setPage(event.page + 1);
+        setRows(event.rows);
 
-    const handlePageChange = (page) => {
-        fetchOrders(page);
     }
-
 
     return (
         <>
-            <Tables title={`Orders (${total})`}
-                    trContent={
-                        <>
-                            <th scope="col">#</th>
-                            <th scope="col">Order Id</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Quantity</th>
-                            <th scope="col">Total Price ($)</th>
-                            {/*<th scope="col">Products</th>*/}
-                            <th scope="col">Status</th>
-                            <th scope="col">Payment Status</th>
-                            <th scope="col">Actions</th>
-                        </>
-                    }
-                    tableContent={
-                        orderdata.map((order, index) => (
-                            <tr key={order._id}>
-                                <td>{(index + 1) + (pagination.currentPage - 1) * pagination.limit}</td>
-                                <td>{order._id}</td>
-                                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                                <td>{order.products?.length}</td>
-                                <td>{order.total_price}</td>
-                                {/*<td></td>*/}
-                                {/* <td>{order.status_history.length > 0 && (
-  <p>
-    Last Updated: {new Date(order.status_history[order.status_history.length - 1].date).toLocaleDateString()}
-  </p>
-)}</td> */}
-                                {/* <td>{order.products.reduce((acc, product) => acc + product.quantity, 0)}</td>
-              <td>{order.total_price}</td>
-              
-                
-                <td>{getProductNames(order)}</td> */}
-
-                                <td>{order.status}</td>
-                                <td>{order.payment_status}</td>
-                                <td  >
+            <DataTable
+                title="Employees"
+                /*addBtn={
+                    <Link to="/admin/employees/create" className='d-flex'>
+                        <Btn
+                            className="btn btn-primary ml-auto"
+                            title="Add Employee"
+                        />
+                    </Link>
+                }*/
+                data={orderdata}
+                loading={loading}
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                columns={[
+                    {header: 'Order Id', field: 'id'},
+                    {header: 'Date', body: (order) => {
+                            const date = new Date(order.createdAt);
+                            return date.toLocaleDateString();
+                        }
+                    },
+                    {header: 'Quantity', field: 'products.length'},
+                    {header: 'Total Price', field: 'total_price'},
+                    {header: 'Status', field: 'status'},
+                    {header: 'Payment Status', field: 'payment_status'},
+                    {
+                        header: 'Actions', body: (order) => {
+                            return (
+                                <div className="d-flex">
                                     <Link to={`/admin/OrderDetails/${order._id}`}>
                                         <button title={"view order"} className="btn-primary btn fa fa-circle-info mr-2"/>
                                     </Link>
@@ -200,20 +167,18 @@ const Orders = () => {
                                         onClick={() => handleCancelOrder(order._id, order.status)}
                                         disabled={order.status !=="Pending"}
                                     />
-                                </td>
-                            </tr>
-                        ))
-                    }
-                    pagination={
-                        <PaginationAdmin
-                            currentPage={pagination.currentPage}
-                            totalPages={pagination.totalPages}
-                            onPageChange={handlePageChange}
-                        />
-                    }
+                                </div>
+                            );
+                        }
+                    },
+                ]}
+
             />
+
         </>
     );
 };
+
+
 
 export default Orders;
