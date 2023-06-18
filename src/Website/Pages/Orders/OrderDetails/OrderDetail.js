@@ -15,7 +15,7 @@ const OrderDetail = () => {
 
   useEffect(() => {
     axiosInstance
-      .get(`/api/v1/orders/${id}`)
+      .get(`/orders/${id}`)
       .then((res) => {
         console.log(res.data);
         setOrderData(res.data.data);
@@ -32,7 +32,7 @@ const OrderDetail = () => {
 
   const fetchProductData = async (products) => {
     const productId = products.map((product) => product.id);
-    const productResponse = await axiosInstance.get("/api/v1/products");
+    const productResponse = await axiosInstance.get("/products");
     console.log(productResponse.data); // Add this line to check the structure of the response
     const productDataWithImage = productResponse.data.data.map((product) => {
       if (productId.includes(product.id)) {

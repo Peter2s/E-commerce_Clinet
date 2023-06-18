@@ -14,7 +14,7 @@ const ContactUs = () => {
 
   const fetchContactUsData = async () => {
     await axiosInstance
-      .get("/settings")
+      .get("/api/v1/settings")
       .then((res) => {
         setContactUsData(res.data.data);
       })

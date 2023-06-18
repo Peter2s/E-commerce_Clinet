@@ -10,7 +10,7 @@ const Orders = () => {
 
   useEffect(() => {
     axiosInstance
-      .get("/api/v1/orders")
+      .get("/orders")
       .then((res) => {
         setOrderData(res.data.data);
         fetchProductData(res.data.data);
@@ -22,7 +22,7 @@ const Orders = () => {
 
   const fetchProductData = async (orders) => {
     const productIds = orders.flatMap((order) => order.products.map((product) => product.product_id));
-    const productResponse = await axiosInstance.get("/api/v1/products");
+    const productResponse = await axiosInstance.get("/products");
     const productDataWithImage = productResponse.data.data.map((product) => {
       if (productIds.includes(product._id)) {
         const productImage = product.images[0] || "";

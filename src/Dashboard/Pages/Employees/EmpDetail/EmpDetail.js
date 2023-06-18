@@ -59,6 +59,15 @@ const EmpDetails = () => {
                       >
                         Back
                       </Link>
+                      <Link
+                          className="btn btn-danger"
+                          to={`/admin/EmpEdit/${id}`}
+                          color="warning"
+                          href="#pablo"
+                          size="sm"
+                      >
+                        Edit
+                      </Link>
                     </Col>
                   </Row>
                 </CardHeader>

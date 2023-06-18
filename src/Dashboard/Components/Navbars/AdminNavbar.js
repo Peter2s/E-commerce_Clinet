@@ -39,6 +39,7 @@ import NotificationIcon from "./NotificationIcon";
 const AdminNavbar = (props) => {
   const jwt = localStorage.getItem("token");
   const decodedToken = jwt ? jwtDecode(jwt) : null;
+  console.log(decodedToken)
   const userName = decodedToken ? decodedToken.role : null;
 
   const handleLogout = () => {

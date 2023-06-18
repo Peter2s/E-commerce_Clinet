@@ -6,7 +6,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       {Array.from({ length: totalPages }, (_, index) => (
         <button
           key={index + 1}
-          className={`btn ${currentPage === index + 1 ? 'active' : ''}`}
+          className={`btn ${currentPage === index + 1 ? 'btn-success' : ''}`}
           onClick={() => onPageChange(index + 1)}
         >
           {index + 1}
