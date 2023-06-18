@@ -29,7 +29,9 @@ import "@fontsource/almarai";
 import "./website.css";
 import TermsAndConditions from "Website/Pages/TermsAndConditions/TermsAndConditions";
 import Profile from "Website/Pages/Profile/Profile";
-import Address from "Website/Pages/Address/Address";
+import Address from "Website/Pages/Address/AddressList/AddressList";
+import AddressEdit from "Website/Pages/Address/AddressEdit/AddressEdit";
+import AddressAdd from "Website/Pages/Address/AddressAdd/AddressAdd";
 import { AllCategoryPage } from "./Website/Pages/Categories/AllCategoryPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -178,6 +180,26 @@ root.render(
             <div dir="rtl" className="websitePages">
               <NavBar />
               <Address />
+              <FooterSite />
+            </div>
+          }
+        />
+        <Route
+          path="/address/:id/edit"
+          element={
+            <div dir="rtl" className="websitePages">
+              <NavBar />
+              <AddressEdit />
+              <FooterSite />
+            </div>
+          }
+        />
+        <Route
+          path="/address/add"
+          element={
+            <div dir="rtl" className="websitePages">
+              <NavBar />
+              <AddressAdd />
               <FooterSite />
             </div>
           }
