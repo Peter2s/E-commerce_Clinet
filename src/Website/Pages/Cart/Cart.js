@@ -90,7 +90,8 @@ const handleDelete = async (productId) => {
                             <div>
                                 <h2 >المنتجات في العربة</h2>
 <hr />
-                                {cartData?.map((product) => (
+                                {  (cartData.length) ?
+                                    cartData?.map((product) => (
                                     <div key={product.product_id._id}>
                                         <Row>
                                             <Col xs="3">
@@ -109,7 +110,19 @@ const handleDelete = async (productId) => {
                                         </Row>
                                         <hr />
                                     </div>
-                                ))}
+                                ))
+                             :
+                                    (   <div className="text-center">
+                                            <h2>لا يوجد منتجات في العربة</h2>
+                                            <Link to={`/home`}>
+                                                <h3 className={"text-light btn btn-primary"}>تسوق الآن<i className="fa fa-arrow-left mr-3"></i></h3>
+                                            </Link>
+                                        </div>
+                                    )
+                                }
+
+
+
                                 <h2>السعر الكلي: {totalPrice.toFixed(2)}$</h2>
                                 <button className="btn btn-primary w-100" >{ (totalPrice !== 0 ) ? (
                                     <Link to={`/checkout`}>
