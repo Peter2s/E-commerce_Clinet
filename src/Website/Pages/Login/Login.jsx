@@ -88,13 +88,14 @@ const Login = () => {
               <button
                 onClick={formik.handleSubmit}
                 className="btn-login mx-auto mt-4"
+                type="submit"
               >
                 تسجيل الدخول
               </button>
             </Form>
             <label className="mx-auto my-4">
               ليس لديك حساب ؟{" "}
-              <Link to="/register" style={{ textDecoration: "none" }}>
+              <Link to="/auth/register" style={{ textDecoration: "none" }}>
                 <span style={{ cursor: "pointer" }} className="text-danger">
                   اضغط هنا
                 </span>
