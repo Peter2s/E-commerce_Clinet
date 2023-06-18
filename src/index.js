@@ -22,7 +22,7 @@ import AboutUS from "Website/Pages/AboutUs/AboutUs";
 import ContactUs from "Website/Pages/ContactUS/ContactUs";
 import Cart from "Website/Pages/Cart/Cart";
 import Checkout from "Website/Pages/Checkout/Checkout";
-import LoginSite from "Website/Pages/Login/Login";
+import LoginSite from "./Website/Pages/Login/Login";
 import NavBar from "Website/components/NavBar/NavBar";
 import FooterSite from "Website/components/Footer/FooterSite";
 import "@fontsource/almarai";
@@ -34,6 +34,7 @@ import AddressEdit from "Website/Pages/Address/AddressEdit/AddressEdit";
 import AddressAdd from "Website/Pages/Address/AddressAdd/AddressAdd";
 import { AllCategoryPage } from "./Website/Pages/Categories/AllCategoryPage";
 import Registration from "./Website/Pages/Registration/Registration";
+import { ForgetPassword } from "./Website/Pages/ForgetPassword/ForgetPassword";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -207,6 +208,7 @@ root.render(
         />
         <Route path="/auth/login" element={<LoginSite />} />
         <Route path="/auth/register" element={<Registration />} />
+        <Route path="/forgot-password" element={<ForgetPassword />} />
 
         <Route path="/login/*" element={<Login />} />
         <Route path="/ForgetPssword/*" element={<ForgetPssword />} />
