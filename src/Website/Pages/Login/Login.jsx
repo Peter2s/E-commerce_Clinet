@@ -33,6 +33,8 @@ const Login = () => {
           },
         })
         .then((res) => {
+          localStorage.setItem("token", res.data.data.token);
+          localStorage.setItem("user", JSON.stringify(res.data.data.user));
           navigate("/home");
         })
         .catch((err) => {
@@ -42,6 +44,8 @@ const Login = () => {
             title: "error!",
             text: err.response.data.error,
           });
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
         });
     },
   });

@@ -83,6 +83,8 @@ const Registration = () => {
             title: "success!",
             text: "account created successfully",
           });
+          localStorage.setItem("token", res.data.data.token);
+          localStorage.setItem("user", JSON.stringify(res.data.data.user));
           navigate("/home");
         })
         .catch((err) => {
@@ -92,6 +94,8 @@ const Registration = () => {
             title: "error!",
             text: err.response.data.error,
           });
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
         });
     },
   });
