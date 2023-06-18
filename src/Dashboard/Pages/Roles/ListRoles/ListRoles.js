@@ -16,10 +16,14 @@ const Roles = () => {
     totalPages: null,
     limit: null,
   });
-
+  // console.log("routes",routes.map((route) => route));
   useEffect(() => {
+    // fetchRoutes();
     fetchRolesData();
+
   }, []);
+
+
 
   const fetchRolesData = async (page = 1) => {
     try {
@@ -121,6 +125,7 @@ const Roles = () => {
 
   return (
     <>
+
       <Tables
         btn={
           <>
@@ -139,6 +144,7 @@ const Roles = () => {
             <th scope="col">Actions</th>
           </>
         }
+
         tableContent={
           roles.map((role,index) => (
             <tr key={role._id}>
