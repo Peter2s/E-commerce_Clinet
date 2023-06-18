@@ -16,10 +16,13 @@ const Login = () => {
       password: "",
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().required("Name is required"),
       email: Yup.string()
         .email("Must be a valid email")
         .required("Email is required"),
+      password: Yup.string()
+        .min(8, "Password must be at least 8 characters")
+        .max(20, "Password must be less than 20 characters")
+        .required("Password is required"),
     }),
     onSubmit: (values) => {
       console.log(values);
@@ -42,7 +45,7 @@ const Login = () => {
           MySwal.fire({
             icon: "error",
             title: "error!",
-            text: err.response.data.error,
+            text: Object.entries(err.response.data.error),
           });
           localStorage.removeItem("token");
           localStorage.removeItem("user");
@@ -56,7 +59,7 @@ const Login = () => {
         <Row className="py-5 d-flex justify-content-center ">
           <Col sm="12" className="d-flex flex-column ">
             <label className="mx-auto title-login">تسجيل الدخول</label>
-            <Form>
+            <Form onSubmit={formik.handleSubmit}>
               <FormGroup>
                 <input
                   value={formik.values.email}

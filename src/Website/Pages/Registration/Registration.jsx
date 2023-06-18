@@ -92,7 +92,7 @@ const Registration = () => {
           MySwal.fire({
             icon: "error",
             title: "error!",
-            text: err.response.data.error,
+            text: Object.entries(err.response.data.error),
           });
           localStorage.removeItem("token");
           localStorage.removeItem("user");
