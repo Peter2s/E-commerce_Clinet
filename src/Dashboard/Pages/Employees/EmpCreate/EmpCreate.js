@@ -20,7 +20,7 @@ const EmpCreate = () => {
 
   useEffect(() => {
     axiosInstance
-      .get("/api/v1/roles")
+      .get("/api/v1/roles?fields=name&limit=1000")
       .then((res) => {
         setRoles(res.data.data); // Assuming the response contains an array of roles
       })
@@ -51,10 +51,6 @@ const EmpCreate = () => {
       password: Yup.string()
         .min(8, "Password must be at least 8 characters")
         .max(20, "Password must be less than 20 characters")
-        .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-          "Invalid password format"
-        )
         .required("Enter the password"),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
@@ -62,7 +58,7 @@ const EmpCreate = () => {
     }),
     onSubmit: (values) => {
       console.log(values);
-      if (values.password != values.confirmPassword) {
+      if (values.password !== values.confirmPassword) {
         console.log(values.password);
         console.log(values.passwordConfirm);
 
@@ -201,6 +197,7 @@ const EmpCreate = () => {
                   </Col>
                   <Col>
                     <FormGroup>
+                      <label>Role</label>
                       <select
                         name="role_id"
                         id="role_id"

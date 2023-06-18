@@ -12,9 +12,11 @@ import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 const Products = () => {
   const Product_URL = "api/v1/products";
   const [product, setProduct] = useState([]);
+  const [total, setTotal] = useState(0);
   const [pagination, setPagination] = useState({
     currentPage: null,
     totalPages: null,
+      limit:null
   });
   const navigate = useNavigate();
 
@@ -29,9 +31,11 @@ const Products = () => {
         console.log(response.data);
         const { data, pagination } = response.data;
         setProduct(data);
+        setTotal(pagination.total);
         setPagination({
           currentPage: pagination.current_page,
           totalPages: pagination.total_pages,
+            limit:pagination.limit
         });
       })
       .catch((error) => {
@@ -76,7 +80,44 @@ const Products = () => {
         });
       });
   };
+    const handleActivate = async (userId) => {
+        await axiosInstance
+            .post(`${Product_URL}/${userId}/ban`)
+            .then((res) => {
+                // Update the user data
+                setProduct(prevData => {
+                    const updatedData = [...prevData];
+                    const userIndex = updatedData.findIndex(user => user._id === userId);
+                    if (userIndex !== -1) {
+                        updatedData[userIndex] = { ...updatedData[userIndex], is_active: false };
+                    }
+                    return updatedData;
+                });
+            })
 
+            .catch((err) => {
+                console.log(err.message);
+            });
+    };
+
+    const handleDeactivate = async (userId) => {
+        await axiosInstance
+            .post(`${Product_URL}/${userId}/unban`)
+            .then((res) => {
+                // Update the user data
+                setProduct(prevData => {
+                    const updatedData = [...prevData];
+                    const userIndex = updatedData.findIndex(user => user._id === userId);
+                    if (userIndex !== -1) {
+                        updatedData[userIndex] = { ...updatedData[userIndex], is_active: true };
+                    }
+                    return updatedData;
+                });
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
+    };
   const handleEditProduct = (id) => {
     navigate(`/admin/edit-product/${id}`);
   };
@@ -94,38 +135,46 @@ const Products = () => {
             </Link>
           </>
         }
-        title="Products"
+        title={`Products (${total})`}
         trContent={
           <>
+            <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">الاسم</th>
             <th scope="col">Image</th>
             <th scope="col">Category</th>
             <th scope="col">Description</th>
-            <th scope="col">Price</th>
+            <th scope="col">Price ($)</th>
             <th scope="col">Quantity</th>
             <th scope="col">Actions</th>
             <th scope="col"></th>
           </>
         }
-        tableContent={product.map((product) => (
+        tableContent={product.map((product,index) => (
           <tr key={product._id}>
+            <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
             <td>{product.name_en}</td>
             <td>{product.name_ar}</td>
-            <td style={{ width: "200px" }}>
-              <img
-                className="img-thumbnail"
-                style={{ minWidth: "200px", width: "50%" }}
-                src={product.image}
-                alt={product.name}
-              />
-            </td>
+              <td style={{ maxWidth: "200px" }}>
+                  <img
+                      className="img-thumbnail"
+                      /*style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}*/
+                      style={{ maxWidth: "100px",maxHeight: "50px", objectFit: "cover" }}
+                      src={product.image}
+                      alt={product.name}
+                  />
+              </td>
             <td>{product.category_id.name_en}</td>
             <td>{product.desc_en}</td>
-            <td>{product.price.$numberDecimal}</td>
+            <td>{product.price}</td>
             <td>{product.quantity}</td>
             <td>
               <div>
+                  {!product.is_active ? (
+                      <Btn className="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(product.id)}/>
+                  ) : (
+                      <Btn className="btn-success btn fa fa-lock-open" onClick={() => handleActivate(product.id)}/>
+                  )}
                 <button
                   className="btn btn-primary"
                   onClick={() => handleEditProduct(product._id)}

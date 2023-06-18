@@ -13,28 +13,42 @@ const CreateRole = () => {
     newRole: '',
     permissions: [],
   };
-
+  const methodes = ["GET", "POST", "PATCH", "DELETE","ACTIVATE","DEACTIVATE"];
+  const [routes, setRoutes] = useState([]);
   const [permissionsData, setPermissionsData] = useState([]);
   const navigate = useNavigate();
 
+  const fetchRoutes = async () => {
+    try {
+      const response = await axiosInstance.get('/api/v1/routes');
+      const { routes:route } = response.data.data;
+      setRoutes(route);
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   useEffect(() => {
-    const fetchPermissions = async () => {
-      try {
-        const response = await axiosInstance.get("/api/v1/roles");
-        const roles = response.data.data;
-        console.log(roles);
-        if (roles && roles.length > 0) {
-          const permissions = roles[0].permissions;
-          setPermissionsData(permissions);
-        }
-      } catch (error) {
-        console.error('Error fetching permissions:', error);
-      }
-    };
+    fetchRoutes();
 
-    fetchPermissions();
+
+    // fetchPermissions();
   }, []);
-
+  const fetchPermissions = async () => {
+    try {
+      const response = await axiosInstance.get("/api/v1/roles");
+      const roles = response.data.data;
+      console.log(roles);
+      if (roles && roles.length > 0) {
+        const permissions = roles[0].permissions;
+        setPermissionsData(permissions);
+      }
+    } catch (error) {
+      console.error('Error fetching permissions:', error);
+    }
+  };
   const validationSchema = Yup.object().shape({
     newRole: Yup.string()
       .required('Role name is required')
@@ -136,136 +150,50 @@ const CreateRole = () => {
                     <b>Permissions</b><span className="required">*</span>
                   </label>
                   <br />
-                  <label htmlFor="permissions">Employees</label>
-                  <div className='row'>
-                    <div className='col-6'>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck1"
-                          value="employees:Get"
-                          checked={formik.values.permissions.includes('employees:Get')}
-                          onChange={handlePermissionChange}
-                        />
-                        <label className="custom-control-label" htmlFor="customCheck1">
-                          Get
-                        </label>
-                      </div>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck2"
-                          value="employees:Post"
-                          checked={formik.values.permissions.includes('employees:Post')}
-                          onChange={handlePermissionChange}
-                        />
-                        <label className="custom-control-label" htmlFor="customCheck2">
-                          Post
-                        </label>
-                      </div>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck3"
-                          value="employees:Patch"
-                          checked={formik.values.permissions.includes('employees:Patch')}
-                          onChange={handlePermissionChange}
-                        />
-                        <label className="custom-control-label" htmlFor="customCheck3">
-                          Patch
-                        </label>
-                      </div>
-                    </div>
-                    <div className='col-6 mb-4'>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck4"
-                          value="employees:Delete"
-                          checked={formik.values.permissions.includes('employees:Delete')}
-                          onChange={handlePermissionChange}
-                        />
-                        <label className="custom-control-label" htmlFor="customCheck4">
-                          Delete
-                        </label>
-                      </div>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck5"
-                          value="employees:Ban"
-                          checked={formik.values.permissions.includes('employees:Ban')}
-                          onChange={handlePermissionChange}
-                        />
-                        <label className="custom-control-label" htmlFor="customCheck5">
-                          Ban
-                        </label>
-                      </div>
-                    </div>
-                    <div className='col-6 mt-4'>
-                      <label htmlFor="permissions">Products</label>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck7"
-                          value="products:Get"
-                          checked={formik.values.permissions.includes('products:Get')}
-                          onChange={handlePermissionChange}
-                        />
-                        <label className="custom-control-label" htmlFor="customCheck7">
-                          Get
-                        </label>
-                      </div>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck8"
-                          value="products:Post"
-                          checked={formik.values.permissions.includes('products:Post')}
-                          onChange={handlePermissionChange}
-                        />
-                        <label className="custom-control-label" htmlFor="customCheck8">
-                          Post
-                        </label>
-                      </div>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck9"
-                          value="products:Patch"
-                          checked={formik.values.permissions.includes('products:Patch')}
-                          onChange={handlePermissionChange}
-                        />
-                        <label className="custom-control-label" htmlFor="customCheck9">
-                          Patch
-                        </label>
-                      </div>
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id="customCheck10"
-                          value="products:Delete"
-                          checked={formik.values.permissions.includes('products:Delete')}
-                          onChange={handlePermissionChange}
-                        />
-                        <label className="custom-control-label mb-4" htmlFor="customCheck10">
-                          Delete
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  {formik.touched.permissions && formik.errors.permissions && (
-                    <div className="text-danger my-2">{formik.errors.permissions}</div>
-                  )}
+
+
+                      <div  >
+                        <table className="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col" className="text-center">Route</th>
+                                    <th scope="col" className="text-center">View - View ALl</th>
+                                    <th scope="col" className="text-center">Create</th>
+                                    <th scope="col" className="text-center">Update</th>
+                                    <th scope="col" className="text-center">Delete</th>
+                                    <th scope="col" className="text-center">Activate</th>
+                                    <th scope="col" className="text-center">Deactivate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {routes.map((route) => (
+                                <tr>
+                                    <td className="text-center">{route}</td>
+                                  {methodes.map((method) => (
+                                    <td className="text-center">
+                                        <div className="custom-control custom-checkbox text-center">
+                                            <input
+                                                type="checkbox"
+                                                className="custom-control-input"
+                                                id={`${route}:${method}`}
+                                                value={`${route}:${method}`}
+                                                checked={formik.values.permissions.includes(`${route}:${method}`)}
+                                                onChange={handlePermissionChange}
+                                            />
+                                            <label className="custom-control-label" htmlFor={`${route}:${method}`}>
+                                            </label>
+                                        </div>
+                                    </td>))}
+                                </tr>))}
+                            </tbody>
+                        </table>
+                        </div>
+
+
+                    {formik.touched.permissions && formik.errors.permissions ? (
+                    <div className="text-danger">{formik.errors.permissions}</div>
+                    ) : null}
+
                   <CardFooter>
                     <Btn type="submit" title="Save" className="btn btn-primary" />
                     <Btn type="button" title="Cancel" className="btn btn-light" onClick={() => navigate('/admin/roles')} />

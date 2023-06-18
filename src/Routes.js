@@ -17,8 +17,8 @@ import EmpEdit from "Dashboard/Pages/Employees/EmpEdit/EmpEdit.js";
 import EmpDetails from "Dashboard/Pages/Employees/EmpDetail/EmpDetail.js";
 import OrderDetail from "Dashboard/Pages/Orders/OrderDetails/OrderDetails.js";
 import EditRole from "Dashboard/Pages/Roles/EditRole/EditRole.js";
-import AboutUS from "Dashboard/Pages/AboutUs/ShowAboutUs/ShowAboutUs.js";
-import ContactUs from "Dashboard/Pages/ContactUs/ShowContactUs/ShowContactUs.js";
+// import AboutUS from "Dashboard/Pages/AboutUs/ShowAboutUs/ShowAboutUs.js";
+// import ContactUs from "Dashboard/Pages/ContactUs/ShowContactUs/ShowContactUs.js";
 import AddProduct from "Dashboard/Pages/Products/Product-add/AddProduct.js";
 import AddCategory from "Dashboard/Pages/Categories/AddCategory/AddCategory.js";
 import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword.js";
@@ -41,13 +41,7 @@ var routes = [
     component: <Index />,
     layout: "/admin",
   },
-  {
-    path: "/orders",
-    name: "Orders",
-    icon: "fa fa-shopping-basket text-blue",
-    component: <Orders />,
-    layout: "/admin",
-  },
+
   {
     path: "/categories",
     name: "Categories",
@@ -90,9 +84,17 @@ var routes = [
     component: <UpdateProduct />,
     layout: "/admin",
   },
+
+  {
+    path: "/orders",
+    name: "Orders",
+    icon: "fa fa-shopping-basket text-blue",
+    component: <Orders />,
+    layout: "/admin",
+  },
   {
     path: "/users",
-    name: "Users",
+    name: "Website Customers",
     icon: "fa fa-users text-blue",
     component: <Users />,
     layout: "/admin",
@@ -116,6 +118,34 @@ var routes = [
     name: "New",
     icon: "fa fa-users text-blue",
     component: <UserDetail />,
+    layout: "/admin",
+  },
+  {
+    path: "/employees",
+    name: "Admin && Employees",
+    icon: "fa fa-users text-blue",
+    component: <Emps />,
+    layout: "/admin",
+  },
+  {
+    path: "/employees/create",
+    name: "New",
+    icon: "fa fa-users text-blue",
+    component: <EmpCreate />,
+    layout: "/admin",
+  },
+  {
+    path: "/EmpEdit/:id",
+    name: "New",
+    icon: "fa fa-users text-blue",
+    component: <EmpEdit />,
+    layout: "/admin",
+  },
+  {
+    path: "/EmpDetails/:id",
+    name: "New",
+    icon: "fa fa-users text-blue",
+    component: <EmpDetails />,
     layout: "/admin",
   },
   {
@@ -146,7 +176,7 @@ var routes = [
     component: <Setting />,
     layout: "/admin",
   },
-  {
+  /*{
     path: "/aboutus",
     name: "About us",
     icon: "fa fa-info text-blue",
@@ -159,35 +189,8 @@ var routes = [
     icon: "fa fa-info text-blue",
     component: <ContactUs />,
     layout: "/admin",
-  },
-  {
-    path: "/employees",
-    name: "Employees",
-    icon: "fa fa-users text-blue",
-    component: <Emps />,
-    layout: "/admin",
-  },
-  {
-    path: "/employees/create",
-    name: "New",
-    icon: "fa fa-users text-blue",
-    component: <EmpCreate />,
-    layout: "/admin",
-  },
-  {
-    path: "/EmpEdit/:id",
-    name: "New",
-    icon: "fa fa-users text-blue",
-    component: <EmpEdit />,
-    layout: "/admin",
-  },
-  {
-    path: "/EmpDetails/:id",
-    name: "New",
-    icon: "fa fa-users text-blue",
-    component: <EmpDetails />,
-    layout: "/admin",
-  },
+  },*/
+
   {
     path: "/login",
     name: "New",

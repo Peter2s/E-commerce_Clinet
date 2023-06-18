@@ -33,7 +33,7 @@ const AddCategory = () => {
             title: "success!",
             text: "category created successfully",
           });
-          navigate("/admin/products");
+          navigate("/admin/categories");
         })
         .catch((err) => {
           console.log(err.response.data.error);

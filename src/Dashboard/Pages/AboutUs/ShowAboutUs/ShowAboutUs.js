@@ -13,7 +13,7 @@ const AboutUS = () => {
 
   const fetchAboutUsData = async () => {
     await axiosInstance
-      .get("/settings")
+      .get("/api/v1/settings")
       .then((res) => {
         setAboutUsData(res.data.data);
       })

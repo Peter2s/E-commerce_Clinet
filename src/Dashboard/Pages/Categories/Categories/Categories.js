@@ -11,9 +11,11 @@ import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
+  const [total, setTotal] = useState(0);
   const [pagination, setPagination] = useState({
     currentPage: null,
     totalPages: null,
+    limit: null,
   });
 
   const CategoriesURL = "api/v1/categories";
@@ -29,9 +31,11 @@ const Categories = () => {
         console.log(response.data);
         const { data, pagination } = response.data;
         setCategories(data);
+        setTotal(pagination.total);
         setPagination({
           currentPage: pagination.current_page,
           totalPages: pagination.total_pages,
+          limit: pagination.limit,
         });
       })
       .catch((error) => {
@@ -75,7 +79,44 @@ const Categories = () => {
         });
       });
   };
+  const handleActivate = async (userId) => {
+    await axiosInstance
+        .post(`${CategoriesURL}/${userId}/ban`)
+        .then((res) => {
+          // Update the user data
+          setCategories(prevData => {
+            const updatedData = [...prevData];
+            const userIndex = updatedData.findIndex(user => user._id === userId);
+            if (userIndex !== -1) {
+              updatedData[userIndex] = { ...updatedData[userIndex], is_active: true };
+            }
+            return updatedData;
+          });
+        })
 
+        .catch((err) => {
+          console.log(err.message);
+        });
+  };
+
+  const handleDeactivate = async (userId) => {
+    await axiosInstance
+        .post(`${CategoriesURL}/${userId}/unban`)
+        .then((res) => {
+          // Update the user data
+          setCategories(prevData => {
+            const updatedData = [...prevData];
+            const userIndex = updatedData.findIndex(user => user._id === userId);
+            if (userIndex !== -1) {
+              updatedData[userIndex] = { ...updatedData[userIndex], is_active: false };
+            }
+            return updatedData;
+          });
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+  };
   const handleEditCategory = (id) => {
     navigate(`/admin/editcategory/${id}`);
   };
@@ -86,7 +127,7 @@ const Categories = () => {
   return (
     <>
       <Tables
-        title="Categories"
+        title={`Categories (${total})`}
         btn={
           <>
             <Link to="/admin/addCategory" className="d-flex">
@@ -96,26 +137,34 @@ const Categories = () => {
         }
         trContent={
           <>
+            <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">الاسم</th>
             <th scope="col">Image</th>
             <th scope="col">Actions</th>
           </>
         }
-        tableContent={categories.map((category) => (
+        tableContent={categories.map((category,index) => (
           <tr key={category.id}>
+            <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
             <td>{category.name_en}</td>
             <td>{category.name_ar}</td>
-            <td style={{ width: "200px" }}>
+            <td style={{ maxWidth: "200px" }}>
               <img
                 className="img-thumbnail"
-                style={{ minWidth: "200px", width: "50%" }}
+                // style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}
+                style={{ maxWidth: "100px",maxHeight: "50px", objectFit: "cover" }}ء
                 src={category.image}
                 alt={category.name}
               />
             </td>
             <td>
               <div>
+                  {category.is_active ? (
+                      <Btn className="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(category.id)}/>
+                  ) : (
+                      <Btn className="btn-success btn fa fa-lock-open" onClick={() => handleActivate(category.id)}/>
+                  )}
                 <button
                   className="btn btn-primary"
                   onClick={() => handleEditCategory(category._id)}

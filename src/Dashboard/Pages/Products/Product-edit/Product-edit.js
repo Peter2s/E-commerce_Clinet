@@ -20,7 +20,7 @@ const UpdateProduct = () => {
     validationSchema: validation,
     onSubmit: (values) => {
       const productData = new FormData();
-
+      console.log(values)
       productData.append("name_en", values.name_en);
       productData.append("name_ar", values.name_ar);
       productData.append("image", values.image[0]);
@@ -104,7 +104,7 @@ const UpdateProduct = () => {
     formik.setFieldValue("descriptionEn", product.desc_en);
     formik.setFieldValue("descriptionAr", product.desc_ar);
     formik.setFieldValue("category", product.category_id?._id);
-    formik.setFieldValue("price", product.price?.$numberDecimal);
+    formik.setFieldValue("price", product.price);
     formik.setFieldValue("quantity", product.quantity);
     formik.setFieldValue("image", product.image);
     formik.setFieldValue("images", product.images);

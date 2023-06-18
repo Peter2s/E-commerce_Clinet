@@ -1,30 +1,39 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { Card, CardHeader, Container, Row, Col, CardBody ,Button, FormGroup} from "reactstrap";
+import { Card, CardHeader, Container, Row, Col, CardBody , FormGroup} from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import MySwal from "sweetalert2";
-import Btn from "Dashboard/SharedUI/Btn/Btn";
-import Input from "Dashboard/SharedUI/Input/Input";
 import { axiosInstance } from "../../../../Axios";
 
 const EmpEdit = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [roles, setRoles] = useState([]);
 
+  useEffect(() => {
+    axiosInstance
+        .get("/api/v1/roles?fields=name&limit=1000")
+        .then((res) => {
+          setRoles(res.data.data); // Assuming the response contains an array of roles
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+  }, []);
   useEffect(() => {
     // Fetch the user data based on the ID and populate the form fields
     axiosInstance
       .get(`/api/v1/employees/${id}`)
       .then((res) => {
         const EmpData = res.data.data;
+        EmpData.role = EmpData.role_id;
         formik.setValues(EmpData);
       })
       .catch((err) => {
         console.log(err.message);
       });
-  }, [id]);
+  }, [ id]);
 
   const formik = useFormik({
     initialValues: {
@@ -45,12 +54,14 @@ const EmpEdit = () => {
       //   .required("Enter the password"),
     }),
     onSubmit: (values) => {
+      console.log(values)
+      // return;
       const empData = {
         name: values.name,
         email: values.email,
         phone: values.phone,
         // password: values.password,
-        role:values.role,
+        role_id:values.role,
       };
 
       axiosInstance
@@ -68,7 +79,14 @@ const EmpEdit = () => {
           navigate("/admin/employees");
         })
         .catch((err) => {
+          console.log(err.response.data.error);
           console.log(err.message);
+            MySwal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: JSON.stringify(err.response.data.error),
+            });
+
         });
     },
   });
@@ -138,8 +156,8 @@ const EmpEdit = () => {
                       )}
                     </FormGroup>
                   </Col>
-                  <Col>
-                    {/* <FormGroup>
+                  {/*<Col>
+                     <FormGroup>
                       <label>Password</label>
                       <input
                        className="form-control form-control-alternative"
@@ -153,10 +171,33 @@ const EmpEdit = () => {
                       {formik.errors.password && formik.touched.password && (
                         <span className="text-danger">{formik.errors.password}</span>
                       )}
-                    </FormGroup> */}
+                    </FormGroup>
+                  </Col>*/}
+                  <Col>
+                  <FormGroup>
+                    <label htmlFor="role">Role</label>
+                    <select
+                        name="role"
+                        id="role"
+                        value={formik.values.role}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        className="form-control"
+                    >
+                      <option value="">Select a role</option>
+                      {roles.map((role) => (
+                          <option key={role._id} value={role._id} >
+                            {role.name}
+                          </option>
+                      ))}
+                    </select>
+                    {formik.errors.role && formik.touched.role && (
+                        <span className="text-danger">{formik.errors.role}</span>
+                    )}
+                  </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+               {/* <Row>
                 <Col>
                     <FormGroup>
                       <label htmlFor="role">Role</label>
@@ -168,17 +209,32 @@ const EmpEdit = () => {
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         className="form-control form-control-alternative"
-                      /> 
+                      />
+                      <select
+                          name="role_id"
+                          id="role_id"
+                          value={formik.values.role_id}
+                          onBlur={formik.handleBlur}
+                          onChange={formik.handleChange}
+                          className="form-control"
+                      >
+                        <option value="">Select a role</option>
+                        {roles.map((role) => (
+                            <option key={role._id} value={role._id} selected={formik.values.role===role.name}>
+                              {role.name}
+                            </option>
+                        ))}
+                      </select>
                       {formik.errors.role && formik.touched.role && (
                         <span className="text-danger">{formik.errors.role}</span>
                       )}
                     </FormGroup>
                     </Col>
-                </Row>
+                </Row>*/}
                 <div className="form-group">
-                  <Button type="submit" className="btn-primary mr-2">
+                  <button type="submit" className="btn btn-primary mr-2">
                     Save Changes
-                  </Button>
+                  </button>
                   <Link to="/admin/employees" className="btn btn-secondary">
                     Cancel
                   </Link>

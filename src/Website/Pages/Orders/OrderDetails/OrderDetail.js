@@ -1,0 +1,291 @@
+import React, { useEffect, useState } from "react";
+import { Card, CardHeader, CardBody, CardFooter, Container, Col, Row, Navbar, Table ,Button } from "reactstrap";
+import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { axiosInstance } from "Axios.js";
+import "./OrderDetail";
+import Swal from 'sweetalert2';
+
+
+const OrderDetail = () => {
+  const { id } = useParams();
+  const [orderdata, setOrderData] = useState({});
+  const [productData, setProductData] = useState([]);
+  const [paymentStatus, setPaymentStatus] = useState(orderdata.payment_status);
+
+  useEffect(() => {
+    axiosInstance
+      .get(`/orders/${id}`)
+      .then((res) => {
+        console.log(res.data);
+        setOrderData(res.data.data);
+        fetchProductData(res.data.data.products);
+        const updatedOrderData = res.data.data;
+        setPaymentStatus(updatedOrderData.payment_status);
+        
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+
+  }, [id]);
+
+  const fetchProductData = async (products) => {
+    const productId = products.map((product) => product.id);
+    const productResponse = await axiosInstance.get("/products");
+    console.log(productResponse.data); // Add this line to check the structure of the response
+    const productDataWithImage = productResponse.data.data.map((product) => {
+      if (productId.includes(product.id)) {
+        const productImage = product.images[0] || "";
+        return { ...product, image: productImage };
+      }
+      return product;
+    });
+    setProductData(productDataWithImage);
+  };
+  
+  const getProductImageById = (productId) => {
+    const product = productData.find((product) => product.id === productId);
+    return product ? product.image : "";
+  };
+
+  const getProductNameById = (productId) => {
+    const product = productData.find((product) => product.id === productId);
+    return product ? product.name_ar : "";
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Completed":
+        return "text-success";
+      case "Cancelled":
+        return "text-danger";
+      case "Pending":
+        return "text-primary";
+      case "Processing":
+        return "text-warning";
+      default:
+        return "";
+    }
+  };
+
+  const handleStatusChange = async () => {
+    try {
+      const { value } = await Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to ${
+          orderdata.status === 'Completed' ? 'reorder' : 'cancel'
+        } this order?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      });
+  
+      if (value) {
+        if (orderdata.status === 'Completed') {
+          // Update order status to 'Pending'
+          await axiosInstance.post(`/orders/${orderdata._id}/reorder`, { status: 'Pending' });
+          setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Pending' }));
+          Swal.fire('Order Reordered!', 'The order status has been changed to Pending.', 'success');
+        } else if (orderdata.status === 'Pending') {
+          // Update order status to 'Cancelled'
+          await axiosInstance.delete(`/orders/${orderdata._id}`, { status: 'Cancelled' });
+          setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Cancelled' }));
+          Swal.fire('Order Cancelled!', 'The order has been cancelled.', 'success');
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire('Error', 'An error occurred while updating the order status.', 'error');
+    }
+  };
+  
+  const renderCancelButton = () => {
+    if (orderdata.status === 'Completed') {
+      return (
+        <Button
+          onClick={handleStatusChange}
+          className="btn-success btn "
+          
+        >
+          اعادة الشراء
+        </Button>
+      );
+    } else if (orderdata.status === 'Pending') {
+      return (
+        <Button
+          onClick={handleStatusChange}
+          className="btn-danger btn fa fa-times-circle"
+        >
+          الغاء الطلب
+        </Button>
+      );
+    }
+  };
+ 
+  return (
+    <>
+      <Navbar />
+      {/* Page content */}
+      <Container>
+        <Row>
+          <div className="col">
+            {orderdata && (
+              <Card className="shadow">
+                <CardHeader className="border-0 ">
+                  <div className="d-flex justify-content-around">
+                  <h1 className="mb-0">تفاصيل الطلب</h1>
+                  <Link to={`/orders`}>
+                        <h3>الرجوع الى الطلبات<i className="fa fa-arrow-left mr-3"></i></h3>
+                  </Link>
+                  </div>
+                  <div >
+                   
+                  </div>
+                </CardHeader>
+                <div className="container">
+                  <CardBody className="border-0 shadow">
+                    <div className=" d-flex justify-content-around">
+                    <p>
+                      رقم الطلب :  <b>{orderdata._id}</b>
+                    </p>
+                    <p>
+                        تم الطلب يوم{" "}
+                        {new Date(orderdata.createdAt).toLocaleDateString("ar", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                        })}
+                    </p>
+                    <h3 className={getStatusColor(orderdata.status)}>{orderdata.status}</h3>
+                    </div>
+                    
+                    <div>
+                      <h2 >المنتجات المطلوبة</h2>
+                      {orderdata.products?.map((product) => (
+                        <div key={product.product_id}>
+                          <Row>
+                            <Col xs="3">
+                              <img src={getProductImageById(product.product_id)} alt="Product" style={{ width: "100%", height: "100%" }} />
+                            </Col>
+                            <Col xs="9" className="text-right">
+                              <p>{product.product_id}</p>
+                              <p>{getProductNameById(product.product_id)}</p>
+                              <p>الكمية: {product.quantity}</p>
+                              <p> {product.price.toFixed(2)}$</p>
+                            </Col>
+                          </Row>
+                          <hr />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ textAlign: "right" }}>
+                      {orderdata && (
+                        <>
+                          <Card className="shadow">
+                            <CardHeader>
+                              <div className="d-flex justify-content-between">
+                               <h2><i className="fa fa-sack-dollar ml-3 text-warning"></i >فاتورة الطلب   </h2> 
+                               <h4> حالة الدفع :  {paymentStatus === 'Pending' ? (
+                                    <button
+                                      className="btn btn-warning"
+                                      disabled={paymentStatus === 'Completed'}
+                                      
+                                    >
+                                      {paymentStatus}
+                                    </button>
+                                  ) : (
+                                    <button className="btn btn-success" disabled>
+                                      {paymentStatus}
+                                    </button>
+                                  )}</h4>
+                                  </div>
+                            </CardHeader>
+                            <CardBody>
+                              <Row>
+                                <Col>
+                                  {/* <h4>
+                                    Total Price: <b>{orderdata.total_price}$</b>
+                                  </h4> */}
+                                  <p>
+                                  <span  style={{ fontWeight: 'bold' }}> طريقة الدفع : </span><i className="fa fa-wallet m-3 text-success"></i>الدفع نقدا عند الاستلام
+                                  </p>
+                               
+                               
+                                  <p>
+                                  <span  style={{ fontWeight: 'bold' }}> رقم الفاتورة: </span> <b>{orderdata.payment_id}</b>
+                                  </p>
+                                  </Col>
+                              </Row>
+                              <Row>
+                                {/* table */}
+                                    <Table striped  style={{ fontSize: '22px' }}>
+                                  <thead>
+                                    <tr>
+                                      <th>رقم المنتج</th>
+                                      <th>اسم المنتج</th>
+                                      <th>الكمية</th>
+                                      <th>السعر</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {/* Render table rows dynamically */}
+                                    {orderdata.products?.map((product) => (
+                                      <tr key={product.product_id}>
+                                        <td>{product.product_id}</td>
+                                        <td>{getProductNameById(product.product_id)}</td>
+                                        <td>{product.quantity}</td>
+                                        <td>{product.price.toFixed(2)}$</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </Table>
+                              </Row>
+                              <Row>
+                                <Col className="text-center mt-3"><h2>الاجمالى :  <b>{orderdata.total_price}$</b></h2></Col>
+                              </Row>
+                            </CardBody>
+                          </Card>
+                          <Card className="mt-3 shadow">
+                            <CardHeader>
+                               <h2><i className=" fa fa-truck  ml-3 text-danger"></i> عنوان التوصيل  </h2>
+                            </CardHeader>
+                            <CardBody>
+                              <Row>
+                                <Col>
+                                  {orderdata.address ? (
+                                    <>
+                                      <h4>
+                                        {orderdata.address.area}
+                                        {orderdata.address.city},{" "}
+                                        {orderdata.address.governate} {orderdata.address.country}
+                                      </h4>
+                                    </>
+                                  ) : (
+                                    <p>No address found</p>
+                                  )}
+                                </Col>
+                              </Row>
+                            </CardBody>
+                          </Card>
+                          <div className="text-center mt-5">{renderCancelButton(orderdata._id, orderdata.status)}</div>
+                        </>
+                      )}
+                    </div>
+                  </CardBody>
+                </div>
+                
+              </Card>
+            )}
+          </div>
+        </Row>
+      </Container>
+    </>
+  );
+};
+
+export default OrderDetail;

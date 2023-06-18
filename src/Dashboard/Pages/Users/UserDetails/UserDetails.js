@@ -50,9 +50,10 @@ const UserDetail = () => {
                     <Col>
                       <div className="card-profile-image">
                         <img
-                          alt="..."
+                          alt={userdata.name}
+                          title={userdata.name}
                           className="rounded-circle"
-                          src={require("../../../Assets/img/theme/team-4-800x800.jpg")}
+                          src={userdata.image}
                         />
                       </div>
                     </Col>
@@ -69,7 +70,19 @@ const UserDetail = () => {
                       >
                         Back
                       </Link>
+                      <Link
+                        className="btn btn-danger"
+                        to={`/admin/UserEdit/${id}`}
+                        color="warning"
+                        href="#pablo"
+                        size="sm"
+                    >
+                      Edit
+                    </Link>
                     </Col>
+
+
+
                   </Row>
                 </CardHeader>
                 <CardBody className="mt-5">
@@ -103,6 +116,17 @@ const UserDetail = () => {
                       </Row>
                     </div>
                     <hr className="my-4" />
+                    {/* Description */}
+                    <h6 className="heading-small text-muted mb-4">
+                      About Customer
+                    </h6>
+                    <div className="pl-lg-4">
+                      <div>
+                        <label>Bio</label>
+                        <div className="custom-input">{userdata.bio}</div>
+                      </div>
+                    </div>
+                    <hr className="my-4" />
                     {/* Address */}
                     <h6 className="heading-small text-muted mb-4">Addresses</h6>
                     <div className="pl-lg-4">
@@ -127,8 +151,8 @@ const UserDetail = () => {
                         ))}
                     </div>
                     <hr className="my-4" />
-                    {/* Address */}
-                    <h6 className="heading-small text-muted mb-4">Cart</h6>
+                     {/*Cart */}
+                    {/*<h6 className="heading-small text-muted mb-4">Cart</h6>
                     <div className="pl-lg-4">
                       {userdata.cart &&
                         userdata.cart.map((cart, cart_index) => (
@@ -153,17 +177,8 @@ const UserDetail = () => {
                         ))}
                     </div>
 
-                    <hr className="my-4" />
-                    {/* Description */}
-                    <h6 className="heading-small text-muted mb-4">
-                      About Customer
-                    </h6>
-                    <div className="pl-lg-4">
-                      <div>
-                        <label>Bio</label>
-                        <div className="custom-input">{userdata.bio}</div>
-                      </div>
-                    </div>
+                    <hr className="my-4" />*/}
+
                   </div>
                 </CardBody>
               </Card>
