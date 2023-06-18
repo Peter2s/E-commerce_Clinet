@@ -122,7 +122,7 @@ const Orders = () => {
     return (
         <>
             <DataTable
-                title="Employees"
+                title="Orders"
                 /*addBtn={
                     <Link to="/admin/employees/create" className='d-flex'>
                         <Btn
@@ -149,7 +149,7 @@ const Orders = () => {
                     {
                         header: 'Actions', body: (order) => {
                             return (
-                                <div className="d-flex">
+                                <div className="d-flex  justify-content-around">
                                     <Link to={`/admin/OrderDetails/${order._id}`}>
                                         <button title={"view order"} className="btn-primary btn fa fa-circle-info mr-2"/>
                                     </Link>

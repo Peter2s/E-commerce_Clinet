@@ -144,7 +144,7 @@ const Emps = () => {
                     {
                         header: 'Actions', body: (rowData) => {
                             return (
-                                <div className="d-flex">
+                                <div className="d-flex  justify-content-around">
                                     <Link to={`/admin/EmpDetails/${rowData.id}`}>
                                         <Btn className="btn-info btn fa fa-circle-info"/>
                                     </Link>
@@ -177,5 +177,6 @@ const Emps = () => {
         </>
     );
 };
+
 
 export default Emps;

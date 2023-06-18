@@ -2,7 +2,7 @@ import {Card, CardBody, CardFooter, CardHeader, Col, Container, Navbar, Row} fro
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import React from "react";
-
+import "./DataTable.css"
 // core components
 
 const Tables = ({title, data, columns, addBtn, pagination, onPageChange}) => {
