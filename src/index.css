@@ -56,3 +56,34 @@ body {
 .features-card {
     background-color: #f6f7f9 !important;
 }
+
+/*register --  login*/
+.user-input {
+    box-sizing: border-box;
+    height: 37px;
+    width: 375px;
+    border: 1px solid #979797;
+    border-radius: 8px;
+}
+
+.title-login {
+    color: #555550;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 28px;
+    text-align: right;
+}
+
+.btn-login {
+    height: 46px;
+    width: 374px;
+    border-radius: 9px;
+    border: none;
+    color: white;
+    background-color: #272727;
+}
+
+.btn-login:hover {
+    color: rgb(206, 204, 204);
+}

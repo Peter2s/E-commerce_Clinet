@@ -33,12 +33,13 @@ import Address from "Website/Pages/Address/AddressList/AddressList";
 import AddressEdit from "Website/Pages/Address/AddressEdit/AddressEdit";
 import AddressAdd from "Website/Pages/Address/AddressAdd/AddressAdd";
 import { AllCategoryPage } from "./Website/Pages/Categories/AllCategoryPage";
+import Registration from "./Website/Pages/Registration/Registration";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
-  {/* <Authentication>
+    {/* <Authentication>
   <Routes>
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/auth/*" element={<AuthLayout />} />
@@ -109,7 +110,7 @@ root.render(
           element={
             <div dir="rtl" className="websitePages">
               <NavBar />
-              <OrderDetail/>
+              <OrderDetail />
               <FooterSite />
             </div>
           }
@@ -205,6 +206,7 @@ root.render(
           }
         />
         <Route path="/auth/login" element={<LoginSite />} />
+        <Route path="/auth/register" element={<Registration />} />
 
         <Route path="/login/*" element={<Login />} />
         <Route path="/ForgetPssword/*" element={<ForgetPssword />} />
