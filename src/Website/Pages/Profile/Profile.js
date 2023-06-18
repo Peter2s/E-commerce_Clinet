@@ -167,6 +167,8 @@ const Profile = () => {
   delete updatedProfileData.cart;
   delete updatedProfileData.createdAt;
   delete updatedProfileData.updatedAt;
+  delete updatedProfileData.is_active;
+  delete updatedProfileData.email_token;
   delete updatedProfileData.__v;
   delete updatedProfileData.id;
 
@@ -177,7 +179,7 @@ const Profile = () => {
   try {
     await axiosInstance.patch(
         "/profile",
-        updatedProfileData  // Send the updated profile data in the request body
+        updatedProfileData
       );
       toggleEditMode();
   } catch (err) {
