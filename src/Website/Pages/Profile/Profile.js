@@ -204,7 +204,7 @@ const Profile = () => {
                 <Col className="text-right" xs="4">
                   {!editMode ? (
                     <Buttons
-                      title="Edit Profile"
+                      title="تعـديل"
                       className="btn btn-primary"
                       onClick={toggleEditMode}
                     />
@@ -215,12 +215,12 @@ const Profile = () => {
                     {editMode ? (
                       <>
                         <Buttons
-                          title="Save"
+                          title="حفـظ"
                           className="btn btn-primary"
                           onClick={saveProfileData}
                         />
                         <Buttons
-                          title="Cancel"
+                          title="رجــوع"
                           className="btn btn-secondary"
                           onClick={cancelMode}
                         />
@@ -530,12 +530,12 @@ const Profile = () => {
                       </ModalBody>
                       <ModalFooter>
                         <Buttons
-                          title="Save"
+                          title="حفــظ"
                           className="btn btn-primary"
                           onClick={handleModalOk}
                         />
                         <Buttons
-                          title="Cancel"
+                          title="رجــوع"
                           className="btn btn-secondary"
                           onClick={closeModal}
                         />

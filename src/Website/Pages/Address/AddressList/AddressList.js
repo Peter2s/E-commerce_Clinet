@@ -28,9 +28,7 @@ const Address = () => {
       .delete(`profile/address/${id}`)
       .then((response) => {
         if (response.data.status === "success") {
-          setAddresses((prevAddresses) =>
-            prevAddresses.filter((address) => address._id !== id)
-          );
+          setAddresses(addresses.filter((address) => address._id !== id));
         }
       })
       .catch((error) => {
@@ -55,7 +53,7 @@ const Address = () => {
       }
     });
   };
-  
+
   return (
     <Container fluid className="mt-4">
       <Row>
