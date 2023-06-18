@@ -3,6 +3,7 @@ import { axiosInstance } from "Axios.js";
 import Swal from "sweetalert2";
 import { Container, Row, Card, CardBody, Col } from "reactstrap";
 
+
 const Checkout = () => {
   
         const [cartData, setCartData] = useState([]);
@@ -11,6 +12,8 @@ const Checkout = () => {
         const [totalPrice, setTotalPrice] = useState(0);
         // Other necessary state variables
         // ...
+
+       
         useEffect(() => {
             const fetchCartData = async () => {
               try {
@@ -36,6 +39,7 @@ const Checkout = () => {
           
             fetchCartData();
             fetchUserData();
+            
           }, []);
           const calculateTotalPrice = (cartData) => {
             let total = 0;
@@ -61,6 +65,7 @@ const Checkout = () => {
               Swal.fire("Error", "An error occurred. Please try again.", "error");
             }
           };
+        
     return (
         <Container fluid className="mt-4">
         <Row>
