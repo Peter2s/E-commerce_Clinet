@@ -121,6 +121,8 @@ const OrderDetail = () => {
                   {/*<h1 className="mb-0">Order Details</h1>*/}
                   <div className=" justify-content-around">
                     <h3>
+                      Order Status: <b className={"text-info"}>{orderdata.status}</b>
+                    </h3><h3>
                       Order ID: <b>{orderdata._id}</b>
                     </h3>
                     <h3>
@@ -169,7 +171,7 @@ const OrderDetail = () => {
                                   <h4>
                                     Total Price: <b className={"text-primary"}>{orderdata.total_price} $</b>
                                   </h4>
-                                  <h4>Payment Status : <b className={"text-primary"}>{orderdata.status}</b></h4>
+                                  <h4>Order Status : <b className={"text-primary"}>{orderdata.status}</b></h4>
                                 </Col>
                                 <Col>
                                   <h4>
