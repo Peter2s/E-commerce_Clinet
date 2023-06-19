@@ -16,7 +16,7 @@ export const ProductsCard = ({ item }) => {
             boxShadow: "0 2px 2px 0 rgba(151,151,151,0.5)",
           }}
         >
-          <Link to={`/products/${item._id}`} style={{ textDecoration: "none" }}>
+          <Link to={`/product/${item._id}`} style={{ textDecoration: "none" }}>
             <CardImg
               style={{ height: "228px", width: "100%" }}
               src={item.image}
@@ -38,7 +38,6 @@ export const ProductsCard = ({ item }) => {
             </CardText>
           </CardBody>
         </Card>
-        {/*<ToastContainer />*/}
       </Col>
     </>
   );
