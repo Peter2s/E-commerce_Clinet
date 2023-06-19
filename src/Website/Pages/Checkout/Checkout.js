@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { axiosInstance } from "Axios.js";
 import Swal from "sweetalert2";
-import { Container, Row, Card, CardBody, Col } from "reactstrap";
+import { Container, Row, Card, CardBody, Col , Button } from "reactstrap";
 
 
 const Checkout = () => {
@@ -69,9 +69,9 @@ const Checkout = () => {
     return (
         <Container fluid className="mt-4">
         <Row>
-          <Card className="container shadow text-right p-2">
+          <Card xs="" className="container shadow text-right p-2 ">
             <h1 className="mr-3 mb-3">اتمام الشراء</h1>
-            <div>
+            <div className=" text-center">
     {/* Render the cart items */}
     {cartData.map((item, index) => (
       <div key={index}>
@@ -90,7 +90,7 @@ const Checkout = () => {
     {/* Render the total price */}
     <h4>الاجمالى: {totalPrice}</h4>
     {/* Render the place order button */}
-    <button onClick={handlePlaceOrder}>اتمام الشراء</button>
+    <Button className="btn btn-success" onClick={handlePlaceOrder}>اتمام الشراء</Button>
   </div>
 
             </Card>

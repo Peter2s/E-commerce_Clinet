@@ -118,7 +118,7 @@ const OrderDetail = () => {
       return (
         <Button
           onClick={handleStatusChange}
-          className="btn-danger btn fa fa-times-circle"
+          className="btn-danger btn "
         >
           الغاء الطلب
         </Button>
