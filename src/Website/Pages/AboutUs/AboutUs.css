@@ -1,0 +1,19 @@
+.aboutUsBanner{
+    width: 100%;   
+    position: relative; 
+}
+
+.aboutUsTitle{
+    position: absolute;
+    top: 30%;
+    right: 70%;
+}
+
+.aboutUsContent{
+    width: 46%;
+    margin: auto;
+    margin-top: 5%;
+    font-size: 18px;
+    text-align: justify;
+    text-align-last: right;
+}
