@@ -16,12 +16,14 @@ import {
 } from "reactstrap";
 import { axiosInstance } from "Axios.js";
 import Buttons from "Website/SharedUI/Buttons/Buttons";
-import './Profile.css';
-import { Link } from "react-router-dom";
+import "./Profile.css";
+import { Link, useNavigate } from "react-router-dom";
 import SideBar from "Website/SharedUI/SideBar/SideBar";
+import Swal from "sweetalert2";
 
 const Profile = () => {
   const [editMode, setEditMode] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -41,24 +43,50 @@ const Profile = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [matchError, setMatchError] = useState(false);
   const [inputError, setInputError] = useState(false);
-  const [originalProfileData, setOriginalProfileData] = useState(null); // New state for storing original profile data
+  const [originalProfileData, setOriginalProfileData] = useState(null);
   const [phoneError, setPhoneError] = useState(false);
   const [errorEmpty, setErrorEmpty] = useState(false);
-  const jwt = localStorage.getItem('jwt');
+  const jwt = localStorage.getItem("token");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordChangeError, setPasswordChangeError] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProfileData();
   }, []);
-
   const fetchProfileData = async () => {
     try {
-      const res = await axiosInstance.get(
-        "/profile"
-      );
+      const res = await axiosInstance.get("/profile");
+      console.log(res);
       setProfileData(res.data.data);
       setOriginalProfileData(res.data.data);
     } catch (err) {
-      console.log(err);
+      if (err.response.data.error.includes("Please login first")) {
+        navigate("/auth/login");
+      }
+      else if (
+        err.response.data.error.includes(
+          "Password changed recently, login again"
+        )
+      ) {
+        localStorage.removeItem("token");
+        Swal.fire({
+          title: 'اعـد الدخـول مرة ثانيــة',
+          text: 'تم تغيير كلمة المرور',
+          icon: 'info',
+          showCancelButton: false,
+          confirmButtonText: 'دخــول',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/auth/login");
+          }
+        });
+        
+        console.log("login again");
+      } else {
+        console.log(err);
+      }
     }
   };
 
@@ -83,11 +111,13 @@ const Profile = () => {
   };
 
   const handleInputChange = (e) => {
-    const { id, name, value } = e.target;
-    if (id === "new_password") {
+    const { name, value } = e.target;
+    if (name === "currentPassword") {
+      setCurrentPassword(value);
+    } else if (name === "newPassword") {
       setNewPassword(value);
-    } else if (id === "confirm_new_password") {
-      setConfirmNewPassword(value);
+    } else if (name === "confirmPassword") {
+      setConfirmPassword(value);
     } else if (name === "phone") {
       // Validate mobile number format
       if (/^\d+$/.test(value) || value === "") {
@@ -107,19 +137,29 @@ const Profile = () => {
     }
   };
 
-  const handleModalOk = () => {
-    if (newPassword === "" || confirmNewPassword === "") {
+  const handleModalOk = async () => {
+    if (newPassword === "" || confirmPassword === "") {
       setMatchError(false);
       setShowModal(true);
       setErrorEmpty(true);
-    } else if (newPassword !== confirmNewPassword) {
+    } else if (newPassword !== confirmPassword) {
       setMatchError(true);
       setErrorEmpty(false);
     } else {
       setMatchError(false);
       setShowModal(false);
       setErrorEmpty(false);
-      saveProfileData();
+      try {
+        await axiosInstance.patch("/update-password", {
+          currentPassword,
+          password: newPassword,
+          confirmPassword,
+        });
+        console.log("login again");
+      } catch (error) {
+        setPasswordChangeError(true);
+        console.error(error);
+      }
     }
   };
 
@@ -140,7 +180,6 @@ const Profile = () => {
     const updatedAddresses = [...profileData.address, ""];
     setProfileData({ ...profileData, address: updatedAddresses });
   };
-  
 
   const handleRemoveAddress = (index) => {
     const updatedAddresses = [...profileData.address];
@@ -151,408 +190,456 @@ const Profile = () => {
     }));
   };
 
-  // const hasEmptyAddress = profileData.address.some( // To validate if address is empty
-  //   (address) => address.trim() === ""
-  // );
+  const saveProfileData = async () => {
+    if (profileData.name.trim() === "" || profileData.phone.trim() === "") {
+      setInputError(true);
+      return;
+    }
+    const {
+      _id,
+      address,
+      cart,
+      createdAt,
+      updatedAt,
+      is_active,
+      email_token,
+      __v,
+      id,
+      passwordChangedAt,
+      ...updatedProfileData
+    } = profileData;
 
- const saveProfileData = async () => {
-  if (profileData.name.trim() === "" || profileData.phone.trim() === "") {
-    setInputError(true);
-    return;
-  }
+    if (profileImage) {
+      const formData = new FormData();
+      formData.append("image", profileImage);
+      try {
+        await axiosInstance.patch("/profile", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        fetchProfileData();
+      } catch (err) {
+        console.log(err);
+      }
+    }
 
-  const updatedProfileData = { ...profileData };
-  delete updatedProfileData._id;
-  delete updatedProfileData.address;
-  delete updatedProfileData.cart;
-  delete updatedProfileData.createdAt;
-  delete updatedProfileData.updatedAt;
-  delete updatedProfileData.is_active;
-  delete updatedProfileData.email_token;
-  delete updatedProfileData.__v;
-  delete updatedProfileData.id;
+    if (newPassword !== "" && confirmNewPassword !== "") {
+      updatedProfileData.password = newPassword;
+    }
 
-  if (newPassword !== "" && confirmNewPassword !== "") {
-    updatedProfileData.password = newPassword;
-  }
-
-  try {
-    await axiosInstance.patch(
-        "/profile",
-        updatedProfileData
-      );
+    try {
+      await axiosInstance.patch("/profile", updatedProfileData);
       toggleEditMode();
-  } catch (err) {
-    console.log(err);
-  }
-};
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div>
       <>
         {/* Page content */}
         <Container fluid className="mt-4">
-        <Row>
-           <SideBar/>
+          <Row>
+            <SideBar />
             <Col lg="8">
-          <Card className="shadow pr-4">
-            <CardHeader className="bg-white rounded shadow border-0">
-              <Row className="align-items-center">
-                <Col xs="8">
-                  <h3 className="mb-0">حســـابي</h3>
-                </Col>
-                <Col className="text-right" xs="4">
-                  {!editMode ? (
-                    <Buttons
-                      title="Edit Profile"
-                      className="btn btn-primary"
-                      onClick={toggleEditMode}
-                    />
-                  ) : (
-                    ""
-                  )}
-                  <Col className="text-right" xs="12">
-                    {editMode ? (
-                      <>
-                        <Buttons
-                          title="Save"
-                          className="btn btn-primary"
-                          onClick={saveProfileData}
-                        />
-                        <Buttons
-                          title="Cancel"
-                          className="btn btn-secondary"
-                          onClick={cancelMode}
-                        />
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </Col>
-                </Col>
-              </Row>
-            </CardHeader>
-            <CardBody>
-              <Form>
-                <div>
-                  <Row>
-                    <Col>
-                      <h6 className="heading-small text-muted mb-4">
-                        معلوماتي الشخصية
-                      </h6>
+              <Card className="shadow pr-4">
+                <CardHeader className="bg-white rounded shadow border-0">
+                  <Row className="align-items-center">
+                    <Col xs="8">
+                      <h3 className="mb-0">حســـابي</h3>
                     </Col>
-                  </Row>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="2" style={{ height: "120px" }} className="mt-5">
-                        <div className="card-profile-image">
-                          <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                            <img
-                              alt="..."
-                              className="rounded-circle"
-                              src={profileData.image}
-                            />
-                          </a>
-                        </div>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col>
+                    <Col className="text-right" xs="4">
+                      {!editMode ? (
+                        <Buttons
+                          title="تعـديل"
+                          className="btn btn-outline-warning"
+                          onClick={toggleEditMode}
+                        />
+                      ) : (
+                        ""
+                      )}
+                      <Col className="text-right" xs="12">
                         {editMode ? (
-                            <input class="form-control form-control-sm w-25" id="formFileSm" type="file"/>
+                          <>
+                            <Buttons
+                              title="حفـظ"
+                              className="btn btn-outline-warning shadow"
+                              onClick={saveProfileData}
+                            />
+                            <Buttons
+                              title="رجــوع"
+                              className="btn btn-outline-primary"
+                              onClick={cancelMode}
+                            />
+                          </>
                         ) : (
                           ""
                         )}
                       </Col>
-                    </Row>
-                  </div>
-                </div>
-                <>
-                  <Row className="mt-5">
-                    <Col>
-                      {editMode && inputError && (
-                        <Alert color="danger" className="alert-transparent">
-                          Complete all required fields
-                        </Alert>
-                      )}
                     </Col>
                   </Row>
-                  <Row>
-                    <Col lg="6">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-username"
-                        >
-                          الاســم{editMode ? <span class="required">*</span> : ""}
-                        </label>
-                        <Col lg="8">
-                          {editMode ? (
-                            <Input
-                              className="form-control-alternative"
-                              id="input-username"
-                              type="text"
-                              name="name"
-                              value={profileData.name}
-                              onChange={handleInputChange}
-                            />
-                          ) : (
-                            <p>{profileData.name}</p>
-                          )}
+                </CardHeader>
+                <CardBody>
+                  <Form>
+                    <div>
+                      <Row>
+                        <Col>
+                          <h6 className="heading-small text-muted mb-4">
+                            معلوماتي الشخصية
+                          </h6>
                         </Col>
-                      </FormGroup>
-                    </Col>
-
-                    <Col lg="6">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-mobile-number"
-                        >
-                          الهاتــف
-                          {editMode ? <span class="required">*</span> : ""}
-                        </label>
-                        <Col lg="8">
-                          {editMode ? (
-                            <Input
-                              className="form-control-alternative"
-                              id="input-mobile-number"
-                              type="tel"
-                              name="phone"
-                              value={profileData.phone}
-                              onChange={handleInputChange}
-                            />
-                          ) : (
-                            <p>{profileData.phone}</p>
-                          )}
-                          {phoneError ? (
-                            <span className="text-danger">
-                              Phone Number must be only numbers
-                            </span>
-                          ) : (
-                            ""
-                          )}
-                        </Col>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg="12">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-last-name"
-                        >
-                          العنـــوان
-                          {editMode ? <span class="required">*</span> : ""}
-                        </label>
-                        <Col lg="12">
-                          {editMode ? (
-                            <>
-                              {profileData.address.map((address, index) => (
-                                <div className="row" key={`address-${index}`}>
-                                  <Col lg="3">
-                                    <Input
-                                      key={`input-address-${index}-area`}
-                                      className="form-control-alternative mb-2"
-                                      type="text"
-                                      name="area"
-                                      value={address.area}
-                                      onChange={(e) =>
-                                        handleAddressChange(e, index)
-                                      }
-                                    />
-                                  </Col>
-                                  <Col lg="3">
-                                    <Input
-                                      key={`input-address-${index}-city`}
-                                      className="form-control-alternative mb-2"
-                                      type="text"
-                                      name="city"
-                                      value={address.city}
-                                      onChange={(e) =>
-                                        handleAddressChange(e, index)
-                                      }
-                                    />
-                                  </Col>
-                                  <Col lg="3">
-                                    <Input
-                                      key={`input-address-${index}-governorate`}
-                                      className="form-control-alternative mb-2"
-                                      type="text"
-                                      name="governorate"
-                                      value={address.governorate}
-                                      onChange={(e) =>
-                                        handleAddressChange(e, index)
-                                      }
-                                    />
-                                  </Col>
-                                  <Col lg="2">
-                                    <Input
-                                      key={`input-address-${index}-country`}
-                                      className="form-control-alternative mb-2"
-                                      type="text"
-                                      name="country"
-                                      value={address.country}
-                                      onChange={(e) =>
-                                        handleAddressChange(e, index)
-                                      }
-                                    />
-                                  </Col>
-                                  <Col lg="1">
-                                    <button
-                                      className="btn btn-sm btn-outline-danger mb-2"
-                                      onClick={() => handleRemoveAddress(index)}
-                                    >
-                                      <i className="fa fa-minus-circle"></i>
-                                    </button>
-                                  </Col>
-                                  {index === profileData.address.length - 1 && (
-                                    <button
-                                      className="btn-sm btn-outline-primary"
-                                      onClick={handleAddAddress}
-                                    >
-                                      <i className="fa fa-plus-circle"></i> 
-                                      إضافة عنـوان جديد
-                                    </button>
-                                  )}
-                                </div>
-                              ))}
-                            </>
-                          ) : (
-                            <>
-                              {profileData.address.map((address, index) => (
-                                <p key={`address-${index}`}>
-                                  {address.area}, {address.city},{" "}
-                                  {address.governorate}, {address.country}
-                                </p>
-                              ))}
-                            </>
-                          )}
-                        </Col>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                  <Col lg="12">
-                      {/* Description */}
-                      <label className="form-control-label" htmlFor="input-Bio">
-                        نبذة تعريفية
-                      </label>
-                      <Col lg="12">
-                        {editMode ? (
-                          <Input
-                            className="form-control-alternative"
-                            rows="4"
-                            type="textarea"
-                            name="bio"
-                            value={profileData.bio}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          <p>{profileData.bio}</p>
-                        )}
-                      </Col>
-                    </Col>
-                  </Row>
-                </>
-
-                <hr className="my-4" />
-                <h6 className="heading-small text-muted mb-4">
-                  معلومات إضافية
-                </h6>
-                <Col lg="6">
-                  <FormGroup>
-                    <label className="form-control-label" htmlFor="input-email">
-                      البريد الإلكتروني
-                    </label>
-                    <Col lg="8">
-                      <p>{profileData.email}</p>
-                    </Col>
-                  </FormGroup>
-                </Col>
-                <Col lg="6">
-                  <FormGroup>
-                  {editMode? (
+                      </Row>
+                      <div className="pl-lg-4">
+                        <Row>
+                          <Col
+                            lg="2"
+                            style={{ height: "120px" }}
+                            className="mt-5"
+                          >
+                            <div className="card-profile-image">
+                              <a
+                                href="#pablo"
+                                onClick={(e) => e.preventDefault()}
+                              >
+                                <img
+                                  alt="..."
+                                  className="rounded-circle"
+                                  src={profileData.image}
+                                />
+                              </a>
+                            </div>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            {editMode ? (
+                              <FormGroup>
+                                <Input
+                                  type="file"
+                                  name="image"
+                                  id="image"
+                                  onChange={(e) =>
+                                    setProfileImage(e.target.files[0])
+                                  }
+                                />
+                              </FormGroup>
+                            ) : (
+                              ""
+                            )}
+                          </Col>
+                        </Row>
+                      </div>
+                    </div>
                     <>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-password"
-                    >
-                      كلمة السـر
-                    </label>
-                    <Buttons
-                      title="Change Password"
-                      className="btn btn-primary ml-3"
-                      onClick={openModal}
-                    />
-                    <Modal
-                      isOpen={showModal}
-                      toggle={() => setShowModal(false)}
-                    >
-                      <ModalBody>
-                        <span className="close" onClick={closeModal}>
-                          &times;
-                        </span>
-                        <h2>Change Password</h2>
-                        <Input
-                          type="password"
-                          name="password"
-                          id="new_password"
-                          className="form-control mt-5"
-                          placeholder="New Password"
-                          onChange={handleInputChange}
-                        />
-                        <Input
-                          type="password"
-                          name="password"
-                          id="confirm_new_password"
-                          className="form-control mt-3"
-                          placeholder="Confirm new password"
-                          onChange={handleInputChange}
-                        />
-                        {matchError && (
-                          <div
-                            className="alert alert-danger mt-3 alert-transparent"
-                            role="alert"
-                          >
-                            New password and confirm new password do not match.
-                          </div>
-                        )}
-                        {errorEmpty && (
-                          <div
-                            className="alert alert-danger mt-3 alert-transparent"
-                            role="alert"
-                          >
-                            Please fill in all the fields.
-                          </div>
-                        )}
-                      </ModalBody>
-                      <ModalFooter>
-                        <Buttons
-                          title="Save"
-                          className="btn btn-primary"
-                          onClick={handleModalOk}
-                        />
-                        <Buttons
-                          title="Cancel"
-                          className="btn btn-secondary"
-                          onClick={closeModal}
-                        />
-                      </ModalFooter>
-                    </Modal>
-                    </>)
-                    :("")
-                  }
-                  </FormGroup>
-                </Col>
-              </Form>
-            </CardBody>
-          </Card>
-        </Col>
-        </Row>
-        </Container>
+                      <Row className="mt-5">
+                        <Col>
+                          {editMode && inputError && (
+                            <Alert color="danger" className="alert-transparent">
+                              Complete all required fields
+                            </Alert>
+                          )}
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col lg="6">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-username"
+                            >
+                              الاســم
+                              {editMode ? <span class="required">*</span> : ""}
+                            </label>
+                            <Col lg="8">
+                              {editMode ? (
+                                <Input
+                                  className="form-control-alternative"
+                                  id="input-username"
+                                  type="text"
+                                  name="name"
+                                  value={profileData.name}
+                                  onChange={handleInputChange}
+                                />
+                              ) : (
+                                <p>{profileData.name}</p>
+                              )}
+                            </Col>
+                          </FormGroup>
+                        </Col>
 
+                        <Col lg="6">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-mobile-number"
+                            >
+                              الهاتــف
+                              {editMode ? <span class="required">*</span> : ""}
+                            </label>
+                            <Col lg="8">
+                              {editMode ? (
+                                <Input
+                                  className="form-control-alternative"
+                                  id="input-mobile-number"
+                                  type="tel"
+                                  name="phone"
+                                  value={profileData.phone}
+                                  onChange={handleInputChange}
+                                />
+                              ) : (
+                                <p>{profileData.phone}</p>
+                              )}
+                              {phoneError ? (
+                                <span className="text-danger">
+                                  Phone Number must be only numbers
+                                </span>
+                              ) : (
+                                ""
+                              )}
+                            </Col>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col lg="12">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-last-name"
+                            >
+                              العنـــوان
+                              {editMode ? <span class="required">*</span> : ""}
+                            </label>
+                            <Col lg="12">
+                              {editMode ? (
+                                <>
+                                  {profileData.address.map((address, index) => (
+                                    <div
+                                      className="row"
+                                      key={`address-${index}`}
+                                    >
+                                      <Col lg="3">
+                                        <Input
+                                          key={`input-address-${index}-area`}
+                                          className="form-control-alternative mb-2"
+                                          type="text"
+                                          name="area"
+                                          value={address.area}
+                                          onChange={(e) =>
+                                            handleAddressChange(e, index)
+                                          }
+                                        />
+                                      </Col>
+                                      <Col lg="3">
+                                        <Input
+                                          key={`input-address-${index}-city`}
+                                          className="form-control-alternative mb-2"
+                                          type="text"
+                                          name="city"
+                                          value={address.city}
+                                          onChange={(e) =>
+                                            handleAddressChange(e, index)
+                                          }
+                                        />
+                                      </Col>
+                                      <Col lg="3">
+                                        <Input
+                                          key={`input-address-${index}-governorate`}
+                                          className="form-control-alternative mb-2"
+                                          type="text"
+                                          name="governorate"
+                                          value={address.governorate}
+                                          onChange={(e) =>
+                                            handleAddressChange(e, index)
+                                          }
+                                        />
+                                      </Col>
+                                      <Col lg="2">
+                                        <Input
+                                          key={`input-address-${index}-country`}
+                                          className="form-control-alternative mb-2"
+                                          type="text"
+                                          name="country"
+                                          value={address.country}
+                                          onChange={(e) =>
+                                            handleAddressChange(e, index)
+                                          }
+                                        />
+                                      </Col>
+                                      <Col lg="1">
+                                        <button
+                                          className="btn btn-sm btn-outline-danger mb-2"
+                                          onClick={() =>
+                                            handleRemoveAddress(index)
+                                          }
+                                        >
+                                          <i className="fa fa-minus-circle"></i>
+                                        </button>
+                                      </Col>
+                                      {index ===
+                                        profileData.address.length - 1 && (
+                                        <button
+                                          className="btn-sm btn-outline-primary"
+                                          onClick={handleAddAddress}
+                                        >
+                                          <i className="fa fa-plus-circle"></i>
+                                          إضافة عنـوان جديد
+                                        </button>
+                                      )}
+                                    </div>
+                                  ))}
+                                </>
+                              ) : (
+                                <>
+                                  {profileData.address.map((address, index) => (
+                                    <p key={`address-${index}`}>
+                                      {address.area}, {address.city},{" "}
+                                      {address.governorate}, {address.country}
+                                    </p>
+                                  ))}
+                                </>
+                              )}
+                            </Col>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col lg="12">
+                          {/* Description */}
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-Bio"
+                          >
+                            نبذة تعريفية
+                          </label>
+                          <Col lg="12">
+                            {editMode ? (
+                              <Input
+                                className="form-control-alternative"
+                                rows="4"
+                                type="textarea"
+                                name="bio"
+                                value={profileData.bio}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              <p>{profileData.bio}</p>
+                            )}
+                          </Col>
+                        </Col>
+                      </Row>
+                    </>
+
+                    <hr className="my-4" />
+                    <h6 className="heading-small text-muted mb-4">
+                      معلومات إضافية
+                    </h6>
+                    <Col lg="6">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-email"
+                        >
+                          البريد الإلكتروني
+                        </label>
+                        <Col lg="8">
+                          <p>{profileData.email}</p>
+                        </Col>
+                      </FormGroup>
+                    </Col>
+                    <Col lg="6">
+                      <FormGroup>
+                        {!editMode ? (
+                          <>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-password"
+                            >
+                              كلمــة المرور
+                            </label>
+                            <Buttons
+                              title="تغييـر كلمــة المرور"
+                              className="btn btn-primary ml-3"
+                              onClick={openModal}
+                            />
+                            <Modal isOpen={showModal} toggle={closeModal}>
+                              <ModalBody>
+                                <span className="close" onClick={closeModal}>
+                                  &times;
+                                </span>
+                                <h2>تغيير كلمة المرور</h2>
+                                {passwordChangeError && (
+                                  <Alert
+                                    color="danger"
+                                    className="alert-transparent"
+                                  >
+                                    Failed to update the password. Please try
+                                    again.
+                                  </Alert>
+                                )}
+                                <Input
+                                  type="password"
+                                  name="currentPassword"
+                                  className="form-control mt-5"
+                                  placeholder="كلمـة المرور الحاليــة"
+                                  onChange={handleInputChange}
+                                />
+                                <Input
+                                  type="password"
+                                  name="newPassword"
+                                  className="form-control"
+                                  placeholder="كلمـة مـرور جديدة"
+                                  onChange={handleInputChange}
+                                />
+                                <Input
+                                  type="password"
+                                  name="confirmPassword"
+                                  className="form-control"
+                                  placeholder="تأكيـد كلمـة المـرور الجديدة"
+                                  onChange={handleInputChange}
+                                />
+                                {matchError && (
+                                  <span className="text-danger">
+                                    New password and confirm password do not
+                                    match.
+                                  </span>
+                                )}{" "}
+                                {errorEmpty && (
+                                  <div
+                                    className="alert alert-danger mt-3 alert-transparent"
+                                    role="alert"
+                                  >
+                                    Please fill in all the fields.
+                                  </div>
+                                )}
+                              </ModalBody>
+                              <ModalFooter>
+                                <Buttons
+                                  title="حفــظ"
+                                  className="btn btn-primary"
+                                  onClick={handleModalOk}
+                                />
+                                <Buttons
+                                  title="رجــوع"
+                                  className="btn btn-secondary"
+                                  onClick={closeModal}
+                                />
+                              </ModalFooter>
+                            </Modal>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Form>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
       </>
     </div>
   );

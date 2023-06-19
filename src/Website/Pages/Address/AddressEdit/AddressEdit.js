@@ -21,13 +21,13 @@ const AddressEdit = () => {
     const fetchOldValues = async () => {
       try {
         const response = await axiosInstance.get(`/profile/address/${id}`);
-        const { area, city, governorate, country } = response.data;
+        const { area, city, governorate, country } = response.data.data;
+        console.log(response.data.data);
         setOldValues({ area, city, governorate, country });
       } catch (error) {
         console.error("Failed to fetch old values:", error);
       }
     };
-
     fetchOldValues();
   }, [id]);
 

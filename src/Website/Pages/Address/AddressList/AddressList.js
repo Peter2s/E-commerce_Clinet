@@ -11,6 +11,10 @@ const Address = () => {
   const [addresses, setAddresses] = useState([]);
 
   useEffect(() => {
+    fetchAddress();
+  }, []);
+
+  const fetchAddress = () => {
     axiosInstance
       .get("profile/address")
       .then((response) => {
@@ -21,21 +25,16 @@ const Address = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }
 
-  const handleDeleteAddress = (id) => {
-    axiosInstance
-      .delete(`profile/address/${id}`)
-      .then((response) => {
-        if (response.data.status === "success") {
-          setAddresses((prevAddresses) =>
-            prevAddresses.filter((address) => address._id !== id)
-          );
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const handleDeleteAddress = async (id) => {
+    try {
+      await axiosInstance.delete(`profile/address/${id}`);
+      setAddresses(addresses.filter((address) => address._id !== id));
+      fetchAddress();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleConfirmDelete = (id) => {
@@ -50,12 +49,24 @@ const Address = () => {
       cancelButtonText: "لا، إلغاء الأمر",
     }).then((result) => {
       if (result.isConfirmed) {
+        console.log(addresses.length);
+    if (addresses.length === 1) {
+      Swal.fire(
+        "لا يمكن حذف العنوان الوحيد",
+        "لا يمكنك حذف العنوان الوحيد الذي لديك.",
+        "warning"
+      );
+      return;
+    }
+  else{
         handleDeleteAddress(id);
         Swal.fire("تم الحذف", "تم حذف العنوان بنجاح.", "success");
+        fetchAddress();
       }
+    }
     });
   };
-  
+
   return (
     <Container fluid className="mt-4">
       <Row>
