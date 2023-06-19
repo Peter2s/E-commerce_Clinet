@@ -33,6 +33,7 @@ import Address from "Website/Pages/Address/AddressList/AddressList";
 import AddressEdit from "Website/Pages/Address/AddressEdit/AddressEdit";
 import AddressAdd from "Website/Pages/Address/AddressAdd/AddressAdd";
 import { AllCategoryPage } from "./Website/Pages/Categories/AllCategoryPage";
+import ProductDetails from "Website/Pages/Products/ProductDetails/ProductDetails";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -200,6 +201,16 @@ root.render(
             <div dir="rtl" className="websitePages">
               <NavBar />
               <AddressAdd />
+              <FooterSite />
+            </div>
+          }
+        />
+        <Route
+          path="/product/:id"
+          element={
+            <div dir="rtl" className="websitePages">
+              <NavBar />
+              <ProductDetails />
               <FooterSite />
             </div>
           }
