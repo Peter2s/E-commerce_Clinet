@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardHeader, CardBody, CardFooter, Container, Col, Row, Navbar, Table, Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, Container, Col, Row, Navbar, Table, Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input } from "reactstrap";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { axiosInstance } from "Axios.js";
-import "./OrderDetail";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const OrderDetail = () => {
   const { id } = useParams();
@@ -16,7 +15,7 @@ const OrderDetail = () => {
 
   useEffect(() => {
     axiosInstance
-      .get(`/profile`)
+      .get(`/orders/${id}`)
       .then((res) => {
         console.log(res.data);
         setOrderData(res.data.data);
@@ -27,9 +26,22 @@ const OrderDetail = () => {
       .catch((err) => {
         console.log(err.message);
       });
-  }, []);
+  }, [id]);
 
-  
+  const fetchProductData = async (products) => {
+    const productId = products.map((product) => product.id);
+    const productResponse = await axiosInstance.get("/products");
+    console.log(productResponse.data); // Add this line to check the structure of the response
+    const productDataWithImage = productResponse.data.data.map((product) => {
+      if (productId.includes(product.id)) {
+        const productImage = product.images[0] || "";
+        return { ...product, image: productImage };
+      }
+      return product;
+    });
+    setProductData(productDataWithImage);
+  };
+
   const getProductImageById = (productId) => {
     const product = productData.find((product) => product.id === productId);
     return product ? product.image : "";
@@ -58,193 +70,161 @@ const OrderDetail = () => {
   const handleStatusChange = async () => {
     try {
       const { value } = await Swal.fire({
-        title: 'Are you sure?',
-        text: `Do you want to ${
-          orderdata.status === 'Completed' ? 'reorder' : 'cancel'
-        } this order?`,
-        icon: 'warning',
+        title: "Are you sure?",
+        text: `Do you want to ${orderdata.status === "Completed" ? "reorder" : "cancel"} this order?`,
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
       });
 
       if (value) {
-        if (orderdata.status === 'Completed') {
-          setModalOpen(true);
-        } else if (orderdata.status === 'Pending') {
+        if (orderdata.status === "Completed") {
+          // Update order status to 'Pending'
+          await axiosInstance.post(`/orders/${orderdata._id}/reorder`, { status: "Pending" });
+          setOrderData((prevOrderData) => ({ ...prevOrderData, status: "Pending" }));
+          Swal.fire("Order Reordered!", "The order status has been changed to Pending.", "success");
+        } else {
           // Update order status to 'Cancelled'
-          await axiosInstance.delete(`/orders/${orderdata._id}`, { status: 'Cancelled' });
-          setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Cancelled' }));
-          Swal.fire('Order Cancelled!', 'The order has been cancelled.', 'success');
+          await axiosInstance.post(`/orders/${orderdata._id}/cancel`, { status: "Cancelled" });
+          setOrderData((prevOrderData) => ({ ...prevOrderData, status: "Cancelled" }));
+          Swal.fire("Order Cancelled!", "The order status has been changed to Cancelled.", "success");
         }
       }
     } catch (error) {
-      console.log(error.message);
-      Swal.fire('Error', 'An error occurred. Please try again.', 'error');
+      console.log(error);
+      Swal.fire("Error", "An error occurred while updating the order status.", "error");
     }
   };
 
-  const handleReorder = async () => {
-    try {
-      const addressId = selectedAddress;
-      if (!addressId) {
-        Swal.fire('Error', 'Please select an address.', 'error');
-        return;
+  const toggleModal = () => {
+    setModalOpen(!modalOpen);
+  };
+
+  const handleReorderConfirmation = async () => {
+    if (selectedAddress) {
+      try {
+        // Create a new order with the selected address_id and status 'Pending'
+        const newOrder = {
+          address_id: selectedAddress,
+          status: "Pending",
+        };
+
+        // Make an API call to create the new order
+        const response = await axiosInstance.post("/orders", newOrder);
+
+        // Display success message
+        Swal.fire("Order Created!", "A new order has been created.", "success");
+
+        // Close the modal and update the order status
+        setModalOpen(false);
+        setOrderData((prevOrderData) => ({ ...prevOrderData, status: "Pending" }));
+      } catch (error) {
+        console.log(error);
+        Swal.fire("Error", "An error occurred while creating the order.", "error");
       }
+    }
+  };
 
-      // Get the selected address object
-      const selectedAddressObj = orderdata.address.find(address => address._id === addressId);
-
-      // Extract the required address fields
-      const { area, city, governorate, country } = selectedAddressObj;
-
-      // Prepare the data for the reorder request
-      const reorderData = {
-        address: {
-          area,
-          city,
-          governorate,
-          country
-        },
-        products: orderdata.products.map((product) => ({
-          id: product.id,
-          quantity: product.quantity,
-        })),
-      };
-
-      // Make the reorder request
-      await axiosInstance.post('/orders', reorderData);
-      Swal.fire('Reorder Success!', 'Your order has been placed successfully.', 'success');
-    } catch (error) {
-      console.log(error.message);
-      Swal.fire('Error', 'An error occurred. Please try again.', 'error');
-    } finally {
-      setModalOpen(false);
+  const renderCancelButton = () => {
+    if (orderdata.status === "Completed") {
+      return (
+        <Button onClick={toggleModal} className="btn-success btn">
+          اعادة الشراء
+        </Button>
+      );
+    } else if (orderdata.status === "Pending") {
+      return (
+        <Button onClick={handleStatusChange} className="btn-danger btn">
+          الغاء الطلب
+        </Button>
+      );
     }
   };
 
   return (
     <>
-      <Navbar className="navbar-top navbar-horizontal navbar-light" expand="md">
-        <Container className="px-4">
-          <Link to="/admin/orders" className="btn btn-icon btn-primary" style={{ marginTop: -15 }}>
-            <span className="btn-inner--icon">
-              <i className="fas fa-long-arrow-alt-left" />
-            </span>
-          </Link>
+      <Navbar expand="lg" color="dark" dark>
+        <Container>
+          <Navbar.Brand tag={Link} to="/">
+            Admin Panel
+          </Navbar.Brand>
         </Container>
       </Navbar>
-      <Container className="mt--6" fluid>
-        <Row>
-          <div className="col">
-            <Card className="shadow">
-              <CardHeader className="border-0">
-                <Row>
-                  <Col xs="6">
-                    <h3 className="mb-0">Order Details</h3>
-                  </Col>
-                  <Col className="text-right" xs="6">
-                    <Button
-                      color={orderdata.status === "Completed" ? "danger" : "success"}
-                      disabled={orderdata.status === "Processing"}
-                      onClick={handleStatusChange}
-                      size="sm"
-                    >
-                      {orderdata.status === "Completed" ? "Reorder" : "Cancel Order"}
-                    </Button>
-                  </Col>
-                </Row>
-              </CardHeader>
-              <CardBody>
-                <Row>
-                  <Col>
-                    <Table className="align-items-center table-flush" responsive>
-                      <thead className="thead-light">
-                        <tr>
-                          <th scope="col">Product</th>
-                          <th scope="col">Image</th>
-                          <th scope="col">Quantity</th>
-                          <th scope="col">Price</th>
-                          <th scope="col">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {orderdata.products &&
-                          orderdata.products.map((product, index) => (
-                            <tr key={index}>
-                              <th scope="row">{getProductNameById(product.id)}</th>
-                              <td>
-                                <img
-                                  alt={getProductNameById(product.id)}
-                                  className="avatar rounded-circle mr-3"
-                                  src={getProductImageById(product.id)}
-                                />
-                              </td>
-                              <td>{product.quantity}</td>
-                              <td>{product.price}</td>
-                              <td>{product.price * product.quantity}</td>
-                            </tr>
-                          ))}
-                      </tbody>
-                      <tfoot>
-                        <tr>
-                          <td colSpan="4" className="text-right">
-                            <strong>Total:</strong>
-                          </td>
-                          <td>{orderdata.total_price}</td>
-                        </tr>
-                      </tfoot>
-                    </Table>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <h3>Addresses</h3>
-                    {orderdata.address &&
-                      orderdata.address.map((address, index) => (
-                        <div key={index}>
-                          <input
-                            type="radio"
-                            name="address"
-                            value={address._id}
-                            checked={selectedAddress === address._id}
-                            onChange={() => setSelectedAddress(address._id)}
-                          />
-                          <label htmlFor={address._id}>
-                            {`${address.area}, ${address.city}, ${address.governorate}, ${address.country}`}
-                          </label>
-                        </div>
-                      ))}
-                  </Col>
-                </Row>
-              </CardBody>
-              <CardFooter>
-                <Row>
-                  <Col>
-                    <Button
-                      color="primary"
-                      onClick={() => setModalOpen(true)}
-                      disabled={orderdata.status !== "Completed"}
-                    >
-                      Reorder
-                    </Button>
-                  </Col>
-                </Row>
-              </CardFooter>
-            </Card>
-          </div>
-        </Row>
+      <Container className="mt-5">
+        <Card>
+          <CardHeader>تفاصيل الطلب</CardHeader>
+          <CardBody>
+            <Row>
+              <Col>
+                <h5>رقم الطلب: {orderdata.order_number}</h5>
+                <h5>العميل: {orderdata.user ? orderdata.user.name : ""}</h5>
+                <h5>الحالة: <span className={getStatusColor(orderdata.status)}>{orderdata.status}</span></h5>
+              </Col>
+              <Col>
+                <h5>تاريخ الطلب: {new Date(orderdata.created_at).toLocaleDateString("en-GB")}</h5>
+                <h5>المبلغ الإجمالي: {orderdata.total_amount} ريال</h5>
+                <h5>حالة الدفع: {paymentStatus}</h5>
+              </Col>
+            </Row>
+            <Table className="mt-3" striped responsive>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>الصورة</th>
+                  <th>المنتج</th>
+                  <th>السعر</th>
+                  <th>الكمية</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderdata.products &&
+                  orderdata.products.map((product, index) => (
+                    <tr key={index}>
+                      <th scope="row">{index + 1}</th>
+                      <td>
+                        <img src={getProductImageById(product.id)} alt={getProductNameById(product.id)} className="img-thumbnail" width="100" height="100" />
+                      </td>
+                      <td>{getProductNameById(product.id)}</td>
+                      <td>{product.pivot.price}</td>
+                      <td>{product.pivot.quantity}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </Table>
+          </CardBody>
+          <CardFooter>
+            <Button onClick={handleStatusChange} className="btn-primary btn">
+              {orderdata.status === "Completed" ? "إعادة الطلب" : "إلغاء الطلب"}
+            </Button>
+            {renderCancelButton()}
+          </CardFooter>
+        </Card>
       </Container>
-      <Modal isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)}>
-        <ModalHeader toggle={() => setModalOpen(!modalOpen)}>Confirm Reorder</ModalHeader>
+      <Modal isOpen={modalOpen} toggle={toggleModal}>
+        <ModalHeader toggle={toggleModal}>اختر عنوانًا</ModalHeader>
         <ModalBody>
-          Are you sure you want to reorder this order?
+          <FormGroup>
+            <Label for="address">العنوان</Label>
+            <Input type="select" name="address" id="address" value={selectedAddress} onChange={(e) => setSelectedAddress(e.target.value)}>
+              <option value="">اختر العنوان</option>
+              {orderdata.user && orderdata.user.addresses.map((address) => (
+                <option key={address.id} value={address.id}>
+                  {address.address}
+                </option>
+              ))}
+            </Input>
+          </FormGroup>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={handleReorder}>Reorder</Button>
-          <Button color="secondary" onClick={() => setModalOpen(!modalOpen)}>Cancel</Button>
+          <Button color="primary" onClick={handleReorderConfirmation}>
+            إعادة الشراء
+          </Button>
+          <Button color="secondary" onClick={toggleModal}>
+            إلغاء
+          </Button>
         </ModalFooter>
       </Modal>
     </>
