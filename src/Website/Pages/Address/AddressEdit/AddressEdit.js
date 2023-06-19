@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Swal from "sweetalert2";
 import SideBar from "Website/SharedUI/SideBar/SideBar";
 import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
 import { axiosInstance } from "../../../../Axios";
@@ -9,21 +10,14 @@ import addressIMG from '../../../../Website/Assests/travel.png';
 
 const AddressEdit = () => {
   const { id } = useParams();
-
-  const [oldValues, setOldValues] = useState({
-    area: "",
-    city: "",
-    governorate: "",
-    country: ""
-  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOldValues = async () => {
       try {
         const response = await axiosInstance.get(`/profile/address/${id}`);
-        const { area, city, governorate, country } = response.data.data;
-        console.log(response.data.data);
-        setOldValues({ area, city, governorate, country });
+        const oldData = response.data.data[0];
+        formik.setValues(oldData);
       } catch (error) {
         console.error("Failed to fetch old values:", error);
       }
@@ -31,25 +25,40 @@ const AddressEdit = () => {
     fetchOldValues();
   }, [id]);
 
-  const navigate = useNavigate();
-
   const formik = useFormik({
-    initialValues: oldValues,
+    initialValues: {
+      area: "",
+      city: "",
+      governorate: "",
+      country: "",
+    },
     validationSchema: Yup.object({
       area: Yup.string().required("يجب إدخال المنطقة"),
       city: Yup.string().required("يجب إدخال المدينة"),
       governorate: Yup.string().required("يجب إدخال المحافظة"),
-      country: Yup.string().required("يجب إدخال الدولة")
+      country: Yup.string().required("يجب إدخال الدولة"),
     }),
     onSubmit: async (values) => {
-      const updatedValues = { ...oldValues, ...values };
+      const updatedValues = {
+        city: values.city,
+        governorate: values.governorate,
+        country: values.country,
+        area: values.area,
+      };
+
       try {
         await axiosInstance.patch(`/profile/address/${id}`, updatedValues);
         navigate("/address");
+        Swal.fire({
+          icon: "success",
+          title: "تم التحديث بنجاح",
+          showConfirmButton: false,
+          timer: 2000,
+        });
       } catch (error) {
         console.error("Failed to update address:", error);
       }
-    }
+    },
   });
 
   return (
@@ -74,7 +83,7 @@ const AddressEdit = () => {
                       className="form-control w-75 mb-3"
                       placeholder="المنطقــة"
                       name="area"
-                      value={formik.values.area} // Set value to old value
+                      value={formik.values.area}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                     />
@@ -85,7 +94,7 @@ const AddressEdit = () => {
                       className="form-control w-75 mb-3"
                       placeholder="المدينــة"
                       name="city"
-                      value={formik.values.city} // Set value to old value
+                      value={formik.values.city}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                     />
@@ -96,7 +105,7 @@ const AddressEdit = () => {
                       className="form-control w-75 mb-3"
                       placeholder="المحافظــة"
                       name="governorate"
-                      value={formik.values.governorate} // Set value to old value
+                      value={formik.values.governorate}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                     />
@@ -107,7 +116,7 @@ const AddressEdit = () => {
                       className="form-control w-75 mb-3"
                       placeholder="الدولــــة"
                       name="country"
-                      value={formik.values.country} // Set value to old value
+                      value={formik.values.country}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                     />
