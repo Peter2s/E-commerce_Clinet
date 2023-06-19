@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardHeader, CardBody, CardFooter, Container, Col, Row, Navbar, Table ,Button } from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, Container, Col, Row, Navbar, Table, Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input } from "reactstrap";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { axiosInstance } from "Axios.js";
@@ -11,7 +11,11 @@ const OrderDetail = () => {
   const { id } = useParams();
   const [orderdata, setOrderData] = useState({});
   const [productData, setProductData] = useState([]);
+  const [userData, setUserData] = useState({});
   const [paymentStatus, setPaymentStatus] = useState(orderdata.payment_status);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState([]);
+  const [userAddresses, setUserAddresses] = useState([]);
 
   useEffect(() => {
     axiosInstance
@@ -28,7 +32,22 @@ const OrderDetail = () => {
         console.log(err.message);
       });
 
+      const fetchUserData = async () => {
+        try {
+          const response = await axiosInstance.get("/profile");
+          setUserData(response.data.data);
+          setUserAddresses(response.data.data.address);
+
+          console.log(userAddresses);
+        } catch (error) {
+          console.log(error.message);
+          // Handle error
+        }
+      };
+      fetchUserData();
+
   }, [id]);
+  
 
   const fetchProductData = async (products) => {
     const productId = products.map((product) => product.id);
@@ -90,7 +109,7 @@ const OrderDetail = () => {
           await axiosInstance.post(`/orders/${orderdata._id}/reorder`, { status: 'Pending' });
           setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Pending' }));
           Swal.fire('Order Reordered!', 'The order status has been changed to Pending.', 'success');
-        } else if (orderdata.status === 'Pending') {
+        }  if (orderdata.status === 'Pending') {
           // Update order status to 'Cancelled'
           await axiosInstance.delete(`/orders/${orderdata._id}`, { status: 'Cancelled' });
           setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Cancelled' }));
@@ -107,7 +126,7 @@ const OrderDetail = () => {
     if (orderdata.status === 'Completed') {
       return (
         <Button
-          onClick={handleStatusChange}
+          onClick={handleReorder}
           className="btn-success btn "
           
         >
@@ -125,7 +144,42 @@ const OrderDetail = () => {
       );
     }
   };
- 
+  
+  const handleReorder = () => {
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleAddressSelect = (event) => {
+    setSelectedAddress(event.target.value);
+  };
+
+  const handleReorderConfirm = async () => {
+    try {
+      const response = await axiosInstance.post(`/orders/${orderdata._id}/reorder`, {
+        
+      });
+      if (response.status === 201) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Order has been placed successfully.',
+          icon: 'success',
+        });
+        setModalOpen(false);
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to place the order. Please try again.',
+        icon: 'error',
+      });
+    }
+  };
+  
+
   return (
     <>
       <Navbar />
@@ -272,18 +326,57 @@ const OrderDetail = () => {
                               </Row>
                             </CardBody>
                           </Card>
-                          <div className="text-center mt-5">{renderCancelButton(orderdata._id, orderdata.status)}</div>
+                          {/* <div className="text-center mt-5">{renderCancelButton(orderdata._id, orderdata.status)}</div> */}
                         </>
                       )}
                     </div>
                   </CardBody>
                 </div>
-                
+                <CardFooter>
+            
+            {renderCancelButton()}
+          </CardFooter>
               </Card>
             )}
           </div>
         </Row>
       </Container>
+      <Modal isOpen={modalOpen} toggle={handleModalClose}>
+        <ModalHeader toggle={handleModalClose}>اختر عنوانًا</ModalHeader>
+        <ModalBody>
+          <FormGroup>
+            <Label for="address">العنوان</Label>
+            <Input type="select" name="address" id="address" value={selectedAddress} onChange={handleAddressSelect}>
+              <option value="">اختر العنوان</option>
+              {userAddresses.length > 0 ? (
+          userAddresses.map((address) => (
+            <option key={address._id}>
+              
+                {address.area}, {address.city}, {address.governorate}, {address.country}
+              
+            </option>
+          ))
+        ) : (
+          <p>No address found</p>
+        )}
+  
+  <Col>
+        
+      </Col>
+             
+            </Input>
+          </FormGroup>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={handleReorderConfirm}>
+            Reorder
+          </Button>
+          <Button color="secondary" onClick={handleModalClose}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+      
     </>
   );
 };
