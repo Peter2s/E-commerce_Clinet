@@ -6,6 +6,7 @@ import { useFormik } from "formik";
 import MySwal from "sweetalert2";
 import { ProductsForm } from "../Products-form/ProductsForm";
 import { initValues, validation } from "../Products-form/validation";
+import handleErrors from "../../../../Errors";
 
 const AddProduct = () => {
   const [categories, setCategories] = useState([]);
@@ -45,14 +46,7 @@ const AddProduct = () => {
           });
           navigate("/admin/products");
         })
-        .catch((err) => {
-          console.log(err.response.data.error);
-          MySwal.fire({
-            icon: "error",
-            title: "error!",
-            text: err.response.data.error,
-          });
-        });
+        .catch((error) => handleErrors(error));
     },
   });
   const handleImageFile = (event) => {
@@ -63,13 +57,17 @@ const AddProduct = () => {
     formik.values.images = Array.from(event.target.files);
     console.log(formik.values.images);
   };
-  useEffect(() => {
-    async function getCategories() {
+
+  async function getCategories() {
+    try {
       const res = await axiosInstance.get(CategoriesURL);
       console.log(res.data);
       setCategories(res.data.data);
+    } catch (error) {
+      handleErrors(error);
     }
-
+  }
+  useEffect(() => {
     getCategories();
   }, []);
 

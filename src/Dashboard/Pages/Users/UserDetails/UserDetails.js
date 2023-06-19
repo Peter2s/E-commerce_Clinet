@@ -16,6 +16,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import "../../../Assets/css/project.css";
 import { axiosInstance } from "../../../../Axios";
+import handleErrors from "../../../../Errors";
 
 const UserDetail = () => {
   const { id } = useParams();
@@ -30,9 +31,7 @@ const UserDetail = () => {
       .then((res) => {
         setUserData(res.data.data);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((error) => handleErrors(error));
   };
 
   return (
@@ -76,13 +75,10 @@ const UserDetail = () => {
                         color="warning"
                         href="#pablo"
                         size="sm"
-                    >
-                      Edit
-                    </Link>
+                      >
+                        Edit
+                      </Link>
                     </Col>
-
-
-
                   </Row>
                 </CardHeader>
                 <CardBody className="mt-5">
@@ -151,7 +147,7 @@ const UserDetail = () => {
                         ))}
                     </div>
                     <hr className="my-4" />
-                     {/*Cart */}
+                    {/*Cart */}
                     {/*<h6 className="heading-small text-muted mb-4">Cart</h6>
                     <div className="pl-lg-4">
                       {userdata.cart &&
@@ -178,7 +174,6 @@ const UserDetail = () => {
                     </div>
 
                     <hr className="my-4" />*/}
-
                   </div>
                 </CardBody>
               </Card>

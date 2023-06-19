@@ -2,21 +2,16 @@ import Index from "./Dashboard/Pages/HomePage/Index.js";
 import Profile from "./Dashboard/Pages/Profile/Profile.js";
 import Login from "./Dashboard/Pages/Login/Login.js";
 import Orders from "./Dashboard/Pages/Orders/OrderList/OrderList.js";
-import Orders2 from "./Dashboard/Pages/Orders/OrderList/OrderList2.js";
 import Products from "./Dashboard/Pages/Products/Product-list/Products.js";
-import Products2 from "./Dashboard/Pages/Products/Product-list/Products2.js";
 import Categories from "./Dashboard/Pages/Categories/Categories/Categories.js";
-import Categories2 from "./Dashboard/Pages/Categories/Categories/Categories2.js";
 import ListRoles from "./Dashboard/Pages/Roles/ListRoles/ListRoles.js";
 import CreateRole from "./Dashboard/Pages/Roles/CreateRole/CreateRole.js";
 import Setting from "./Dashboard/Pages/Setting/Setting.js";
 import Users from "./Dashboard/Pages/Users/UserListing/UserListing.js";
-import Users2 from "./Dashboard/Pages/Users/UserListing/UserListing2.js";
 import UserCreate from "./Dashboard/Pages/Users/UserCreate/UserCreate.js";
 import UserEdit from "./Dashboard/Pages/Users/UserEdit/UserEdit.js";
 import UserDetail from "Dashboard/Pages/Users/UserDetails/UserDetails.js";
-import Emps from "Dashboard/Pages/Employees/EmpListing/EmpListing.js";
-import Emps2 from "Dashboard/Pages/Employees/EmpListing/EmpListing2.js";
+import Emps from "./Dashboard/Pages/Employees/EmpListing/EmpListing.js";
 import EmpCreate from "Dashboard/Pages/Employees/EmpCreate/EmpCreate.js";
 import EmpEdit from "Dashboard/Pages/Employees/EmpEdit/EmpEdit.js";
 import EmpDetails from "Dashboard/Pages/Employees/EmpDetail/EmpDetail.js";
@@ -51,7 +46,7 @@ var routes = [
     path: "/categories",
     name: "Categories",
     icon: "ni ni-bullet-list-67 text-blue",
-    component: <Categories2 />,
+    component: <Categories />,
     layout: "/admin",
   },
   {
@@ -72,7 +67,7 @@ var routes = [
     path: "/products",
     name: "Products",
     icon: "ni ni-bag-17 text-blue",
-    component: <Products2 />,
+    component: <Products />,
     layout: "/admin",
   },
   {
@@ -94,14 +89,7 @@ var routes = [
     path: "/orders",
     name: "Orders",
     icon: "fa fa-shopping-basket text-blue",
-    component: <Orders2 />,
-    layout: "/admin",
-  },
-  {
-    path: "/orders2",
-    name: "New",
-    icon: "fa fa-shopping-basket text-blue",
-    component: <Orders2 />,
+    component: <Orders />,
     layout: "/admin",
   },
 
@@ -109,7 +97,7 @@ var routes = [
     path: "/users",
     name: "Customers",
     icon: "fa fa-users text-blue",
-    component: <Users2 />,
+    component: <Users />,
     layout: "/admin",
   },
   {
@@ -137,7 +125,7 @@ var routes = [
     path: "/employees",
     name: "Employees",
     icon: "fa fa-person-military-pointing text-blue",
-    component: <Emps2 />,
+    component: <Emps />,
     layout: "/admin",
   },
 

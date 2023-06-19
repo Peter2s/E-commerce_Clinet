@@ -1,10 +1,19 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Card, CardHeader, Container, Row, Col, CardBody , FormGroup} from "reactstrap";
+import {
+  Card,
+  CardHeader,
+  Container,
+  Row,
+  Col,
+  CardBody,
+  FormGroup,
+} from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import MySwal from "sweetalert2";
 import { axiosInstance } from "../../../../Axios";
+import handleErrors from "../../../../Errors";
 
 const EmpEdit = () => {
   const navigate = useNavigate();
@@ -13,13 +22,11 @@ const EmpEdit = () => {
 
   useEffect(() => {
     axiosInstance
-        .get("/api/v1/roles?fields=name&limit=1000")
-        .then((res) => {
-          setRoles(res.data.data); // Assuming the response contains an array of roles
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
+      .get("/api/v1/roles?fields=name&limit=1000")
+      .then((res) => {
+        setRoles(res.data.data); // Assuming the response contains an array of roles
+      })
+      .catch((error) => handleErrors(error));
   }, []);
   useEffect(() => {
     // Fetch the user data based on the ID and populate the form fields
@@ -30,10 +37,8 @@ const EmpEdit = () => {
         EmpData.role = EmpData.role_id;
         formik.setValues(EmpData);
       })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, [ id]);
+      .catch((error) => handleErrors(error));
+  }, [id]);
 
   const formik = useFormik({
     initialValues: {
@@ -44,9 +49,15 @@ const EmpEdit = () => {
       role: "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().matches(/^[a-zA-Z\s]*$/, "Invalid name format").required("Enter the name"),
-      email: Yup.string().email("Invalid email address").required("Enter the email"),
-      phone: Yup.string().matches(/^[0-9]{11}$/, "Invalid phone number").required("Enter the phone number"),
+      name: Yup.string()
+        .matches(/^[a-zA-Z\s]*$/, "Invalid name format")
+        .required("Enter the name"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Enter the email"),
+      phone: Yup.string()
+        .matches(/^[0-9]{11}$/, "Invalid phone number")
+        .required("Enter the phone number"),
       // password: Yup.string()
       //   .min(8, "Password must be at least 8 characters")
       //   .max(20, "Password must be less than 20 characters")
@@ -54,14 +65,14 @@ const EmpEdit = () => {
       //   .required("Enter the password"),
     }),
     onSubmit: (values) => {
-      console.log(values)
+      console.log(values);
       // return;
       const empData = {
         name: values.name,
         email: values.email,
         phone: values.phone,
         // password: values.password,
-        role_id:values.role,
+        role_id: values.role,
       };
 
       axiosInstance
@@ -78,16 +89,7 @@ const EmpEdit = () => {
           });
           navigate("/admin/employees");
         })
-        .catch((err) => {
-          console.log(err.response.data.error);
-          console.log(err.message);
-            MySwal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: JSON.stringify(err.response.data.error),
-            });
-
-        });
+        .catch((error) => handleErrors(error));
     },
   });
 
@@ -101,8 +103,7 @@ const EmpEdit = () => {
               <form onSubmit={formik.handleSubmit}>
                 <Row>
                   <Col>
-                  
-                        <FormGroup>
+                    <FormGroup>
                       <label>Name</label>
                       <input
                         id="name"
@@ -115,16 +116,17 @@ const EmpEdit = () => {
                         error={formik.errors.name && formik.touched.name}
                       />
                       {formik.errors.name && formik.touched.name && (
-                        <span className="text-danger">{formik.errors.name}</span>
+                        <span className="text-danger">
+                          {formik.errors.name}
+                        </span>
                       )}
-                      </FormGroup>
-                   
+                    </FormGroup>
                   </Col>
                   <Col>
                     <FormGroup>
                       <label>Email</label>
                       <input
-                      className="form-control form-control-alternative"
+                        className="form-control form-control-alternative"
                         type="text"
                         name="email"
                         value={formik.values.email}
@@ -133,7 +135,9 @@ const EmpEdit = () => {
                         error={formik.errors.email && formik.touched.email}
                       />
                       {formik.errors.email && formik.touched.email && (
-                        <span className="text-danger">{formik.errors.email}</span>
+                        <span className="text-danger">
+                          {formik.errors.email}
+                        </span>
                       )}
                     </FormGroup>
                   </Col>
@@ -152,7 +156,9 @@ const EmpEdit = () => {
                         error={formik.errors.phone && formik.touched.phone}
                       />
                       {formik.errors.phone && formik.touched.phone && (
-                        <span className="text-danger">{formik.errors.phone}</span>
+                        <span className="text-danger">
+                          {formik.errors.phone}
+                        </span>
                       )}
                     </FormGroup>
                   </Col>
@@ -174,30 +180,32 @@ const EmpEdit = () => {
                     </FormGroup>
                   </Col>*/}
                   <Col>
-                  <FormGroup>
-                    <label htmlFor="role">Role</label>
-                    <select
+                    <FormGroup>
+                      <label htmlFor="role">Role</label>
+                      <select
                         name="role"
                         id="role"
                         value={formik.values.role}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         className="form-control"
-                    >
-                      <option value="">Select a role</option>
-                      {roles.map((role) => (
-                          <option key={role._id} value={role._id} >
+                      >
+                        <option value="">Select a role</option>
+                        {roles.map((role) => (
+                          <option key={role._id} value={role._id}>
                             {role.name}
                           </option>
-                      ))}
-                    </select>
-                    {formik.errors.role && formik.touched.role && (
-                        <span className="text-danger">{formik.errors.role}</span>
-                    )}
-                  </FormGroup>
+                        ))}
+                      </select>
+                      {formik.errors.role && formik.touched.role && (
+                        <span className="text-danger">
+                          {formik.errors.role}
+                        </span>
+                      )}
+                    </FormGroup>
                   </Col>
                 </Row>
-               {/* <Row>
+                {/* <Row>
                 <Col>
                     <FormGroup>
                       <label htmlFor="role">Role</label>

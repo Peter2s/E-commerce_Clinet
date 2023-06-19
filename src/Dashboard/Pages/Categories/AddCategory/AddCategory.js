@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import MySwal from "sweetalert2";
 import { CategoriesForm } from "../CategoriesForm/CategoriesForm";
 import { initValues, validation } from "../CategoriesForm/validation";
+import handleErrors from "../../../../Errors";
 
 const AddCategory = () => {
   const navigate = useNavigate();
@@ -35,14 +36,7 @@ const AddCategory = () => {
           });
           navigate("/admin/categories");
         })
-        .catch((err) => {
-          console.log(err.response.data.error);
-          MySwal.fire({
-            icon: "error",
-            title: "error!",
-            text: err.response.data.error,
-          });
-        });
+        .catch((error) => handleErrors(error));
     },
   });
 

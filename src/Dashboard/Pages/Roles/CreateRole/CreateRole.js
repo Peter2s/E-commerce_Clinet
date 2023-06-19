@@ -15,6 +15,7 @@ import { axiosInstance } from "../../../../Axios";
 import { Navigate, useNavigate } from "react-router";
 import { useFormik } from "formik";
 import { Checkbox } from "primereact/checkbox";
+import handleErrors from "../../../../Errors";
 
 const CreateRole = () => {
   const initialRole = {
@@ -32,7 +33,7 @@ const CreateRole = () => {
       const { routes: route } = response.data.data;
       setRoutes(route);
     } catch (error) {
-      console.log(error);
+      handleErrors(error);
     }
   };
 
@@ -51,7 +52,7 @@ const CreateRole = () => {
         setPermissionsData(permissions);
       }
     } catch (error) {
-      console.error("Error fetching permissions:", error);
+      handleErrors(error);
     }
   };
   const validationSchema = Yup.object().shape({
@@ -110,7 +111,7 @@ const CreateRole = () => {
 
         navigate("/admin/roles");
       } catch (error) {
-        console.error("Error saving role:", error);
+        handleErrors(error);
       }
     },
   });
