@@ -131,7 +131,7 @@ const Emps = () => {
     <>
       <DataTable
         title="Employees"
-        setSearchب={setSearch}
+        setSearch={setSearch}
         addBtn={
           <Link to="/admin/employees/create" className="d-flex">
             <Btn className="btn btn-primary ml-auto" title="Add Employee" />

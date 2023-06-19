@@ -4,11 +4,14 @@ import Login from "./Dashboard/Pages/Login/Login.js";
 import Orders from "./Dashboard/Pages/Orders/OrderList/OrderList.js";
 import Orders2 from "./Dashboard/Pages/Orders/OrderList/OrderList2.js";
 import Products from "./Dashboard/Pages/Products/Product-list/Products.js";
+import Products2 from "./Dashboard/Pages/Products/Product-list/Products2.js";
 import Categories from "./Dashboard/Pages/Categories/Categories/Categories.js";
+import Categories2 from "./Dashboard/Pages/Categories/Categories/Categories2.js";
 import ListRoles from "./Dashboard/Pages/Roles/ListRoles/ListRoles.js";
 import CreateRole from "./Dashboard/Pages/Roles/CreateRole/CreateRole.js";
 import Setting from "./Dashboard/Pages/Setting/Setting.js";
 import Users from "./Dashboard/Pages/Users/UserListing/UserListing.js";
+import Users2 from "./Dashboard/Pages/Users/UserListing/UserListing2.js";
 import UserCreate from "./Dashboard/Pages/Users/UserCreate/UserCreate.js";
 import UserEdit from "./Dashboard/Pages/Users/UserEdit/UserEdit.js";
 import UserDetail from "Dashboard/Pages/Users/UserDetails/UserDetails.js";
@@ -48,7 +51,7 @@ var routes = [
     path: "/categories",
     name: "Categories",
     icon: "ni ni-bullet-list-67 text-blue",
-    component: <Categories />,
+    component: <Categories2 />,
     layout: "/admin",
   },
   {
@@ -69,7 +72,7 @@ var routes = [
     path: "/products",
     name: "Products",
     icon: "ni ni-bag-17 text-blue",
-    component: <Products />,
+    component: <Products2 />,
     layout: "/admin",
   },
   {
@@ -91,7 +94,7 @@ var routes = [
     path: "/orders",
     name: "Orders",
     icon: "fa fa-shopping-basket text-blue",
-    component: <Orders />,
+    component: <Orders2 />,
     layout: "/admin",
   },
   {
@@ -104,9 +107,9 @@ var routes = [
 
   {
     path: "/users",
-    name: "Website Customers",
+    name: "Customers",
     icon: "fa fa-users text-blue",
-    component: <Users />,
+    component: <Users2 />,
     layout: "/admin",
   },
   {
@@ -132,18 +135,12 @@ var routes = [
   },
   {
     path: "/employees",
-    name: "Admin && Employees",
-    icon: "fa fa-users text-blue",
-    component: <Emps />,
-    layout: "/admin",
-  },
-  {
-    path: "/employees2",
-    name: "New",
-    icon: "fa fa-users text-blue",
+    name: "Employees",
+    icon: "fa fa-person-military-pointing text-blue",
     component: <Emps2 />,
     layout: "/admin",
   },
+
   {
     path: "/employees/create",
     name: "New",

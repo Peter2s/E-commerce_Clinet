@@ -172,7 +172,7 @@ const Orders = () => {
             header: "Actions",
             body: (order) => {
               return (
-                <div className="d-flex  justify-content-around">
+                <div className="d-flex justify-content-around">
                   <Link to={`/admin/OrderDetails/${order._id}`}>
                     <button
                       title={"view order"}
