@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // node.js library that concatenates classes (strings)
 import classnames from "classnames";
 // javascipt plugin for creating charts
@@ -47,10 +47,44 @@ import {
 } from "../../Variables/Charts.js";
 
 import Header from "../../Components/Headers/Header.js";
+import { axiosInstance } from "../../../Axios";
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
+  const [statistics, setStatistics] = useState({});
+
+  const fetc = async () => {
+    try {
+      const response = await axiosInstance.get("/statics");
+      const {
+        numberOfUsers,
+        numberOfCategories,
+        numberOfProducts,
+        numberOfOrders,
+        sales,
+        completedOrdersInLastSixMonths,
+        cancelledOrdersInLastSixMonths,
+        processingOrdersFromLastSixMonths,
+        topProducts,
+      } = response.data.data;
+      setStatistics({
+        numberOfUsers,
+        numberOfCategories,
+        numberOfProducts,
+        numberOfOrders,
+        sales,
+        completedOrdersInLastSixMonths,
+        cancelledOrdersInLastSixMonths,
+        processingOrdersFromLastSixMonths,
+        topProducts,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {}, []);
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -109,7 +143,7 @@ const Index = (props) => {
                 </Row>
               </CardHeader>
               <CardBody>
-                {/* Chart */}
+                Chart
                 <div className="chart">
                   <Line
                     data={chartExample1[chartExample1Data]}
@@ -133,7 +167,7 @@ const Index = (props) => {
                 </Row>
               </CardHeader>
               <CardBody>
-                {/* Chart */}
+                Chart
                 <div className="chart">
                   <Bar
                     data={chartExample2.data}
