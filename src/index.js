@@ -208,7 +208,7 @@ root.render(
           }
         />
         <Route
-          path="/product/:id"
+          path="/products/:slug"
           element={
             <div dir="rtl" className="websitePages">
               <NavBar />

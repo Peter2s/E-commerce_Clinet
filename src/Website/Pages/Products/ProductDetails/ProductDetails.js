@@ -4,14 +4,15 @@ import Swal from 'sweetalert2';
 import { axiosInstance } from "../../../../Axios";
 import Buttons from "Website/SharedUI/Buttons/Buttons";
 import './ProductDetails.css';
+import { useParams } from "react-router";
 
 const ProductsDetails = () => {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
-
+  const { slug } = useParams();
 
   useEffect(() => {
-    axiosInstance.get("/products/updates")
+    axiosInstance.get(`/products/${slug}`)
       .then(response => {
         setProduct(response.data.data);
       })

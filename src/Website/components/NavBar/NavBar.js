@@ -3,12 +3,27 @@ import { faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons';
 import './NavBar.css';
 import { Link } from 'react-router-dom';
 import SearchBox from 'Website/SharedUI/SearchBox/SearchBox';
+import { useEffect, useState } from 'react';
+import { axiosInstance } from './../../../Axios';
 
 const NavBar = () => {
+  const [navbarData, setNavbarData] = useState([]);
+
+  useEffect(() => {
+    axiosInstance
+      .get("/info")
+      .then((response) => {
+        setNavbarData(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
     return (
         <nav id="navBar">
           <Link to="/home">
-            <img src="https://i.ibb.co/5BkDRW0/Screenshot-1-removebg-preview.png" className='logoNav' alt="logo" />
+            <img src={navbarData.logo} className='logoNav' alt="logo" />
           </Link>
         <ul>
           <li>
