@@ -9,13 +9,15 @@ import Swal from 'sweetalert2';
 
 const OrderDetail = () => {
   const { id } = useParams();
-  const [orderdata, setOrderData] = useState({});
+  const [orderdata, setOrderData] = useState([]);
   const [productData, setProductData] = useState([]);
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState([]);
   const [paymentStatus, setPaymentStatus] = useState(orderdata.payment_status);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState([]);
   const [userAddresses, setUserAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState([]);
+
 
   useEffect(() => {
     axiosInstance
@@ -104,12 +106,12 @@ const OrderDetail = () => {
       });
   
       if (value) {
-        if (orderdata.status === 'Completed') {
-          // Update order status to 'Pending'
-          await axiosInstance.post(`/orders/${orderdata._id}/reorder`, { status: 'Pending' });
-          setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Pending' }));
-          Swal.fire('Order Reordered!', 'The order status has been changed to Pending.', 'success');
-        }  if (orderdata.status === 'Pending') {
+        // if (orderdata.status === 'Completed') {
+        //   // Update order status to 'Pending'
+        //   await axiosInstance.post(`/orders/${orderdata._id}/reorder`, { status: 'Pending' });
+        //   setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Pending' }));
+        //   Swal.fire('Order Reordered!', 'The order status has been changed to Pending.', 'success');} 
+           if (orderdata.status === 'Pending') {
           // Update order status to 'Cancelled'
           await axiosInstance.delete(`/orders/${orderdata._id}`, { status: 'Cancelled' });
           setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Cancelled' }));
@@ -154,13 +156,13 @@ const OrderDetail = () => {
   };
 
   const handleAddressSelect = (event) => {
-    setSelectedAddress(event.target.value);
+    setSelectedAddressId(event.target.value);
   };
 
   const handleReorderConfirm = async () => {
     try {
       const response = await axiosInstance.post(`/orders/${orderdata._id}/reorder`, {
-        
+         address_id: selectedAddressId._id,
       });
       if (response.status === 201) {
         Swal.fire({
@@ -346,7 +348,7 @@ const OrderDetail = () => {
         <ModalBody>
           <FormGroup>
             <Label for="address">العنوان</Label>
-            <Input type="select" name="address" id="address" value={selectedAddress} onChange={handleAddressSelect}>
+            <Input type="select" name="address" id="address" value={selectedAddressId} onChange={handleAddressSelect}>
               <option value="">اختر العنوان</option>
               {userAddresses.length > 0 ? (
           userAddresses.map((address) => (
