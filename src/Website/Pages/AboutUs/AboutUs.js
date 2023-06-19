@@ -20,17 +20,14 @@ const AboutUS = () => {
   return (
     <Container fluid>
       <Row>
-      {/* https://assets-global.website-files.com/6152b2d34ca06b6d275dd66e/6152b2d34ca06b8ff65dddde_digi-auto-billing.png */}
-      {/* src="https://assets-global.website-files.com/6152b2d34ca06b6d275dd66e/615e78b99d4c8d84eeb0edd4_digi-shopping-catalogue.png" */}
-
         <img
           src="https://assets-global.website-files.com/6152b2d34ca06b6d275dd66e/6152b2d34ca06b8ff65dddde_digi-auto-billing.png"
           alt="about us banner"
-          className="aboutUsBanner"
+          className="settingBanner"
         />
-        <h1 className="aboutUsTitle">من نحــن؟</h1>
+        <h1 className="settingTitle">من نحــن؟</h1>
       </Row>
-      <Row className="row aboutUsContent">
+      <Row className="row settingContent">
         <div dangerouslySetInnerHTML={{ __html: aboutus }} />
       </Row>
     </Container>
