@@ -397,7 +397,7 @@ const WebsiteInfo = () => {
                           <>
                             <div
                               className={
-                                "fa-brands fa-" + (item.name || "facebook")
+                                "fa-brands fa-" + (item.name)
                               }></div>
                             <b> {item.name}: </b> &nbsp;
                             <span>{item.url}</span>
