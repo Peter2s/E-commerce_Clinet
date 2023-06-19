@@ -9,7 +9,7 @@ import MySwal from "sweetalert2";
 
 const Login = () => {
   const navigate = useNavigate();
-  const RegistrationURL = "login";
+  const LoginURL = "login";
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -26,13 +26,14 @@ const Login = () => {
     }),
     onSubmit: (values) => {
       console.log(values);
-      const LoginData = new FormData();
-      LoginData.append("email", values.email);
-      LoginData.append("password", values.password);
+      const LoginData = {
+        email: values.email,
+        password: values.password,
+      };
       axiosInstance
-        .post(RegistrationURL, LoginData, {
+        .post(LoginURL, LoginData, {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         })
         .then((res) => {

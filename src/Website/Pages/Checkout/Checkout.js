@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { axiosInstance } from "Axios.js";
 import Swal from "sweetalert2";
-import { Container, Row, Card, CardBody, Col } from "reactstrap";
+import { Container, Row, Card, CardBody, Col , Button } from "reactstrap";
+
 
 const Checkout = () => {
   
@@ -11,6 +12,8 @@ const Checkout = () => {
         const [totalPrice, setTotalPrice] = useState(0);
         // Other necessary state variables
         // ...
+
+       
         useEffect(() => {
             const fetchCartData = async () => {
               try {
@@ -36,6 +39,7 @@ const Checkout = () => {
           
             fetchCartData();
             fetchUserData();
+            
           }, []);
           const calculateTotalPrice = (cartData) => {
             let total = 0;
@@ -61,38 +65,110 @@ const Checkout = () => {
               Swal.fire("Error", "An error occurred. Please try again.", "error");
             }
           };
-    return (
-        <Container fluid className="mt-4">
-        <Row>
-          <Card className="container shadow text-right p-2">
-            <h1 className="mr-3 mb-3">اتمام الشراء</h1>
-            <div>
-    {/* Render the cart items */}
-    {cartData.map((item, index) => (
-      <div key={index}>
-        <h4>{item.product_id.name_ar}</h4>
-        <p>الكمية: {item.quantity}</p>
-        <p>السعر: {item.product_id.price}</p>
         
-      </div>
-    ))}
-    {/* Render the user's address */}
-    <h4>عنوان التوصيل</h4>
-    <p>المنطقة: {addressData.area}</p>
-    <p>المدينة: {addressData.city}</p>
-    <p>المحافظة: {addressData.governorate}</p>
-    <p>الدولة: {addressData.country}</p>
-    {/* Render the total price */}
-    <h4>الاجمالى: {totalPrice}</h4>
-    {/* Render the place order button */}
-    <button onClick={handlePlaceOrder}>اتمام الشراء</button>
-  </div>
+    return (
+      <Container className="mt-4">
+        <Row>
+        <Col xs="8">
+            <h1 className="mb-3">معلومات التوصيل</h1>
+            <Card className="shadow p-3">
+              <Row>
+                <Col>
+                  <h3>{userData.name}</h3>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <p>المنطقة: {addressData.area}</p>
+                </Col>
+                <Col>
+                  <p>المدينة: {addressData.city}</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <p>المحافظة: {addressData.governorate}</p>
+                </Col>
+                <Col>
+                  <p>الدولة: {addressData.country}</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                <p><i className="fa-solid fa-phone text-success ml-2"></i>{userData.phone}</p> 
+                </Col>
+                
+              </Row>
 
+              
             </Card>
-            </Row>
-            </Container>
-       
-    )
+          </Col>
+          <Col xs="4">
+            <h1 className="mb-3">معلومات الدفع </h1>
+            <Card className="container shadow text-right p-4 ">
+              <Row>
+                <Col xs="5">
+                <h4>طريقة الدفع :</h4>
+                </Col>
+                <Col  xs="7">
+                <p><i className="fa-solid fa-money-bill text-success ml-2"></i>كاش عند الاستلام</p>
+                </Col>
+              </Row>
+              {/* <Row>
+                <Col>
+                <p>عدد المنتجات : </p>
+                </Col>
+                <Col>
+                <p>orderData.p</p>
+                </Col>
+              </Row> */}
+              <Row>
+                <Col>
+                  <h2>السعر الكلى:</h2>
+                </Col>
+                <Col>
+                  <h2>{totalPrice}$</h2>
+                </Col>
+              </Row>
+              <Row>
+                  <Button className="btn btn-success w-100" onClick={handlePlaceOrder}>
+                      اتمام الشراء
+                  </Button>
+              </Row>
+               
+              
+            </Card>
+          </Col>
+          
+        </Row>
+        <Row>
+
+          <Col xs="8">
+          <h1 className="mb-3 mt-3">مراجعة الطلب </h1>
+            <Card className="container shadow text-right p-4">
+             {cartData?.map((product) => (
+                                    <div key={product.product_id._id}>
+                                        <Row>
+                                            <Col xs="3">
+                                                <img src={product.product_id.image} alt="Product" style={{ width: "100%", height: "100%" }} />
+                                            </Col>
+                                            <Col xs="7" className="text-right">
+                                                {/*<p>{product.product_id._id}</p>*/}
+                                                <p> اسم المنتج: {product.product_id.name.ar}</p>
+                                                <p>الكمية: {product.quantity}</p>
+                                                <p> سعر الوحدة: {product.product_id.price.toFixed(2)}$</p>
+                                                <p>السعر الكلي: {(product.quantity * product.product_id.price).toFixed(2)}$</p>
+                                            </Col>
+                                            
+                                        </Row>
+                                        <hr />
+                                    </div>
+             ))}
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    );
 }
 
 export default Checkout;

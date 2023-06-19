@@ -2,7 +2,6 @@ import Index from "./Dashboard/Pages/HomePage/Index.js";
 import Profile from "./Dashboard/Pages/Profile/Profile.js";
 import Login from "./Dashboard/Pages/Login/Login.js";
 import Orders from "./Dashboard/Pages/Orders/OrderList/OrderList.js";
-import Orders2 from "./Dashboard/Pages/Orders/OrderList/OrderList2.js";
 import Products from "./Dashboard/Pages/Products/Product-list/Products.js";
 import Categories from "./Dashboard/Pages/Categories/Categories/Categories.js";
 import ListRoles from "./Dashboard/Pages/Roles/ListRoles/ListRoles.js";
@@ -12,8 +11,7 @@ import Users from "./Dashboard/Pages/Users/UserListing/UserListing.js";
 import UserCreate from "./Dashboard/Pages/Users/UserCreate/UserCreate.js";
 import UserEdit from "./Dashboard/Pages/Users/UserEdit/UserEdit.js";
 import UserDetail from "Dashboard/Pages/Users/UserDetails/UserDetails.js";
-import Emps from "Dashboard/Pages/Employees/EmpListing/EmpListing.js";
-import Emps2 from "Dashboard/Pages/Employees/EmpListing/EmpListing2.js";
+import Emps from "./Dashboard/Pages/Employees/EmpListing/EmpListing.js";
 import EmpCreate from "Dashboard/Pages/Employees/EmpCreate/EmpCreate.js";
 import EmpEdit from "Dashboard/Pages/Employees/EmpEdit/EmpEdit.js";
 import EmpDetails from "Dashboard/Pages/Employees/EmpDetail/EmpDetail.js";
@@ -94,17 +92,10 @@ var routes = [
     component: <Orders />,
     layout: "/admin",
   },
-  {
-    path: "/orders2",
-    name: "New",
-    icon: "fa fa-shopping-basket text-blue",
-    component: <Orders2 />,
-    layout: "/admin",
-  },
 
   {
     path: "/users",
-    name: "Website Customers",
+    name: "Customers",
     icon: "fa fa-users text-blue",
     component: <Users />,
     layout: "/admin",
@@ -132,18 +123,12 @@ var routes = [
   },
   {
     path: "/employees",
-    name: "Admin && Employees",
-    icon: "fa fa-users text-blue",
+    name: "Employees",
+    icon: "fa fa-person-military-pointing text-blue",
     component: <Emps />,
     layout: "/admin",
   },
-  {
-    path: "/employees2",
-    name: "New",
-    icon: "fa fa-users text-blue",
-    component: <Emps2 />,
-    layout: "/admin",
-  },
+
   {
     path: "/employees/create",
     name: "New",

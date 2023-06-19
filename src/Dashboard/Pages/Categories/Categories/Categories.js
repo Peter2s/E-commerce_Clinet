@@ -7,40 +7,50 @@ import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Btn from "../../../SharedUI/Btn/Btn";
 import MySwal from "sweetalert2";
 import PaginationAdmin from "../../../SharedUI/PaginationAdmin/PaginationAdmin";
-
+import DataTable from "../../../SharedUI/DataTable/DataTable";
+import handleErrors from "../../../../Errors";
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
-  const [total, setTotal] = useState(0);
+  // For pagination
+  const [search, setSearch] = useState(""); // Search keyword
+  const [rows, setRows] = useState(5); // Number of rows per page
+  const [page, setPage] = useState(1); // Current page number
+  const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     currentPage: null,
     totalPages: null,
     limit: null,
+    total: null,
   });
 
   const CategoriesURL = "api/v1/categories";
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    setLoading(true);
+    fetch();
+  }, [rows, page, search]);
 
-  const fetchCategories = (page = 1) => {
+  const fetch = () => {
     axiosInstance
-      .get(`${CategoriesURL}?page=${page}`)
+      .get(`${CategoriesURL}?page=${page}&limit=${rows}`, {
+        params: {
+          keyword: search,
+        },
+      })
       .then((response) => {
         console.log(response.data);
         const { data, pagination } = response.data;
         setCategories(data);
-        setTotal(pagination.total);
+
         setPagination({
           currentPage: pagination.current_page,
           totalPages: pagination.total_pages,
           limit: pagination.limit,
+          total: pagination.total,
         });
       })
-      .catch((error) => {
-        console.error(error);
-      });
+      .catch((error) => handleErrors(error));
   };
 
   const handleDeleteCategory = (id, name) => {
@@ -52,11 +62,13 @@ const Categories = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        callApiToDelete(id);
-      }
-    });
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          callApiToDelete(id);
+        }
+      })
+      .catch((error) => handleErrors(error));
   };
 
   const callApiToDelete = (id) => {
@@ -70,126 +82,131 @@ const Categories = () => {
           text: "category deleted successfully",
         });
       })
-      .catch((error) => {
-        console.log(error.message);
-        MySwal.fire({
-          icon: "error",
-          title: "error!",
-          text: error.response.data.error,
-        });
-      });
+      .catch((error) => handleErrors(error));
   };
   const handleActivate = async (userId) => {
     await axiosInstance
-        .post(`${CategoriesURL}/${userId}/ban`)
-        .then((res) => {
-          // Update the user data
-          setCategories(prevData => {
-            const updatedData = [...prevData];
-            const userIndex = updatedData.findIndex(user => user._id === userId);
-            if (userIndex !== -1) {
-              updatedData[userIndex] = { ...updatedData[userIndex], is_active: true };
-            }
-            return updatedData;
-          });
-        })
-
-        .catch((err) => {
-          console.log(err.message);
+      .post(`${CategoriesURL}/${userId}/ban`)
+      .then((res) => {
+        // Update the user data
+        setCategories((prevData) => {
+          const updatedData = [...prevData];
+          const userIndex = updatedData.findIndex(
+            (user) => user._id === userId
+          );
+          if (userIndex !== -1) {
+            updatedData[userIndex] = {
+              ...updatedData[userIndex],
+              is_active: false,
+            };
+          }
+          return updatedData;
         });
+      })
+
+      .catch((error) => handleErrors(error));
   };
 
   const handleDeactivate = async (userId) => {
     await axiosInstance
-        .post(`${CategoriesURL}/${userId}/unban`)
-        .then((res) => {
-          // Update the user data
-          setCategories(prevData => {
-            const updatedData = [...prevData];
-            const userIndex = updatedData.findIndex(user => user._id === userId);
-            if (userIndex !== -1) {
-              updatedData[userIndex] = { ...updatedData[userIndex], is_active: false };
-            }
-            return updatedData;
-          });
-        })
-        .catch((err) => {
-          console.log(err.message);
+      .post(`${CategoriesURL}/${userId}/unban`)
+      .then((res) => {
+        // Update the user data
+        setCategories((prevData) => {
+          const updatedData = [...prevData];
+          const userIndex = updatedData.findIndex(
+            (user) => user._id === userId
+          );
+          if (userIndex !== -1) {
+            updatedData[userIndex] = {
+              ...updatedData[userIndex],
+              is_active: true,
+            };
+          }
+          return updatedData;
         });
+      })
+      .catch((error) => handleErrors(error));
   };
   const handleEditCategory = (id) => {
     navigate(`/admin/editcategory/${id}`);
   };
-  const handlePageChange = (page) => {
-    fetchCategories(page);
-  };
 
+  const handlePageChange = async (event) => {
+    setPage(event.page + 1);
+    setRows(event.rows);
+  };
   return (
     <>
-      <Tables
-        title={`Categories (${total})`}
-        btn={
-          <>
-            <Link to="/admin/addCategory" className="d-flex">
-              <Btn className="btn btn-primary ml-auto" title="Add Category" />
-            </Link>
-          </>
+      <DataTable
+        title="Categories"
+        setSearch={setSearch}
+        addBtn={
+          <Link to="/admin/addCategory" className="d-flex">
+            <Btn className="btn btn-primary ml-auto" title="Add Category" />
+          </Link>
         }
-        trContent={
-          <>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">الاسم</th>
-            <th scope="col">Image</th>
-            <th scope="col">Actions</th>
-          </>
-        }
-        tableContent={categories.map((category,index) => (
-          <tr key={category.id}>
-            <td>{(index+1)+(pagination.currentPage-1)*pagination.limit}</td>
-            <td>{category.name_en}</td>
-            <td>{category.name_ar}</td>
-            <td style={{ maxWidth: "200px" }}>
+        data={categories}
+        loading={loading}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        columns={[
+          { header: "Name", field: "name_en" },
+          { header: "الاسم", field: "name_ar" },
+          {
+            header: "Image",
+            body: (product) => (
               <img
                 className="img-thumbnail"
-                // style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}
-                style={{ maxWidth: "100px",maxHeight: "50px", objectFit: "cover" }}ء
-                src={category.image}
-                alt={category.name}
+                /*style={{ maxWidth: "200px", width: "50%", maxHeight: "100px", height: "50%", objectFit: "cover" }}*/
+                style={{
+                  maxWidth: "100px",
+                  maxHeight: "50px",
+                  objectFit: "cover",
+                }}
+                src={product.image}
+                alt={product.name}
               />
-            </td>
-            <td>
-              <div>
-                  {category.is_active ? (
-                      <Btn className="btn-danger btn fa fa-lock" onClick={() => handleDeactivate(category.id)}/>
+            ),
+          },
+
+          {
+            header: "Actions",
+            body: (category) => {
+              return (
+                <div className="d-flex justify-content-around">
+                  {!category.is_active ? (
+                    <button
+                      title={"Activate"}
+                      className="btn-danger btn fa fa-lock"
+                      onClick={() => handleDeactivate(category._id)}
+                    />
                   ) : (
-                      <Btn className="btn-success btn fa fa-lock-open" onClick={() => handleActivate(category.id)}/>
+                    <button
+                      title={"Deactivate"}
+                      className="btn-success btn fa fa-lock-open"
+                      onClick={() => handleActivate(category._id)}
+                    />
                   )}
-                <button
-                  className="btn btn-primary"
-                  onClick={() => handleEditCategory(category._id)}
-                >
-                  <FontAwesomeIcon icon={faPenToSquare} />
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() =>
-                    handleDeleteCategory(category._id, category.name_en)
-                  }
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-        pagination={
-          <PaginationAdmin
-            currentPage={pagination.currentPage}
-            totalPages={pagination.totalPages}
-            onPageChange={handlePageChange}
-          />
-        }
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleEditCategory(category._id)}
+                  >
+                    <FontAwesomeIcon icon={faPenToSquare} />
+                  </button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() =>
+                      handleDeleteCategory(category._id, category.name_en)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </div>
+              );
+            },
+          },
+        ]}
       />
     </>
   );

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import "./ListRoles.css";
 import PaginationAdmin from "./../../../SharedUI/PaginationAdmin/PaginationAdmin";
 import DataTable from "../../../SharedUI/DataTable/DataTable";
+import handleErrors from "../../../../Errors";
 
 const Roles = () => {
   const maping = {
@@ -60,7 +61,7 @@ const Roles = () => {
       });
       console.log(response.data);
     } catch (error) {
-      console.log(error);
+      handleErrors(error);
     }
   };
 
@@ -85,9 +86,7 @@ const Roles = () => {
         });
       })
 
-      .catch((err) => {
-        console.log(err.message);
-      });
+      .catch((error) => handleErrors(error));
   };
 
   const handleDeactivate = async (userId) => {
@@ -110,9 +109,7 @@ const Roles = () => {
           return updatedData;
         });
       })
-      .catch((err) => {
-        console.log(err.message);
-      });
+      .catch((error) => handleErrors(error));
   };
   const handleDelete = async (id) => {
     try {
@@ -133,7 +130,7 @@ const Roles = () => {
         Swal.fire("Deleted!", "The role has been deleted.", "success");
       }
     } catch (error) {
-      console.log(error);
+      handleErrors(error);
     }
   };
 

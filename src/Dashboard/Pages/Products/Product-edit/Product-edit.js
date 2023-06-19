@@ -5,6 +5,7 @@ import { ProductsForm } from "../Products-form/ProductsForm";
 import { useFormik } from "formik";
 import MySwal from "sweetalert2";
 import { initValues, validation } from "../Products-form/validation";
+import handleErrors from "../../../../Errors";
 
 const UpdateProduct = () => {
   const [categories, setCategories] = useState(null);
@@ -20,7 +21,7 @@ const UpdateProduct = () => {
     validationSchema: validation,
     onSubmit: (values) => {
       const productData = new FormData();
-      console.log(values)
+      console.log(values);
       productData.append("name_en", values.name_en);
       productData.append("name_ar", values.name_ar);
       productData.append("image", values.image[0]);
@@ -47,14 +48,7 @@ const UpdateProduct = () => {
           });
           navigate("/admin/products");
         })
-        .catch((err) => {
-          console.log(err.response.data.error);
-          MySwal.fire({
-            icon: "error",
-            title: "error!",
-            text: err.response.data.error,
-          });
-        });
+        .catch((error) => handleErrors(error));
     },
   });
   const handleImageFile = (event) => {
@@ -65,31 +59,25 @@ const UpdateProduct = () => {
     formik.values.images = Array.from(event.target.files);
     console.log(formik.values.images);
   };
-
+  const fetchProduct = async () => {
+    axiosInstance
+      .get(`${ProductsURL}/${productID}`)
+      .then((response) => {
+        console.log(response.data.data);
+        setProduct(response.data.data);
+      })
+      .catch((error) => handleErrors(error));
+  };
+  const fetchCategories = async () => {
+    axiosInstance
+      .get(CategoriesURL)
+      .then((response) => {
+        setCategories(response.data.data);
+      })
+      .catch((error) => handleErrors(error));
+  };
   useEffect(() => {
     // Fetch the product data based on the categoryId
-    const fetchProduct = async () => {
-      axiosInstance
-        .get(`${ProductsURL}/${productID}`)
-        .then((response) => {
-          console.log(response.data.data);
-          setProduct(response.data.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    };
-
-    const fetchCategories = async () => {
-      axiosInstance
-        .get(CategoriesURL)
-        .then((response) => {
-          setCategories(response.data.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    };
 
     // Fetch the category data only if categoryId is provided
     if (productID) {

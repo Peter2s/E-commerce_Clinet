@@ -16,6 +16,7 @@ import { Navigate, useNavigate } from "react-router";
 import { useFormik } from "formik";
 import { Checkbox } from "primereact/checkbox";
 import { useParams } from "react-router-dom";
+import handleErrors from "../../../../Errors";
 
 const CreateRole = () => {
   const { id } = useParams();
@@ -34,7 +35,7 @@ const CreateRole = () => {
       const { routes: route } = response.data.data;
       setRoutes(route);
     } catch (error) {
-      console.log(error);
+      handleErrors(error);
     }
   };
   const fetchRoleData = async () => {
@@ -59,7 +60,7 @@ const CreateRole = () => {
         console.log(permissionsArray);
       }
     } catch (error) {
-      console.error("Error fetching permissions:", error);
+      handleErrors(error);
     }
   };
 
@@ -83,7 +84,7 @@ const CreateRole = () => {
               roles.find((role) => role.name === formik.values.newRole))
           );
         } catch (error) {
-          console.error("Error checking role uniqueness:", error);
+          handleErrors(error);
           return false;
         }
       }),
@@ -131,7 +132,7 @@ const CreateRole = () => {
 
         navigate("/admin/roles");
       } catch (error) {
-        console.error("Error saving role:", error);
+        handleErrors(error);
       }
     },
   });
