@@ -15,7 +15,7 @@ import Home from "Website/Pages/HomePage/HomePage";
 import { Authentication } from "Context/Authentication ";
 import ForgetPssword from "Dashboard/Components/Forgot/ForgetPassword";
 import Login from "Dashboard/Pages/Login/Login";
-import Products from "Website/Pages/Products/Products";
+import Products from "./Website/Pages/Products/Products";
 import Orders from "Website/Pages/Orders/Orders";
 import OrderDetail from "Website/Pages/Orders/OrderDetails/OrderDetail";
 import AboutUS from "Website/Pages/AboutUs/AboutUs";

@@ -13,6 +13,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import MySwal from "sweetalert2";
 import { axiosInstance } from "../../../../Axios";
+import handleErrors from "../../../../Errors";
 
 const EmpCreate = () => {
   const navigate = useNavigate();
@@ -24,9 +25,7 @@ const EmpCreate = () => {
       .then((res) => {
         setRoles(res.data.data); // Assuming the response contains an array of roles
       })
-      .catch((err) => {
-        console.log(err.message);
-      });
+      .catch((error) => handleErrors(error));
   }, []);
 
   const formik = useFormik({
@@ -85,9 +84,7 @@ const EmpCreate = () => {
           });
           navigate("/admin/employees");
         })
-        .catch((err) => {
-          console.log(err.message);
-        });
+        .catch((error) => handleErrors(error));
     },
   });
 

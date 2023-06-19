@@ -16,6 +16,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import "../../../Assets/css/project.css";
 import { axiosInstance } from "../../../../Axios";
+import handleErrors from "../../../../Errors";
 
 const EmpDetails = () => {
   const { id } = useParams();
@@ -28,15 +29,13 @@ const EmpDetails = () => {
       .then((res) => {
         setEmpData(res.data.data);
       })
-      .catch((err) => {
-        console.log(err.message);
-      });
+      .catch((error) => handleErrors(error));
   }, [id]);
 
   return (
     <>
       <Navbar />
-      
+
       {/* Page content */}
       <Container className="mt--7 col-lg-6">
         {/* Table */}
@@ -60,11 +59,11 @@ const EmpDetails = () => {
                         Back
                       </Link>
                       <Link
-                          className="btn btn-danger"
-                          to={`/admin/EmpEdit/${id}`}
-                          color="warning"
-                          href="#pablo"
-                          size="sm"
+                        className="btn btn-danger"
+                        to={`/admin/EmpEdit/${id}`}
+                        color="warning"
+                        href="#pablo"
+                        size="sm"
                       >
                         Edit
                       </Link>

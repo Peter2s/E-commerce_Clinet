@@ -1,15 +1,15 @@
-.aboutUsBanner{
+.settingBanner{
     width: 100%;   
     position: relative; 
 }
 
-.aboutUsTitle{
+.settingTitle{
     position: absolute;
     top: 30%;
     right: 70%;
 }
 
-.aboutUsContent{
+.settingContent{
     width: 46%;
     margin: auto;
     margin-top: 5%;

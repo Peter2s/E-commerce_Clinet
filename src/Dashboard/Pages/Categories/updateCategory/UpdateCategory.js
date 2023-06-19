@@ -5,6 +5,7 @@ import { CategoriesForm } from "../CategoriesForm/CategoriesForm";
 import MySwal from "sweetalert2";
 import { useFormik } from "formik";
 import { initValues, validation } from "../CategoriesForm/validation";
+import handleErrors from "../../../../Errors";
 
 const UpdateCategory = () => {
   const categoryId = useParams().id;
@@ -35,14 +36,7 @@ const UpdateCategory = () => {
           });
           navigate("/admin/categories");
         })
-        .catch((err) => {
-          console.log(err.response.data.error);
-          MySwal.fire({
-            icon: "error",
-            title: "error!",
-            text: err.response.data.error,
-          });
-        });
+        .catch((error) => handleErrors(error));
     },
   });
 
@@ -54,14 +48,7 @@ const UpdateCategory = () => {
           console.log(res.data.data);
           setCategory(res.data.data);
         })
-        .catch((error) => {
-          console.log(error.response.data.error);
-          MySwal.fire({
-            icon: "error",
-            title: "error!",
-            text: error.response.data.error,
-          });
-        });
+        .catch((error) => handleErrors(error));
     };
     // Fetch the category data only if categoryId is provided
     if (categoryId) {
