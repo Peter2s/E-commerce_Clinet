@@ -57,12 +57,12 @@ const Checkout = () => {
                   };
               await axiosInstance.post("/orders", orderData);
               console.log(orderData);
-              Swal.fire("Order Placed!", "Your order has been placed successfully.", "success");
+              Swal.fire("تم الطلب!", "تم اتمام الطلب بنجاح !", "نجاح ");
               // Redirect to the orders page
               
             } catch (error) {
               console.log(error.message);
-              Swal.fire("Error", "An error occurred. Please try again.", "error");
+              Swal.fire("فشل", " حدث خطأ برجاء المحاولة مرة أخرى.", "فشل");
             }
           };
         
@@ -114,14 +114,7 @@ const Checkout = () => {
                 <p><i className="fa-solid fa-money-bill text-success ml-2"></i>كاش عند الاستلام</p>
                 </Col>
               </Row>
-              {/* <Row>
-                <Col>
-                <p>عدد المنتجات : </p>
-                </Col>
-                <Col>
-                <p>orderData.p</p>
-                </Col>
-              </Row> */}
+              
               <Row>
                 <Col>
                   <h2>السعر الكلى:</h2>
