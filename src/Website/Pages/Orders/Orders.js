@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Card, CardBody, Col } from "reactstrap";
+import { Container, Row, Card, CardBody, Col, InputGroup, InputGroupAddon, Button , image } from "reactstrap";
 import { axiosInstance } from "Axios.js";
 import "../Orders/Orders.css";
 import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { FaCalendarAlt } from "react-icons/fa";
+import imageSrc from "../../Assets/img/OIUFKQ0.jpg";
+
+
 
 const Orders = () => {
   const [orderData, setOrderData] = useState([]);
@@ -85,18 +89,39 @@ const Orders = () => {
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
+  const hasOrders = orderData.length > 0;
   return (
     <Container fluid className="mt-4">
       <Row>
         <Card className="container shadow text-right p-2">
-          <h1 className="mr-3 mb-3">طلباتى</h1>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            dateFormat="dd/MM/yyyy"
-            className="mb-3 react-datepicker"
-          />
+        <Row className="d-flex justify-content-between mt-3">
+            <Col>
+              <h1 className="mr-3 mb-3">طلباتى</h1>
+            </Col>
+            <Col lg="5" className="text-left">
+            <InputGroup className="mb-3 ml-3">
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={(date) => setSelectedDate(date)}
+                  dateFormat="dd/MM/yyyy"
+                  className="form-control"
+                  placeholderText="تاريخ البحث"
+                />
+                <InputGroupAddon addonType="append">
+                  <Button color="warning">
+                    <FaCalendarAlt />
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
+            </Col>
+          </Row>
+          
+          {!hasOrders && selectedDate && (
+            <div className="text-center mt-4 mb-4">
+              <h2>لا توجد طلبات في هذا اليوم</h2>
+              <img src={imageSrc} alt="No Orders" style={{ width: "250px", height: "250px" }} />
+            </div>
+          )}
           {currentOrders.map((order) => (
             <Card key={order._id} className="m-2 shadow">
               <CardBody className="hover-border-primary">
@@ -114,7 +139,7 @@ const Orders = () => {
                       </p>
                       <h3 className={getStatusColor(order.status)}>{order.status}</h3>
                     </Col>
-                    <Col xs="3" className="separator" />
+                    <Col lg="3" xs="5" className="separator" />
 
                     <Col xs="3">
                       <img

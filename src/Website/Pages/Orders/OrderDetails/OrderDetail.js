@@ -9,15 +9,13 @@ import Swal from 'sweetalert2';
 
 const OrderDetail = () => {
   const { id } = useParams();
-  const [orderdata, setOrderData] = useState([]);
+  const [orderdata, setOrderData] = useState({});
   const [productData, setProductData] = useState([]);
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState({});
   const [paymentStatus, setPaymentStatus] = useState(orderdata.payment_status);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState([]);
   const [userAddresses, setUserAddresses] = useState([]);
-  
-
 
   useEffect(() => {
     axiosInstance
@@ -105,12 +103,12 @@ const OrderDetail = () => {
       });
   
       if (value) {
-        // if (orderdata.status === 'Completed') {
-        //   // Update order status to 'Pending'
-        //   await axiosInstance.post(`/orders/${orderdata._id}/reorder`, { status: 'Pending' });
-        //   setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Pending' }));
-        //   Swal.fire('Order Reordered!', 'The order status has been changed to Pending.', 'success');} 
-           if (orderdata.status === 'Pending') {
+        if (orderdata.status === 'Completed') {
+          // Update order status to 'Pending'
+          await axiosInstance.post(`/orders/${orderdata._id}/reorder`, { status: 'Pending' });
+          setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Pending' }));
+          Swal.fire('Order Reordered!', 'The order status has been changed to Pending.', 'success');
+        }  if (orderdata.status === 'Pending') {
           // Update order status to 'Cancelled'
           await axiosInstance.delete(`/orders/${orderdata._id}`, { status: 'Cancelled' });
           setOrderData((prevOrderData) => ({ ...prevOrderData, status: 'Cancelled' }));
