@@ -57,7 +57,7 @@ const Login = () => {
       setuser("");
       setpassword("");
       setsuccess(true);
-      Navigate("/admin");
+      Navigate("/admin/index");
     } catch (err) {
       console.error(err.response.data.message);
       const erorr = err.response.data.message;
@@ -71,7 +71,7 @@ const Login = () => {
       {success ? (
         <section>
           <p> loged in success </p>
-          {Navigate("/admin")}
+          {Navigate("/admin/index")}
         </section>
       ) : (
         <div className={"row text-center mt-5"}>

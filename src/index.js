@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -38,196 +38,15 @@ import Registration from "./Website/Pages/Registration/Registration";
 import { ForgetPassword } from "./Website/Pages/ForgetPassword/ForgetPassword";
 import VerifyEmail from "./Website/Pages/verifyEmail/VerifyEmail";
 import PageNotFound from "./SharedUi/PageNotFound";
+import AuthContext from "Context/Authentication ";
+import AppRoutes from "./AppRoutes";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
     <Authentication>
-      <Routes>
-        <Route path="/admin/*" element={<AdminLayout />} />
-        <Route path="/auth/*" element={<AuthLayout />} />
-        <Route path="/admin/login" element={<Login />} />
-        <Route
-          path="/home"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <Home />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/categories"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <AllCategoryPage />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/products"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <Products />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/orders"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <Orders />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/orders/OrderDetail/:id"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <OrderDetail />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/aboutus"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <AboutUS />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/contactus"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <ContactUs />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <Cart />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <Checkout />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/termsAndConditions"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <TermsAndConditions />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <Profile />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/address"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <Address />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/address/:id/edit"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <AddressEdit />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/address/add"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <AddressAdd />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/products/:slug"
-          element={
-            <div dir="rtl" className="websitePages">
-              <NavBar />
-              <ProductDetails />
-              <FooterSite />
-            </div>
-          }
-        />
-        <Route
-          path="/auth/login"
-          element={
-            <div dir="rtl" className="websitePages">
-              <LoginSite />
-            </div>
-          }
-        />
-        <Route
-          path="/auth/register"
-          element={
-            <div dir="rtl" className="websitePages">
-              <Registration />
-            </div>
-          }
-        />
-        <Route
-          path="/verify-email/:token"
-          element={
-            <div dir="rtl" className="websitePages">
-              <VerifyEmail />
-            </div>
-          }
-        />
-        <Route path="/forgot-password" element={<ForgetPassword />} />
-
-        <Route path="/login" element={<Login />} />
-        <Route path="/ForgetPssword" element={<ForgetPssword />} />
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
+      <AppRoutes />
     </Authentication>
   </BrowserRouter>
 );
