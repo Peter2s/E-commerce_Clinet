@@ -7,7 +7,7 @@ const SearchBox = ({ searchQuery, onSearchQueryChange }) => {
       placeholder="Search"
       value={searchQuery}
       onChange={onSearchQueryChange}
-      className="form-control " 
+      className="form-control shadow w-25 m-auto" 
     />
   );
 };

@@ -45,17 +45,17 @@ const Products = () => {
 
   return (
     <>
-      <div style={{ minHeight: "670px" }}>
-        <Container>
+      <div >
+        <Container fluid className="mt-4">
           <Row className="d-flex flex-row">
-            <Col sm="2" xs="2" md="1" className="d-flex">
+            <Col sm="4" xs="4" md="2" className="d-flex">
               <SideFilter
                 updateCategory={updateCategory}
                 updatePriceFrom={updatePriceFrom}
                 updatePriceTo={updatePriceTo}
               />
             </Col>
-            <Col sm="10" xs="10" md="11">
+            <Col sm="6" xs="8" md="10">
               <SearchBox searchQuery={searchQuery} onSearchQueryChange={handleSearchQueryChange} 
               className="form-control" />
               <CardProductsContainer products={filteredProducts} title="" btntitle="" />
