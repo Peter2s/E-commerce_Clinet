@@ -26,30 +26,63 @@ import { ForgetPassword } from "./Website/Pages/ForgetPassword/ForgetPassword";
 import ForgetPssword from "./Dashboard/Components/Forgot/ForgetPassword";
 import PageNotFound from "./SharedUi/PageNotFound";
 import React, { useContext, useEffect } from "react";
-import AuthContext from "./Context/Authentication ";
+import ProtectedRoute from "./Website/components/Uitily/ProtectedRoute";
+import ProtectedRouteHook from "./Website/hook/auth/ProtectedRouteHook";
+import ProductsByCategory from "./Website/Pages/Products/ProductsByCategory";
 
 const AppRoutes = () => {
-  const { user } = useContext(AuthContext);
-  const getUser = () => {
-    const user = localStorage.getItem("admin-user");
-    const currntUser = JSON.parse(user);
-    console.log("cuser", currntUser);
-    if (currntUser) return currntUser;
-    else return null;
-  };
+  const [isUser, isAdmin, isGuest, userData] = ProtectedRouteHook();
+  console.log("g", isGuest);
+  console.log("u", isUser);
+  console.log("a", isAdmin);
+
   return (
     <>
       <Routes>
         <Route
           path="/admin/*"
-          element={getUser() ? <AdminLayout /> : <Navigate to="/admin/login" />}
+          element={
+            <ProtectedRoute auth={isAdmin} path="/admin/login">
+              <AdminLayout />
+            </ProtectedRoute>
+          }
         />
-        <Route path="/auth/*" element={<AuthLayout />} />
+        <Route element={<ProtectedRoute auth={isGuest} path="/admin/index" />}>
+          <Route path="/auth/*" element={<AuthLayout />} />
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/ForgetPssword" element={<ForgetPssword />} />
+
+          {/*for Website*/}
+
+          <Route
+            path="/forgot-password"
+            element={
+              <div dir="rtl" className="websitePages">
+                <ForgetPassword />
+              </div>
+            }
+          />
+
+          <Route
+            path="/login"
+            element={
+              <div dir="rtl" className="websitePages">
+                <LoginSite />
+              </div>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <div dir="rtl" className="websitePages">
+                <Registration />
+              </div>
+            }
+          />
+        </Route>
+
         <Route
-          path="/admin/login"
-          element={getUser() ? <Navigate to="/admin/index" /> : <Login />}
-        />
-        <Route
+          index
           path="/home"
           element={
             <div dir="rtl" className="websitePages">
@@ -65,6 +98,16 @@ const AppRoutes = () => {
             <div dir="rtl" className="websitePages">
               <NavBar />
               <AllCategoryPage />
+              <FooterSite />
+            </div>
+          }
+        />
+        <Route
+          path="/categories/:slug/products"
+          element={
+            <div dir="rtl" className="websitePages">
+              <NavBar />
+              <ProductsByCategory />
               <FooterSite />
             </div>
           }
@@ -199,22 +242,7 @@ const AppRoutes = () => {
             </div>
           }
         />
-        <Route
-          path="/auth/login"
-          element={
-            <div dir="rtl" className="websitePages">
-              <LoginSite />
-            </div>
-          }
-        />
-        <Route
-          path="/auth/register"
-          element={
-            <div dir="rtl" className="websitePages">
-              <Registration />
-            </div>
-          }
-        />
+
         <Route
           path="/verify-email/:token"
           element={
@@ -223,10 +251,7 @@ const AppRoutes = () => {
             </div>
           }
         />
-        <Route path="/forgot-password" element={<ForgetPassword />} />
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/ForgetPssword" element={<ForgetPssword />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </>

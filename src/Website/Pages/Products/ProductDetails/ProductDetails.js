@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { axiosInstance } from "../../../../Axios";
 import Buttons from "Website/SharedUI/Buttons/Buttons";
-import './ProductDetails.css';
+import "./ProductDetails.css";
 import { useParams } from "react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCartPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ProductsDetails = () => {
   const [product, setProduct] = useState(null);
@@ -12,11 +14,12 @@ const ProductsDetails = () => {
   const { slug } = useParams();
 
   useEffect(() => {
-    axiosInstance.get(`/products/${slug}`)
-      .then(response => {
+    axiosInstance
+      .get(`/products/${slug}`)
+      .then((response) => {
         setProduct(response.data.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error fetching product details:", error);
       });
   }, []);
@@ -33,31 +36,32 @@ const ProductsDetails = () => {
       return;
     }
 
-    axiosInstance.patch("/profile/cart/add", { product_id: product._id, quantity })
-      .then(response => {
+    axiosInstance
+      .patch("/profile/cart/add", { product_id: product._id, quantity })
+      .then((response) => {
         console.log("Product added to cart:", response.data);
         showSuccessAlert();
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error adding product to cart:", error);
       });
   };
 
   const showSuccessAlert = () => {
     Swal.fire({
-      icon: 'success',
-      title: 'تمت إضافة المنتج لعربة التسـوق',
+      icon: "success",
+      title: "تمت إضافة المنتج لعربة التسـوق",
       showConfirmButton: false,
-      timer: 1500
+      timer: 1500,
     });
   };
 
   const showFailureAlert = () => {
     Swal.fire({
-      icon: 'error',
-      title: 'الكميـة المتاحة لدينا لا تكفـي',
+      icon: "error",
+      title: "الكميـة المتاحة لدينا لا تكفـي",
       showConfirmButton: false,
-      timer: 1500
+      timer: 1500,
     });
   };
 
@@ -83,11 +87,20 @@ const ProductsDetails = () => {
               <Row>
                 <Col lg="3">
                   {product.images.map((image, index) => (
-                    <img key={index} src={image} alt={product.name_ar} className="productGallery" />
+                    <img
+                      key={index}
+                      src={image}
+                      alt={product.name_ar}
+                      className="productGallery"
+                    />
                   ))}
                 </Col>
                 <Col lg="4">
-                  <img src={product.image} alt={product.name_ar} className="productImage shadow" />
+                  <img
+                    src={product.image}
+                    alt={product.name_ar}
+                    className="productImage shadow"
+                  />
                 </Col>
               </Row>
             </Col>
@@ -95,39 +108,64 @@ const ProductsDetails = () => {
               {quantityInStock > 0 ? (
                 <p className="available">
                   <i className="fa fa-check"></i>
-                  &nbsp;متوفـر</p>
+                  &nbsp;متوفـر
+                </p>
               ) : (
                 <p className="unavailable">
                   <i className="fa fa-warning"></i>
-                  &nbsp;غير متوفـر 
+                  &nbsp;غير متوفـر
                 </p>
               )}
               <div className="details my-3">
                 <h1>{product.name_ar}</h1>
-                <h3><span className="font-weight-bold">القســـم: </span>{product.category_id.name_ar}</h3>
+                <h3>
+                  <span className="font-weight-bold">القســـم: </span>
+                  {product.category_id.name_ar}
+                </h3>
                 <p className="description row">
                   <span className="font-weight-bold mr-3">الـوصــــف: </span>
-                 <span className="col"> {product.desc_ar}</span></p>
-                <p className="mt-3"><span className="font-weight-bold ml-3">الكميــة: </span>
+                  <span className="col"> {product.desc_ar}</span>
+                </p>
+                <p className="mt-3">
+                  <span className="font-weight-bold ml-3">الكميــة: </span>
                   <span className="quantity-control shadow">
-                    <span className="quantity-button minusBTN" onClick={decreaseQuantity}>-</span>
+                    <span
+                      className="quantity-button minusBTN"
+                      onClick={decreaseQuantity}
+                    >
+                      -
+                    </span>
                     <span className="quantity-value">{quantity}</span>
-                    <span className="quantity-button plusBTN" onClick={increaseQuantity}>+</span>
+                    <span
+                      className="quantity-button plusBTN"
+                      onClick={increaseQuantity}
+                    >
+                      +
+                    </span>
                   </span>
                 </p>
                 <Row className="mt-5">
                   <Col lg="3">
-                    <p><span className="productPrice"><sub>{product.price}</sub></span><sup> ج.م</sup></p>
+                    <p>
+                      <span className="productPrice">
+                        <sub>{product.price}</sub>
+                      </span>
+                      <sup> ج.م</sup>
+                    </p>
                   </Col>
                   <Col lg="9" className="mt-4 text-left">
                     {quantityInStock > 0 ? (
-                      <Buttons
-                        title="إضافــة إلي العـربة"
+                      <button
                         className="btn btn-outline-dark"
                         onClick={addToCart}
-                      />
+                      >
+                        <FontAwesomeIcon icon={faCartPlus} className="mx-1" />
+                        إضافــة إلي العـربة
+                      </button>
                     ) : (
-                      <span className="text-warning">هذا المنتج غير متوفـر حاليـًا</span>
+                      <span className="text-warning">
+                        هذا المنتج غير متوفـر حاليـًا
+                      </span>
                     )}
                   </Col>
                 </Row>

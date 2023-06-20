@@ -66,7 +66,7 @@ const NavBar = () => {
       await axiosInstance.delete("/logout");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      navigate("/auth/login");
+      navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -100,13 +100,13 @@ const NavBar = () => {
       {!isLoggedIn ? (
         <ul>
           <li>
-            <Link to="/auth/login">
+            <Link to="/login">
               <FontAwesomeIcon icon={faUser} className="Icons" />
               تسجيل الدخول
             </Link>
           </li>
           <li>
-            <Link to="/auth/register">
+            <Link to="/register">
               <FontAwesomeIcon icon={faUser} className="Icons" />
               حســـاب جديـد
             </Link>
