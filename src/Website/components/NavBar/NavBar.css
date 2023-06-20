@@ -13,7 +13,7 @@
 #navBar li{
     list-style: none;
     margin-top: 3vh;
-    margin-left: 3vw;
+    margin-left: 2.5vw;
 }
 
 #navBar a{
@@ -36,4 +36,13 @@
     margin-right: 3vw;
 }
 
-  
+.navProfileImage{
+    width: 50px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.dropdown:hover{
+    cursor: pointer;
+    align-items: center;
+}
