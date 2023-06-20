@@ -36,6 +36,7 @@ import { AllCategoryPage } from "./Website/Pages/Categories/AllCategoryPage";
 import ProductDetails from "Website/Pages/Products/ProductDetails/ProductDetails";
 import Registration from "./Website/Pages/Registration/Registration";
 import { ForgetPassword } from "./Website/Pages/ForgetPassword/ForgetPassword";
+import VerifyEmail from "./Website/Pages/verifyEmail/VerifyEmail";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -219,6 +220,7 @@ root.render(
         />
         <Route path="/auth/login" element={<LoginSite />} />
         <Route path="/auth/register" element={<Registration />} />
+        <Route path="/verify-email/:token" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgetPassword />} />
 
         <Route path="/login/*" element={<Login />} />

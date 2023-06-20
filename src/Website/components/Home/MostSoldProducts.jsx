@@ -4,7 +4,7 @@ import { SubTiltle } from "../Uitily/SubTiltle";
 import { ViewHomeProductsHook } from "../../hook/Products/ViewHomeProductsHook";
 import { useEffect } from "react";
 
-export const LatestProduct = ({ title, btntitle, pathText }) => {
+export const MostSoldProducts = ({ title, btntitle, pathText }) => {
   const [products, loading] = ViewHomeProductsHook();
   useEffect(() => {
     if (products.length > 0) {
