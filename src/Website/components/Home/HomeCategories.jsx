@@ -15,11 +15,7 @@ export const HomeCategories = () => {
   return (
     <>
       <Container>
-        <SubTiltle
-          title="التصنيفات"
-          btntitle="المزيد"
-          pathText="/allcategory"
-        />
+        <SubTiltle title="التصنيفات" btntitle="المزيد" pathText="/categories" />
         <Row className="my-2 d-flex justify-content-between">
           {loading === false ? (
             categories ? (
@@ -27,7 +23,7 @@ export const HomeCategories = () => {
                 return (
                   <CategoryCard
                     key={item._id}
-                    id={item._id}
+                    slug={item.slug}
                     title={item.name_ar}
                     img={item.image}
                   />

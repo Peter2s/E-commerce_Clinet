@@ -1,7 +1,7 @@
 import { Col } from "reactstrap";
 import { Link } from "react-router-dom";
 
-export const CategoryCard = ({ img, title, id }) => {
+export const CategoryCard = ({ img, title, slug }) => {
   return (
     <>
       <Col
@@ -14,7 +14,7 @@ export const CategoryCard = ({ img, title, id }) => {
         <div className="allCard mb-3 ">
           <div className="categoty-card "></div>{" "}
           <Link
-            to={`/categories/${id}/products`}
+            to={`/categories/${slug}/products`}
             style={{ textDecoration: "none" }}
           >
             <img alt="zcv" src={img} className="categoty-card-img" />

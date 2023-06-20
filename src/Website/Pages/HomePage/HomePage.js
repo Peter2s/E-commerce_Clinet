@@ -1,6 +1,6 @@
 import Silder from "../../components/Home/Silder";
 import { HomeCategories } from "../../components/Home/HomeCategories";
-import { LatestProduct } from "../../components/Home/LatestProduct";
+import { MostSoldProducts } from "../../components/Home/MostSoldProducts";
 import { Features } from "../../components/Home/Features";
 
 const Home = () => {
@@ -9,8 +9,8 @@ const Home = () => {
       <Silder />
       <Features />
       <HomeCategories />
-      <LatestProduct
-        title="احدث المنتجات"
+      <MostSoldProducts
+        title="الاكثر مبيعا"
         btntitle="المزيد"
         pathText="/products"
       />
