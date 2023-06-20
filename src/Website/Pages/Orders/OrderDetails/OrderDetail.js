@@ -37,8 +37,7 @@ const OrderDetail = () => {
           const response = await axiosInstance.get("/profile");
           setUserData(response.data.data);
           setUserAddresses(response.data.data.address);
-
-          console.log(userAddresses);
+          console.log(response.data.data.address);
         } catch (error) {
           console.log(error.message);
           // Handle error
@@ -154,15 +153,20 @@ const OrderDetail = () => {
   };
 
   const handleAddressSelect = (event) => {
-    setSelectedAddress(event.target.value);
-  };
+  const selectedValue = event.target.value;
+  setSelectedAddress(selectedValue);
+
+  // Use the selectedValue as needed
+  console.log(selectedValue);
+  // You can pass the selectedValue to any function or perform any other logic here
+};
 
   const handleReorderConfirm = async () => {
     try {
       const response = await axiosInstance.post(`/orders/${orderdata._id}/reorder`, {
-        
+        address_id: selectedAddress,
       });
-      if (response.status === 201) {
+      if (response.data.status === "success") {
         Swal.fire({
           title: 'Success!',
           text: 'Order has been placed successfully.',
@@ -344,28 +348,27 @@ const OrderDetail = () => {
       <Modal isOpen={modalOpen} toggle={handleModalClose}>
         <ModalHeader toggle={handleModalClose}>اختر عنوانًا</ModalHeader>
         <ModalBody>
-          <FormGroup>
-            <Label for="address">العنوان</Label>
-            <Input type="select" name="address" id="address" value={selectedAddress} onChange={handleAddressSelect}>
-              <option value="">اختر العنوان</option>
-              {userAddresses.length > 0 ? (
-          userAddresses.map((address) => (
-            <option key={address._id}>
-              
-                {address.area}, {address.city}, {address.governorate}, {address.country}
-              
-            </option>
-          ))
-        ) : (
-          <p>No address found</p>
-        )}
-  
-  <Col>
-        
-      </Col>
-             
-            </Input>
-          </FormGroup>
+        <FormGroup>
+  <Label for="address">العنوان</Label>
+  <Input
+    type="select"
+    name="address"
+    id="address"
+    value={selectedAddress}
+    onChange={handleAddressSelect}
+  >
+    <option value="">اختر العنوان</option>
+    {userAddresses.length > 0 ? (
+      userAddresses.map((address) => (
+        <option key={address._id} value={address._id}>
+          {address.area}, {address.city}, {address.governorate}, {address.country}
+        </option>
+      ))
+    ) : (
+      <option disabled>No address found</option>
+    )}
+  </Input>
+</FormGroup>
         </ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={handleReorderConfirm}>
