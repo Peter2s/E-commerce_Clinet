@@ -46,7 +46,7 @@ const Login = () => {
           MySwal.fire({
             icon: "error",
             title: "error!",
-            text: Object.entries(err.response.data.error),
+            text: err.response.data.error,
           });
           localStorage.removeItem("token");
           localStorage.removeItem("user");
