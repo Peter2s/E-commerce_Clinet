@@ -1,7 +1,11 @@
 import { Row } from "reactstrap";
 import SidebarSearchHook from "../../hook/Search/SideBarSearchHook";
 
-export const SideFilter = ({ updateCategory, updatePriceFrom, updatePriceTo }) => {
+export const SideFilter = ({
+  updateCategory,
+  updatePriceFrom,
+  updatePriceTo,
+}) => {
   let localFrom = localStorage.getItem("priceFrom");
   let localTo = localStorage.getItem("priceTo");
   const [category, clickCategory] = SidebarSearchHook();
