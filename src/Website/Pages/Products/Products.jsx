@@ -15,6 +15,7 @@ const Products = () => {
   const updateCategory = (categoryId) => {
     setSelectedCategory(categoryId === "0" ? null : categoryId);
   };
+  
 
   const updatePriceFrom = (value) => {
     setPriceFrom(value);
@@ -31,7 +32,6 @@ const Products = () => {
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
       !selectedCategory || product.category_id._id === selectedCategory;
-
     const matchesPrice =
       (!priceFrom || product.price >= parseInt(priceFrom)) &&
       (!priceTo || product.price <= parseInt(priceTo));

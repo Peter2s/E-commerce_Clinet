@@ -6,8 +6,8 @@ export const SideFilter = ({
   updatePriceFrom,
   updatePriceTo,
 }) => {
-  let localFrom = localStorage.getItem("priceFrom");
-  let localTo = localStorage.getItem("priceTo");
+  const localFrom = localStorage.getItem("priceFrom") || "";
+  const localTo = localStorage.getItem("priceTo") || "";
   const [category, clickCategory] = SidebarSearchHook();
 
   const handlePriceFromChange = (event) => {
@@ -22,6 +22,12 @@ export const SideFilter = ({
     localStorage.setItem("priceTo", value);
   };
 
+  const handleCategoryChange = (event) => {
+    const categoryId = event.target.value;
+    updateCategory(categoryId);
+    localStorage.setItem("catChecked", categoryId);
+  };
+
   return (
     <>
       <div className="mt-3">
@@ -29,7 +35,12 @@ export const SideFilter = ({
           <div className="d-flex flex-column mt-2">
             <div className="filter-title">الفئة</div>
             <div className="d-flex mt-3">
-              <input onChange={clickCategory} type="checkbox" value="0" />
+              <input
+                onChange={handleCategoryChange}
+                type="checkbox"
+                value="0"
+                checked={localStorage.getItem("catChecked") === "0"}
+              />
               <div className="filter-sub me-2 ">الكل</div>
             </div>
             {category ? (
@@ -37,9 +48,10 @@ export const SideFilter = ({
                 return (
                   <div key={index} className="d-flex mt-3">
                     <input
-                      onChange={clickCategory}
+                      onChange={handleCategoryChange}
                       type="checkbox"
                       value={item._id}
+                      checked={localStorage.getItem("catChecked") === item._id}
                     />
                     <div className="filter-sub me-2 ">{item.name_ar}</div>
                   </div>
