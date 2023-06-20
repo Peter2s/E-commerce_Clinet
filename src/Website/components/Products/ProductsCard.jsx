@@ -17,10 +17,7 @@ export const ProductsCard = ({ item }) => {
           }}
         >
           <Link to={`/product/${item._id}`} style={{ textDecoration: "none" }}>
-            <CardImg
-              style={{ height: "228px", width: "100%" }}
-              src={item.image}
-            />
+            <CardImg style={{ height: "228px", width: "100%" }} src={item.image} />
           </Link>
           <div className="d-flex justify-content-end mx-2"></div>
           <CardBody>

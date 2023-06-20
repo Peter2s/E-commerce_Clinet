@@ -1,10 +1,23 @@
 import { Row } from "reactstrap";
 import SidebarSearchHook from "../../hook/Search/SideBarSearchHook";
 
-export const SideFilter = () => {
+export const SideFilter = ({ updateCategory, updatePriceFrom, updatePriceTo }) => {
   let localFrom = localStorage.getItem("priceFrom");
   let localTo = localStorage.getItem("priceTo");
-  const [category, clickCategory, priceFrom, priceTo] = SidebarSearchHook();
+  const [category, clickCategory] = SidebarSearchHook();
+
+  const handlePriceFromChange = (event) => {
+    const value = event.target.value;
+    updatePriceFrom(value);
+    localStorage.setItem("priceFrom", value);
+  };
+
+  const handlePriceToChange = (event) => {
+    const value = event.target.value;
+    updatePriceTo(value);
+    localStorage.setItem("priceTo", value);
+  };
+
   return (
     <>
       <div className="mt-3">
@@ -38,7 +51,7 @@ export const SideFilter = () => {
             <p className="filter-sub my-2">من:</p>
             <input
               value={localFrom}
-              onChange={priceFrom}
+              onChange={handlePriceFromChange}
               className="m-2 text-center"
               type="number"
               style={{ width: "50px", height: "25px" }}
@@ -47,7 +60,7 @@ export const SideFilter = () => {
           <div className="d-flex">
             <p className="filter-sub my-2">الي:</p>
             <input
-              onChange={priceTo}
+              onChange={handlePriceToChange}
               value={localTo}
               className="m-2 text-center"
               type="number"
