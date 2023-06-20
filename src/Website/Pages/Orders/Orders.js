@@ -3,24 +3,34 @@ import { Container, Row, Card, CardBody, Col } from "reactstrap";
 import { axiosInstance } from "Axios.js";
 import "../Orders/Orders.css";
 import { Link } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Orders = () => {
   const [orderData, setOrderData] = useState([]);
   const [productData, setProductData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedDate, setSelectedDate] = useState(null);
   const ordersPerPage = 3;
 
   useEffect(() => {
     axiosInstance
       .get("/orders")
       .then((res) => {
-        setOrderData(res.data.data);
-        fetchProductData(res.data.data);
+        const filteredOrders = selectedDate
+          ? res.data.data.filter((order) => {
+              const orderDate = new Date(order.createdAt).setHours(0, 0, 0, 0);
+              return orderDate === selectedDate.getTime();
+            })
+          : res.data.data;
+
+        setOrderData(filteredOrders);
+        fetchProductData(filteredOrders);
       })
       .catch((err) => {
         console.log(err.message);
       });
-  }, []);
+  }, [selectedDate]);
 
   const fetchProductData = async (orders) => {
     const productIds = orders.flatMap((order) =>
@@ -81,6 +91,12 @@ const Orders = () => {
       <Row>
         <Card className="container shadow text-right p-2">
           <h1 className="mr-3 mb-3">طلباتى</h1>
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            dateFormat="dd/MM/yyyy"
+            className="mb-3 react-datepicker"
+          />
           {currentOrders.map((order) => (
             <Card key={order._id} className="m-2 shadow">
               <CardBody className="hover-border-primary">
@@ -122,25 +138,24 @@ const Orders = () => {
             </Card>
           ))}
           <Row>
-        <nav>
-          <ul className="pagination justify-content-center">
-            {Array.from({ length: Math.ceil(orderData.length / ordersPerPage) }, (_, i) => (
-              <li key={i + 1} className="page-item">
-                <button
-                  className="page-link"
-                  onClick={() => paginate(i + 1)}
-                  style={{ cursor: "pointer" }}
-                >
-                  {i + 1}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </Row>
+            <nav>
+              <ul className="pagination justify-content-center">
+                {Array.from({ length: Math.ceil(orderData.length / ordersPerPage) }, (_, i) => (
+                  <li key={i + 1} className="page-item">
+                    <button
+                      className="page-link"
+                      onClick={() => paginate(i + 1)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {i + 1}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </Row>
         </Card>
       </Row>
-      
     </Container>
   );
 };

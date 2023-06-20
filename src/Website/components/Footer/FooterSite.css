@@ -19,6 +19,10 @@
     margin-right: 15px;
 }
 
+.FollowUsSocialMedia:hover{
+    color: rgba(0, 0, 0, 0.653);
+}
+
 .EnglishWords{
     text-align: left;
 }
